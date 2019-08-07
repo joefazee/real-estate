@@ -11,6 +11,7 @@
   "author": "Dainius Gliebus",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "celebrate": "^10.0.1",
     "compression": "^1.7.3",
     "cors": "^2.8.5",

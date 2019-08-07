@@ -1,4 +1,4 @@
-const UUID = require("uuid");
+const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, Sequelize) => {
 	//Modeling a table
@@ -46,6 +46,11 @@ module.exports = (sequelize, Sequelize) => {
 			timestamp: true
 		}
 	);
+
+	User.beforeSave(async (user, options) => {
+		user.password = await bcrypt.hash(user.password, 10);
+		return;
+	});
 
 	return User;
 };
