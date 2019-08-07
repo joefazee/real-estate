@@ -1,26 +1,51 @@
-'user strict';
+const UUID = require("uuid");
 
-const { db_read } = require('../config/db');
+module.exports = (sequelize, Sequelize) => {
+	//Modeling a table
+	const Model = Sequelize.Model;
+	class User extends Model {}
+	User.init(
+		{
+			//attributes
+			name: {
+				type: Sequelize.STRING,
+				allowNull: false
+			},
+			email: {
+				type: Sequelize.STRING,
+				allowNull: false,
+				unique: true
+			},
+			password: {
+				type: Sequelize.STRING,
+				allowNull: false
+			},
+			phone: {
+				type: Sequelize.STRING,
+				unique: true
+			},
+			user_type: {
+				type: Sequelize.ENUM(["admin", "investor", "seller"]),
+				defaultValue: "investor",
+				allowNull: false
+			},
+			email_verified: {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false,
+				allowNull: false
+			},
+			id: {
+				primaryKey: true,
+				type: Sequelize.UUID,
+				defaultValue: Sequelize.UUIDV4
+			}
+		},
+		{
+			sequelize,
+			modelName: "user",
+			timestamp: true
+		}
+	);
 
-// User object constructor
-const User = data => {
-    this.id = data.id;
-    this.username = data.username;
-    this.email = data.email;
-    this.password = data.password;
-    this.created_at = new Date();
-    this.updated_at = new Date();
-}
-
-User.findById = function createUser(userId, result) {
-    db_read.query("Select * from users where id = ?", userId, function (err, res) {             
-        if(err) {
-            console.log("error: ", err);
-            result(err, null);
-        } else{
-            result(null, res[0]);
-        }
-    });   
+	return User;
 };
-
-module.exports = User;

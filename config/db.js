@@ -1,28 +1,27 @@
-require('dotenv').config();
-const mysql = require("mysql2");
+require("dotenv").config();
+const Sequelize = require("sequelize");
+const userModel = require("../models/user");
 
-const db_write = mysql.createConnection({
-    host     : process.env.DB_WRITE_HOST || 'localhost',
-    user     : process.env.DB_USERNAME   || 'root',
-    password : process.env.DB_PASSWORD   || '',
-    database : process.env.DB_DATABASE   || 'test',
-    port     : process.env.DB_PORT       || 3306
-});
+sequelize = new Sequelize(
+	process.env.DB_DATABASE,
+	process.env.DB_USERNAME,
+	process.env.DB_PASSWORD,
+	{
+		host: process.env.DB_WRITE_HOST,
+		dialect: "mysql"
+	}
+);
 
-const db_read = mysql.createConnection({
-    host     : process.env.DB_READ_HOST || 'localhost',
-    user     : process.env.DB_USERNAME  || 'root',
-    password : process.env.DB_PASSWORD  || '',
-    database : process.env.DB_DATABASE  || 'test',
-    port     : process.env.DB_PORT      || 3306
-});
+const User = userModel(sequelize, Sequelize);
 
-db_write.connect(function(err) {
-    if (err) throw err;
-});
+//Synchronizing all models at once
+sequelize
+	.sync()
+	.then(() => {
+		console.log("Synchronized!!!");
+	})
+	.catch(err => {
+		console.error("Unable to synchronize", err);
+	});
 
-db_read.connect(function(err) {
-    if (err) throw err;
-});
-
-module.exports = {db_write, db_read};
+module.exports = { User };
