@@ -24,5 +24,16 @@ module.exports = {
 				.required(),
 			user_type: Joi.string().required(),
     }
+  },
+
+  // POST /api/v1/private/add-category
+
+  createCategory: {
+    body: {
+      name: Joi.string()
+        .min(3)
+        .max(255)
+        .required()
+    }
   }
 };

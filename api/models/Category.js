@@ -1,14 +1,13 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 
-const tableName = 'categories';
-
 const Category = sequelize.define(
   'Category',
   {
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
+      primaryKey: true,
       allowNull: false
     },
     name: {
@@ -17,7 +16,7 @@ const Category = sequelize.define(
       allowNull: false
     }
   },
-  { tableName }
+  { tableName: 'categories' }
 );
 
 module.exports = Category;
