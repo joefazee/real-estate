@@ -3,10 +3,13 @@ const paramValidation = require('../../api/validations/category.validation');
 const verifyIsAdmin = require('../../api/middlewares/verifyIsAdmin');
 
 const privateRoutes = {
-  'GET /users': 'UserController.getAll',
+  'GET /users': {
+    path: 'UserController.getAll',
+    middlewares: [verifyIsAdmin]
+  },
   'GET /category': 'CategoryController.getAll',
   'POST /category': {
-    path: 'UserController.register',
+    path: 'CategoryController.create',
     middlewares: [validate(paramValidation.createCategory, { abortEarly: false }), verifyIsAdmin]
   }
 };

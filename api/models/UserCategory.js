@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 
 const Category = require('./Category');
+const User = require('./User');
 
 const UserCategory = sequelize.define(
   'UserCategory',
@@ -25,6 +26,8 @@ const UserCategory = sequelize.define(
   },
   { tableName: 'user_categories' }
 );
+
+UserCategory.hasOne(User);
 
 UserCategory.hasMany(Category);
 

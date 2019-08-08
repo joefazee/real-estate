@@ -1,11 +1,11 @@
-const Category = require('../models/Category');
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
+const CategoryQuery = require('../queries/category.queries');
 
 const CategoryController = () => {
-  const getAll = async (req, res) => {
+  const getAll = async (req, res, next) => {
     try {
-      const category = await Category.findAll();
+      const category = await CategoryQuery.findAll();
 
       return res.json(sendResponse(httpStatus.OK, 'success!', category, null));
     } catch (err) {
@@ -15,10 +15,11 @@ const CategoryController = () => {
 
   const create = async (req, res, next) => {
     try {
-      const category = await Category.create({ ...req.body });
+      const category = await CategoryQuery.create({ ...req.body });
+
       return res.json(sendResponse(httpStatus.OK, 'success', category, null));
     } catch (error) {
-      next(err);
+      next(error);
     }
   };
 
