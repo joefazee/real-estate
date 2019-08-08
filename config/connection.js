@@ -1,9 +1,11 @@
+require("dotenv").config();
+
 const development = {
-  database: 'real_estate',
-  username: 'root',
-  password: 'password',
-  host: 'localhost',
-  dialect: 'mysql',
+  database: process.env.DB_DATABASE,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  dialect: process.env.DB_DIALECT,
 };
 
 const testing = {
