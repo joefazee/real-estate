@@ -22,6 +22,19 @@ const UserController = () => {
 				);
 			}
 
+			const userExist = await UserQuery.findByEmail(email);
+			if (userExist) {
+				return res.json(
+					sendResponse(
+						httpStatus.BAD_REQUEST,
+						"email has been taken",
+						{},
+						{ email: "email has been taken" }
+					)
+				);
+			
+			}
+
 			const user = await UserQuery.create({
 				name,
 				email,
