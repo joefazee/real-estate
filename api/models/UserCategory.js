@@ -2,8 +2,10 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../../config/database');
 
-const UserCategories = sequelize.define(
-  'UserCategories',
+const Category = require('./Category');
+
+const UserCategory = sequelize.define(
+  'UserCategory',
   {
     id: {
       type: Sequelize.UUID,
@@ -24,4 +26,6 @@ const UserCategories = sequelize.define(
   { tableName: 'user_categories' }
 );
 
-module.exports = UserCategories;
+UserCategory.hasMany(Category);
+
+module.exports = UserCategory;
