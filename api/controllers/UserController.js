@@ -61,30 +61,21 @@ const UserController = () => {
 
 			if (!user) {
 				return res.json(
-					sendResponse(
-						httpStatus.NOT_FOUND,
-						"User does not exist",
-						{},
-						{ error: "User does not exist" }
-					)
+					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
 				);
 			}
+			console.log(user);
+
+			const { id, useremail, user_type } = user;
 
 			if (bcryptService().comparePassword(password, user.password)) {
-				const token = authService().issue({ id: user.id });
+				const token = authService().issue({ id, useremail, user_type });
 
-				return res.json(
-					sendResponse(httpStatus.OK, "success", user, null, token)
-				);
+				return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
 			}
 
 			return res.json(
-				sendResponse(
-					httpStatus.BAD_REQUEST,
-					"invalid email or password",
-					{},
-					{ error: "invalid email or password" }
-				)
+				sendResponse(httpStatus.BAD_REQUEST, 'invalid email or password', {}, { error: 'invalid email or password' })
 			);
 		} catch (err) {
 			next(err);
@@ -114,7 +105,7 @@ const UserController = () => {
 		try {
 			const users = await User.findAll();
 
-			return res.json(sendResponse(httpStatus.OK, "success!", users, null));
+			return res.json(sendResponse(httpStatus.OK, 'success!', users, null));
 		} catch (err) {
 			next(err);
 		}
@@ -124,7 +115,7 @@ const UserController = () => {
 		register,
 		login,
 		validate,
-		getAll
+		getAll,
 	};
 };
 

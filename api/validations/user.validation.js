@@ -1,4 +1,4 @@
-const { Joi } = require("celebrate");
+const { Joi } = require('celebrate');
 
 module.exports = {
   // POST /api/v1/public/signup
