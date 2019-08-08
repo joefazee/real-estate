@@ -36,7 +36,7 @@ Start by cloning this repository
 
 ```sh
 # HTTPS
-$ git clone https://github.com/aichbauer/express-rest-api-boilerplate.git
+$ git clone https://github.com/joefazee/real-estate.git
 ```
 
 then
@@ -576,4 +576,4 @@ Optional:
 
 ## LICENSE
 
-MIT © Lukas Aichbauer
+MIT © Diaspora Invest
