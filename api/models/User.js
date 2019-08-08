@@ -4,9 +4,9 @@ const bcryptService = require('../services/bcrypt.service');
 const sequelize = require('../../config/database');
 
 const hooks = {
-  beforeCreate(user) {
-    user.password = bcryptService().hashPassword(user); // eslint-disable-line no-param-reassign
-  },
+	beforeCreate(user) {
+		user.password = bcryptService().hashPassword(user); // eslint-disable-line no-param-reassign
+	},
 };
 
 const tableName = 'users';
@@ -48,12 +48,12 @@ const User = sequelize.define('User', {
 }, { hooks, tableName });
 
 // eslint-disable-next-line
-User.prototype.toJSON = function () {
-  const values = Object.assign({}, this.get());
+User.prototype.toJSON = function() {
+	const values = Object.assign({}, this.get());
 
-  delete values.password;
+	delete values.password;
 
-  return values;
+	return values;
 };
 
 module.exports = User;
