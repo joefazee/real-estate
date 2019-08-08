@@ -11,7 +11,7 @@ beforeAll(async () => {
 afterAll(() => {
 	afterAction();
 });
-describe("User | Signup", () => {
+describe("User | Signup", () => { 
 	test("Correct User Information", async () => {
 		const res = await request(api)
 			.post("/public/signup")
