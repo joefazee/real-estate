@@ -53,18 +53,13 @@ const UserController = () => {
 		try {
 			const { email, password } = req.body;
 
-			const user = await User.findOne({
-				where: {
-					email
-				}
-			});
+			const user = await UserQuery.findByEmail(email);
 
 			if (!user) {
 				return res.json(
 					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
 				);
 			}
-			console.log(user);
 
 			const { id, useremail, user_type } = user;
 
