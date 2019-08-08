@@ -12,13 +12,39 @@ const hooks = {
 const tableName = 'users';
 
 const User = sequelize.define('User', {
+  //attributes
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   email: {
     type: Sequelize.STRING,
-    unique: true,
+    allowNull: false,
+    unique: true
   },
   password: {
     type: Sequelize.STRING,
+    allowNull: false
   },
+  phone: {
+    type: Sequelize.STRING,
+    unique: true
+  },
+  user_type: {
+    type: Sequelize.ENUM(["admin", "investor", "seller"]),
+    defaultValue: "investor",
+    allowNull: false
+  },
+  email_verified: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  id: {
+    primaryKey: true,
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4
+  }
 }, { hooks, tableName });
 
 // eslint-disable-next-line

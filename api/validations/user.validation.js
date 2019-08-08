@@ -4,15 +4,25 @@ module.exports = {
   // POST /api/v1/public/signup
   createUser: {
     body: {
-      email: Joi.string()
-        .email()
-        .required(),
-      password: Joi.string()
-        .min(6)
-        .required(),
-      password2: Joi.string()
-        .min(6)
-        .required()
+      name: Joi.string()
+			.max(200)
+			.required(),
+			email: Joi.string()
+				.email()
+				.max(200)
+				.required(),
+			phone: Joi.string()
+				.max(45)
+				.required(),
+			password: Joi.string()
+				.min(6)
+				.max(255)
+				.required(),
+			password2: Joi.string()
+				.min(6)
+				.max(255)
+				.required(),
+			user_type: Joi.string().required(),
     }
   }
 };
