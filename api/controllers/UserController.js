@@ -59,8 +59,8 @@ const UserController = () => {
 				return res.json(
 					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
 				);
-			}
-
+      }
+      
 			const { id, useremail, user_type } = user;
 
 			if (bcryptService().comparePassword(password, user.password)) {
