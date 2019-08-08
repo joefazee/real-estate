@@ -16,8 +16,12 @@ afterAll(() => {
 
 beforeEach(async () => {
   user = await User.create({
-    email: 'martin@mail.com',
-    password: 'securepassword',
+    name: "Martin",
+    email: "martin@mail.com",
+    phone: "123456",
+    password: "securepassword",
+    password2: "securepassword",
+    user_type: "investor"
   });
 });
 
