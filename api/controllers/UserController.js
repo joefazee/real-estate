@@ -53,7 +53,7 @@ const UserController = () => {
 		try {
 			const { email, password } = req.body;
 
-			const user = await UserQuery.findByEmail(email);
+			const user = await UserQuery.findByEmail(email); 
 
 			if (!user) {
 				return res.json(
