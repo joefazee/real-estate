@@ -4,6 +4,7 @@ const authService = require("../services/auth.service");
 const bcryptService = require("../services/bcrypt.service");
 const httpStatus = require("http-status");
 const sendResponse = require("../../helpers/response");
+const UserQuery = require('../queries/user.queries');
 
 const UserController = () => {
 	const register = async (req, res, next) => {
@@ -21,7 +22,7 @@ const UserController = () => {
 				);
 			}
 
-			const user = await User.create({
+			const user = await UserQuery.create({
 				name,
 				email,
 				phone,
