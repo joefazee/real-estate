@@ -7,7 +7,7 @@ const privateRoutes = {
 
 	'POST /create_profile': {
 		path: 'AgencyProfileController.createProfile',
-		// middlewares: [validate(profileValidation.createProfile, { abortEarly: false })],
+		middlewares: [validate(profileValidation.createProfile, { abortEarly: false })],
 	},
 };
 
