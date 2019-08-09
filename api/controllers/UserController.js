@@ -93,19 +93,23 @@ const UserController = () => {
   const forgotPassword = async (req, res, next) => {
     try {
       const { email } = req.body;
-      // const user = await UserQuery.findByEmail(email);
-      // if (user) {
-      // Compose email and send to user email address
-      const mailResult = await new Mail()
-        .from()
-        .to(email)
-        .subject(`Password Reset`)
-        .html('<p>Password reset link</p>')
-        .send();
+      const user = await UserQuery.findByEmail(email);
 
-      console.log(mailResult);
-      // }
-    } catch (error) {}
+      if (user) {
+        const mailResult = await new Mail()
+          .from()
+          .to(email)
+          .subject(`Password Reset`)
+          .html('<p>Password reset link</p>')
+          .send();
+      }
+
+      const response = 'Please check your email for your password reset link';
+
+      return res.json(sendResponse(httpStatus.OK, 'success', response, null));
+    } catch (err) {
+      next(err);
+    }
   };
 
   const validate = (req, res) => {
