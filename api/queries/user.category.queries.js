@@ -1,5 +1,5 @@
 const UserCategory = require('../models/UserCategory');
-const Category = require('../models/Category');
+const sequelize = require('../../config/database');
 
 class UserCategoryQueries {
   constructor(Model) {
@@ -12,14 +12,14 @@ class UserCategoryQueries {
   }
 
   findByUserId(user_id) {
-    return this.Model.findAll({
-      where: { user_id },
-      include: [
-        {
-          model: Category,
-          as: 'category'
-        }
-      ]
+    const QUERY = `
+    SELECT categories.name 
+    FROM categories 
+    INNER JOIN user_categories ON user_categories.category_id = categories.id 
+    INNER JOIN users ON user_categories.user_id = users.id 
+    WHERE users.id = '${user_id}';`;
+    return sequelize.query(QUERY, {
+      type: sequelize.QueryTypes.SELECT
     });
   }
 }
