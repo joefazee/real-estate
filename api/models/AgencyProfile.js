@@ -15,6 +15,8 @@ const AgencyProfile = sequelize.define(
 		},
 		user_id: {
 			type: Sequelize.INTEGER,
+			// a seller is not allowed to have multiple agency profiles
+			unique: true,
 			references: {
 				model: 'users',
 			},
@@ -30,7 +32,6 @@ const AgencyProfile = sequelize.define(
 		website: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			unique: true,
 		},
 		phone: {
 			type: Sequelize.STRING,

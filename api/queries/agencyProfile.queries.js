@@ -8,6 +8,13 @@ class AgencyProfileQueries {
 	create(payload) {
 		return this.Model.create(payload);
 	}
+	findByUserId(user_id) {
+		return this.Model.findOne({
+			where: {
+				user_id,
+			},
+		});
+	}
 }
 
 const agencyProfileQuery = new AgencyProfileQueries(AgencyProfile);
