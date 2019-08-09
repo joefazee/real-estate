@@ -15,16 +15,10 @@ const AgencyProfileController = () => {
 				website,
 				phone,
 				email,
-				user_id: req.token.id,
-      });
-      
-    //  if(req.user.getProfile.id === undefined) {
-
-    //  }
+				user_id: req.token.user.id,
+			});
 
 			return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
-
-			res.send({ status: 'ok' });
 		} catch (error) {
 			next(error);
 		}
