@@ -1,7 +1,6 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../api/models/User');
-const Category = require('../../api/models/Category');
 
 let api;
 
@@ -183,6 +182,59 @@ test('Investor | login | Investor get all his categories', async () => {
   console.log(investorCategory.body);
 
   expect(investorCategory.body.payload).toBeTruthy();
+
+  await admin.destroy();
+});
+
+test('Unauthorized user aside Admin | login | Unauthorized user aside Admin to create a category', async () => {
+  const admin = await User.create({
+    name: 'Martin Luke',
+    email: 'martin@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '09057373',
+    user_type: 'admin'
+  });
+
+  const investor = await request(api)
+    .post('/public/signup')
+    .set('Accept', /json/)
+    .set('Content-Type', 'application/json')
+    .send({
+      name: 'Blake Freeman',
+      email: 'BFreeman@gmail.com',
+      password: 'password',
+      password2: 'password',
+      phone: '09012345',
+      user_type: 'investor'
+    })
+    .expect(200);
+
+  expect(investor.body.payload).toBeTruthy();
+
+  const investorLogin = await request(api)
+    .post('/public/login')
+    .set('Accept', /json/)
+    .set('Content-Type', 'application/json')
+    .send({
+      email: 'BFreeman@gmail.com',
+      password: 'password'
+    })
+    .expect(200);
+
+  expect(investorLogin.body.token).toBeTruthy();
+
+  const category = await request(api)
+    .post('/private/category')
+    .set('Accept', /json/)
+    .set('Authorization', `Bearer ${investorLogin.body.token}`)
+    .set('Content-Type', 'application/json')
+    .send({
+      name: 'Office'
+    })
+    .expect(401);
+
+  expect(category.body.msg).toMatch(/You are not Authorized to perform this operation/);
 
   await admin.destroy();
 });
