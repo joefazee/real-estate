@@ -15,7 +15,8 @@ const CategoryController = () => {
 
   const create = async (req, res, next) => {
     try {
-      const category = await CategoryQuery.create({ ...req.body });
+      const { name } = req.body;
+      const category = await CategoryQuery.create({ name });
 
       return res.json(sendResponse(httpStatus.OK, 'success', category, null));
     } catch (error) {
