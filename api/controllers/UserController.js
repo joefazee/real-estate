@@ -96,7 +96,7 @@ const UserController = () => {
       const user = await UserQuery.findByEmail(email);
 
       if (user) {
-        const mailResult = await new Mail()
+        const mailResult = new Mail()
           .from()
           .to(email)
           .subject(`Password Reset`)
