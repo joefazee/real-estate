@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 // const path = require('path');
 
-
 const connection = require('./connection');
 
 let database;
@@ -18,9 +17,9 @@ switch (process.env.NODE_ENV) {
         pool: {
           max: 5,
           min: 0,
-          idle: 10000,
-        },
-      },
+          idle: 10000
+        }
+      }
     );
     break;
   case 'testing':
@@ -34,9 +33,9 @@ switch (process.env.NODE_ENV) {
         pool: {
           max: 5,
           min: 0,
-          idle: 10000,
-        },
-      },
+          idle: 10000
+        }
+      }
     );
     break;
   default:
@@ -46,15 +45,15 @@ switch (process.env.NODE_ENV) {
       connection.development.password,
       {
         host: connection.development.host,
+        port: connection.development.port,
         dialect: connection.development.dialect,
         pool: {
           max: 5,
           min: 0,
-          idle: 10000,
-        },
-      },
+          idle: 10000
+        }
+      }
     );
 }
-
 
 module.exports = database;
