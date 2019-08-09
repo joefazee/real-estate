@@ -1,6 +1,6 @@
-const request = require("supertest");
-const { beforeAction, afterAction } = require("../setup/_setup");
-const User = require("../../api/models/User");
+const request = require('supertest');
+const { beforeAction, afterAction } = require('../setup/_setup');
+const User = require('../../api/models/User');
 
 let api;
 
@@ -22,7 +22,7 @@ test('User | create', async () => {
 			password: 'securepassword',
 			password2: 'securepassword',
 			phone: '09057373',
-			user_type: 'admin',
+			user_type: 'admin'
 		})
 		.expect(200);
 
@@ -38,12 +38,12 @@ test('User | create', async () => {
 
 test('User | login', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin'
 	});
 
 	const res = await request(api)
@@ -51,7 +51,7 @@ test('User | login', async () => {
 		.set('Accept', /json/)
 		.send({
 			email: 'martin@mail.com',
-			password: 'securepassword',
+			password: 'securepassword'
 		})
 		.expect(200);
 
@@ -68,7 +68,7 @@ test('User | login | User does not exist', async () => {
 		.set('Accept', /json/)
 		.send({
 			email: 'martinil@ttt.co',
-			password: 'passssword',
+			password: 'passssword'
 		});
 
 	expect(res.body.token).toBeFalsy();
@@ -78,12 +78,12 @@ test('User | login | User does not exist', async () => {
 
 test('User | login | invalid email or password', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin2@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin2@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin'
 	});
 
 	const res = await request(api)
@@ -91,7 +91,7 @@ test('User | login | invalid email or password', async () => {
 		.set('Accept', /json/)
 		.send({
 			email: 'martin2@mail.com',
-			password: 'password',
+			password: 'password'
 		});
 
 	expect(res.body.token).toBeFalsy();
@@ -104,12 +104,12 @@ test('User | login | invalid email or password', async () => {
 
 test('User | get all (auth)', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin'
 	});
 
 	const res = await request(api)
@@ -117,7 +117,7 @@ test('User | get all (auth)', async () => {
 		.set('Accept', /json/)
 		.send({
 			email: 'martin@mail.com',
-			password: 'securepassword',
+			password: 'securepassword'
 		})
 		.expect(200);
 
