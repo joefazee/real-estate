@@ -6,7 +6,7 @@ const CategoryQuery = require('../queries/category.queries');
 const UserCategoryController = () => {
   const getAll = async (req, res, next) => {
     try {
-      const { id: user_id } = req.token;
+      const { id: user_id } = req.params;
 
       const categories = await UserCategoryQuery.findByUserId(user_id);
       return res.json(sendResponse(httpStatus.OK, 'success', categories, null));

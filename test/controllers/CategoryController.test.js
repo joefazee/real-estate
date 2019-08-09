@@ -144,28 +144,21 @@ test('Investor | login | Investor get all his categories', async () => {
     user_type: 'admin'
   });
 
-  const investor = await request(api)
-    .post('/public/signup')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      name: 'Blake Freeman',
-      email: 'BFreeman@gmail.com',
-      password: 'password',
-      password2: 'password',
-      phone: '09012345',
-      user_type: 'investor'
-    })
-    .expect(200);
-
-  expect(investor.body.payload).toBeTruthy();
+  const investor = await User.create({
+    name: 'Blake Dep',
+    email: 'BlakeDep@gmail.com',
+    password: 'password',
+    password2: 'password',
+    phone: '09012345',
+    user_type: 'investor'
+  });
 
   const investorLogin = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .set('Content-Type', 'application/json')
     .send({
-      email: 'BFreeman@gmail.com',
+      email: 'BlakeDep@gmail.com',
       password: 'password'
     })
     .expect(200);
@@ -173,16 +166,15 @@ test('Investor | login | Investor get all his categories', async () => {
   expect(investorLogin.body.token).toBeTruthy();
 
   const investorCategory = await request(api)
-    .get('/private/user-categories')
+    .get(`/private/user-categories/${investor.dataValues.id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${investorLogin.body.token}`)
     .set('Content-Type', 'application/json')
     .expect(200);
 
-  console.log(investorCategory.body);
-
   expect(investorCategory.body.payload).toBeTruthy();
 
+  await investor.destroy();
   await admin.destroy();
 });
 

@@ -82,7 +82,7 @@ test('Investor | login | Investor get all his categories', async () => {
     .set('Content-Type', 'application/json')
     .send({
       name: 'Blake Freeman',
-      email: 'BFreeman@gmail.com',
+      email: 'BFreeman1@gmail.com',
       password: 'password',
       password2: 'password',
       phone: '09012345',
@@ -105,13 +105,11 @@ test('Investor | login | Investor get all his categories', async () => {
   expect(investorLogin.body.token).toBeTruthy();
 
   const investorCategory = await request(api)
-    .get('/private/user-categories')
+    .get(`/private/user-categories/${investor.body.payload.id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${investorLogin.body.token}`)
     .set('Content-Type', 'application/json')
     .expect(200);
-
-  console.log(investorCategory.body);
 
   expect(investorCategory.body.payload).toBeTruthy();
 
