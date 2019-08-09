@@ -7,7 +7,7 @@ class CategoryQueries {
   }
 
   create(payload) {
-    return this.Model.create(payload);
+    return this.Model.create(payload, { individualHooks: true });
   }
 
   findAll() {

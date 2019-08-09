@@ -19,8 +19,7 @@ const UserCategory = sequelize.define(
       defaultValue: Sequelize.UUIDV4,
       allowNull: false,
       references: {
-        model: User,
-        key: 'user_id'
+        model: 'users'
       }
     },
     category_id: {
@@ -28,8 +27,7 @@ const UserCategory = sequelize.define(
       defaultValue: Sequelize.UUIDV4,
       allowNull: false,
       references: {
-        model: Category,
-        key: 'category_id'
+        model: 'category'
       }
     }
   },

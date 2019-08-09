@@ -9,9 +9,9 @@ const privateRoutes = {
     path: 'UserController.getAll',
     middlewares: [IsAdmin]
   },
-  'GET /category': 'CategoryController.getAll',
+  'GET /categories': 'CategoryController.getAll',
 
-  'GET /user-category': {
+  'GET /user-categories': {
     path: 'UserCategoryController.getAll',
     middlewares: [IsInvestor]
   },
