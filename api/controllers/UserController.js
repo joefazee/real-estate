@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-const User = require("../models/User");
-const authService = require("../services/auth.service");
-const bcryptService = require("../services/bcrypt.service");
-const httpStatus = require("http-status");
-const sendResponse = require("../../helpers/response");
-const UserQuery = require("../queries/user.queries");
-const Mail = require("../services/mail.service");
+const User = require('../models/User');
+const authService = require('../services/auth.service');
+const bcryptService = require('../services/bcrypt.service');
+const httpStatus = require('http-status');
+const sendResponse = require('../../helpers/response');
+const UserQuery = require('../queries/user.queries');
+const Mail = require('../services/mail.service');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -16,9 +16,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.BAD_REQUEST,
-            "Passwords does not match",
+            'Passwords does not match',
             {},
-            { password: "password does not match" }
+            { password: 'password does not match' }
           )
         );
       }
@@ -28,9 +28,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.BAD_REQUEST,
-            "email has been taken",
+            'email has been taken',
             {},
-            { email: "email has been taken" }
+            { email: 'email has been taken' }
           )
         );
       }
@@ -43,7 +43,7 @@ const UserController = () => {
         user_type
       });
 
-      return res.json(sendResponse(httpStatus.OK, "success", user, null));
+      return res.json(sendResponse(httpStatus.OK, 'success', user, null));
     } catch (err) {
       next(err);
     }
@@ -59,9 +59,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.NOT_FOUND,
-            "User does not exist",
+            'User does not exist',
             {},
-            { error: "User does not exist" }
+            { error: 'User does not exist' }
           )
         );
       }
@@ -72,16 +72,16 @@ const UserController = () => {
         const token = authService().issue({ id, useremail, user_type });
 
         return res.json(
-          sendResponse(httpStatus.OK, "success", user, null, token)
+          sendResponse(httpStatus.OK, 'success', user, null, token)
         );
       }
 
       return res.json(
         sendResponse(
           httpStatus.BAD_REQUEST,
-          "invalid email or password",
+          'invalid email or password',
           {},
-          { error: "invalid email or password" }
+          { error: 'invalid email or password' }
         )
       );
     } catch (err) {
@@ -95,17 +95,17 @@ const UserController = () => {
       const user = await UserQuery.findByEmail(email);
 
       if (user) {
-        const mailResult = await new Mail()
+        const mailResult = new Mail()
           .from()
           .to(email)
           .subject(`Password Reset`)
-          .html("<p>Password reset link</p>")
+          .html('<p>Password reset link</p>')
           .send();
       }
 
-      const response = "Please check your email for your password reset link";
+      const response = 'Please check your email for your password reset link';
 
-      return res.json(sendResponse(httpStatus.OK, "success", response, null));
+      return res.json(sendResponse(httpStatus.OK, 'success', response, null));
     } catch (err) {
       next(err);
     }
@@ -119,9 +119,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.UNAUTHORIZED,
-            "Invalid Token!",
+            'Invalid Token!',
             {},
-            { error: "Invalid Token!" }
+            { error: 'Invalid Token!' }
           )
         );
       }
@@ -134,7 +134,7 @@ const UserController = () => {
     try {
       const users = await User.findAll();
 
-      return res.json(sendResponse(httpStatus.OK, "success!", users, null));
+      return res.json(sendResponse(httpStatus.OK, 'success!', users, null));
     } catch (err) {
       next(err);
     }
