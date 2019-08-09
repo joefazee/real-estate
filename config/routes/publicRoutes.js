@@ -1,5 +1,6 @@
 const { celebrate: validate } = require("celebrate");
 const paramValidation = require("../../api/validations/user.validation");
+const forgotPasswordValidation = require("../../api/validations/forgotpassword.validation");
 
 const publicRoutes = {
   "POST /signup": {
@@ -7,7 +8,13 @@ const publicRoutes = {
     middlewares: [validate(paramValidation.createUser, { abortEarly: false })]
   },
   "POST /login": "UserController.login",
-  "POST /validate": "UserController.validate"
+  "POST /validate": "UserController.validate",
+  "POST /forgot-password": {
+    path: "UserController.forgotPassword",
+    middlewares: [
+      validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
+    ]
+  }
 };
 
 module.exports = publicRoutes;
