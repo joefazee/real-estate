@@ -11,24 +11,32 @@ const UserCategory = sequelize.define(
     id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
+      primaryKey: true,
       allowNull: false
     },
     user_id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'user_id'
+      }
     },
     category_id: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: Category,
+        key: 'category_id'
+      }
     }
   },
-  { tableName: 'user_categories' }
+  { tableName: 'user_categories', timestamps: false, underscored: true }
 );
 
-UserCategory.hasOne(User);
-
-UserCategory.hasMany(Category);
+UserCategory.belongsTo(User, { as: 'user', foreignKey: 'id' });
+UserCategory.belongsTo(Category, { as: 'category', foreignKey: 'id' });
 
 module.exports = UserCategory;

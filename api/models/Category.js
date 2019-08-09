@@ -18,7 +18,7 @@ const Category = sequelize.define(
       allowNull: false
     }
   },
-  { tableName, timestamps: false }
+  { tableName, timestamps: false, underscored: true }
 );
 
 module.exports = Category;
