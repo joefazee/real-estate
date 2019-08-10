@@ -223,10 +223,11 @@ test('Unauthorized user aside Admin | login | Unauthorized user aside Admin to c
     .set('Content-Type', 'application/json')
     .send({
       name: 'Office'
-    })
-    .expect(401);
+    });
 
-  expect(category.body.msg).toMatch(/You are not Authorized to perform this operation/);
+  expect(category.body.statusCode).toBe(401);
+
+  expect(category.body.message).toMatch(/You are not Authorized to perform this operation!/);
 
   await admin.destroy();
 });

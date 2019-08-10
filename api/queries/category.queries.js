@@ -14,8 +14,8 @@ class CategoryQueries {
     return this.Model.findAll();
   }
 
-  findByCategory(categories) {
-    return sequelize.query(`SELECT id AS category_id FROM categories WHERE ${categories}`, {
+  findByCategory(category) {
+    return sequelize.query(`SELECT id AS category_id FROM categories WHERE ${category}`, {
       type: sequelize.QueryTypes.SELECT
     });
   }
