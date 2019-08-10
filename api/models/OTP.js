@@ -18,12 +18,10 @@ const OTP = sequelize.define(
     },
     password: {
       type: Sequelize.STRING,
-      allowNull: false,
       unique: true
     },
     expiry: {
-      type: Sequelize.DATE,
-      allowNull: false
+      type: Sequelize.DATE
     }
   },
   { tableName }
