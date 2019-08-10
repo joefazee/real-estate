@@ -8,6 +8,7 @@ const UserQuery = require('../queries/user.queries');
 const OTPQuery = require('../queries/otp.queries');
 const Mail = require('../services/mail.service');
 const crypto = require('crypto');
+const { port } = require('../../config');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -93,36 +94,53 @@ const UserController = () => {
 
   const forgotPassword = async (req, res, next) => {
     try {
-      const FIFTEEN_MINS = 1000 * 60 * 15;
+      // Define generic success response to return
+      const response = 'Please check your email for your password reset link';
 
       // Check if user exists
       const { email } = req.body;
       const user = await UserQuery.findByEmail(email);
 
+      // Return generic success response if user is not found
       if (!user) {
         return res.json(sendResponse(httpStatus.OK, 'success', response, null));
       }
 
-      const user_id = user.id;
-      const password = crypto.randomBytes(30).toString('hex');
-      const expiry = Date.now() + FIFTEEN_MINS;
-      const payload = { user_id, password, expiry };
+      // Create payload for OTP queries
+      const { id, name } = user;
+      const temporaryPassword = crypto.randomBytes(20).toString('hex');
+      const tokenExpiry = timeInMins => Date.now() + 1000 * 60 * timeInMins;
+      const payload = {
+        user_id: id,
+        otp: temporaryPassword,
+        expiry: tokenExpiry(15)
+      };
 
-      const otp = await OTPQuery.findByUserID(user_id);
-      if (!otp) {
+      // Create new OTP if user hasn't requested one before, otherwise update the OTP
+      const existingOTP = await OTPQuery.findByUserID(id);
+      if (!existingOTP) {
         OTPQuery.create(payload);
       } else {
         OTPQuery.update(payload);
       }
 
-      // const mailResult = new Mail()
-      //     .from()
-      //     .to(email)
-      //     .subject(`Password Reset`)
-      //     .html('<p>Password reset link</p>')
-      //     .send();
+      // Create email with password reset link and send to user
+      const mailTitle = `Diaspora Invest: Password Reset`;
+      const resetLink = new URL(
+        `http://localhost:${port}/api/v1/auth/reset/${temporaryPassword}`
+      );
+      const message = `<p>To reset your password, please click on the following link: <a href=${resetLink}>Reset my password</a>.</p>
+                        <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
+      const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
 
-      let response = 'Please check your email for your password reset link';
+      const mailResult = new Mail()
+        .from()
+        .to(`${name}<${email}>`)
+        .subject(mailTitle)
+        .html(mailBody)
+        .send();
+
+      // return generic success response
       return res.json(sendResponse(httpStatus.OK, 'success', response, null));
     } catch (err) {
       next(err);
