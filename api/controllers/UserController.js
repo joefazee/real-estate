@@ -5,7 +5,9 @@ const bcryptService = require('../services/bcrypt.service');
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const UserQuery = require('../queries/user.queries');
+const OTPQuery = require('../queries/otp.queries');
 const Mail = require('../services/mail.service');
+const crypto = require('crypto');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -91,20 +93,36 @@ const UserController = () => {
 
   const forgotPassword = async (req, res, next) => {
     try {
+      const FIFTEEN_MINS = 1000 * 60 * 15;
+
+      // Check if user exists
       const { email } = req.body;
       const user = await UserQuery.findByEmail(email);
 
-      if (user) {
-        const mailResult = new Mail()
-          .from()
-          .to(email)
-          .subject(`Password Reset`)
-          .html('<p>Password reset link</p>')
-          .send();
+      if (!user) {
+        return res.json(sendResponse(httpStatus.OK, 'success', response, null));
       }
 
-      const response = 'Please check your email for your password reset link';
+      const user_id = user.id;
+      const password = crypto.randomBytes(30).toString('hex');
+      const expiry = Date.now() + FIFTEEN_MINS;
+      const payload = { user_id, password, expiry };
 
+      const otp = await OTPQuery.findByUserID(user_id);
+      if (!otp) {
+        OTPQuery.create(payload);
+      } else {
+        OTPQuery.update(payload);
+      }
+
+      // const mailResult = new Mail()
+      //     .from()
+      //     .to(email)
+      //     .subject(`Password Reset`)
+      //     .html('<p>Password reset link</p>')
+      //     .send();
+
+      let response = 'Please check your email for your password reset link';
       return res.json(sendResponse(httpStatus.OK, 'success', response, null));
     } catch (err) {
       next(err);
