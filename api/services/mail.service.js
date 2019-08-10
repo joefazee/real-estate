@@ -1,15 +1,12 @@
-const nodemailer = require("nodemailer");
-// const config = require('../config/env');
+const nodemailer = require('nodemailer');
+const config = require('../../config/mail');
 
-let host = "smtp.mailtrap.io";
-let port = 2525;
-let user = "b589c4c0124691";
-let pass = "d0c7abe972b1f5";
+const { NODE_ENV } = process.env;
 
-// let host = config.mail.host;
-// let port = config.mail.port;
-// let user = config.mail.user;
-// let pass = config.mail.pass;
+let host = config[NODE_ENV].host;
+let port = config[NODE_ENV].port;
+let user = config[NODE_ENV].username;
+let pass = config[NODE_ENV].password;
 
 class Mail {
   constructor() {
@@ -25,8 +22,8 @@ class Mail {
    * @param { string } senderName - optional name of sender
    */
   from(
-    senderEmail = "no-reply@diasporainvest.com",
-    senderName = "Diaspora Invest"
+    senderEmail = 'no-reply@diasporainvest.com',
+    senderName = 'Diaspora Invest'
   ) {
     this.sender = `${senderName} <${senderEmail}>`;
 
