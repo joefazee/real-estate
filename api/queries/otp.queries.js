@@ -9,6 +9,17 @@ class OTPQueries {
     return this.Model.create(payload);
   }
 
+  update(payload) {
+    const updates = { ...payload };
+    const { user_id } = updates;
+    delete updates.user_id;
+    return this.Model.update(updates, {
+      where: {
+        user_id
+      }
+    });
+  }
+
   findOTP(otp) {
     return this.Model.findOne({
       where: {
