@@ -11,18 +11,7 @@ const uploadFile = require('../../helpers/fileUpload');
 const UserController = () => {
 	const register = async (req, res, next) => {
 		try {
-			const { name, email, phone, password, password2, user_type } = req.body;
-
-			if (password !== password2) {
-				return res.json(
-					sendResponse(
-						httpStatus.BAD_REQUEST,
-						'Passwords does not match',
-						{},
-						{ password: 'password does not match' }
-					)
-				);
-			}
+			const { name, email, phone, password, user_type } = req.body;
 
 			const userExist = await UserQuery.findByEmail(email);
 			if (userExist) {
@@ -120,8 +109,6 @@ const UserController = () => {
 	};
 
 	const fileUpload = async (req, res) => {
-		console.log('here');
-
 		return await uploadFile(req, res);
 	};
 
