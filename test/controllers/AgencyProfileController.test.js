@@ -96,3 +96,56 @@ test('Agency Profile | create (user is not a seller)', async () => {
 	expect(res2.body.message).toBe('Unauthorized user');
 	await newUser.destroy();
 });
+
+test('Agency Profile | create (user cannot create a second profile)', async () => {
+	const newUser = await User.create({
+		name: 'Martin Luke',
+		email: 'martin@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'seller',
+	});
+
+	const loginDetails = {
+		email: 'martin@mail.com',
+		password: 'securepassword',
+	};
+
+	// get user details that include id
+	const res = await UserQuery.findByEmail(loginDetails.email);
+
+	const confirmedUser = res.dataValues;
+
+	// generate a token
+	const token = await authService().issue(confirmedUser);
+	console.log(token);
+
+	await request(api)
+		.post('/private/create_profile')
+		.set('Authorization', `Bearer ${token}`)
+		.set('Content-Type', 'application/json')
+		.send({
+			business_name: 'XYZ Realtors',
+			business_address: '10, Balewa Str',
+			website: 'www.xyzrealtee.com',
+			phone: '123456',
+			email: 'info@xyzrealtee.com',
+		});
+
+	const res2 = await request(api)
+		.post('/private/create_profile')
+		.set('Authorization', `Bearer ${token}`)
+		.set('Content-Type', 'application/json')
+		.send({
+			business_name: 'XYZ Realtors',
+			business_address: '10, Balewa Str',
+			website: 'www.xyzrealtee.com',
+			phone: '123456',
+			email: 'info@xyzrealtee.com',
+		});
+
+	expect(res2.body.statusCode).toBe(400);
+	expect(res2.body.message).toBe('User has an agency profile');
+	await newUser.destroy();
+});
