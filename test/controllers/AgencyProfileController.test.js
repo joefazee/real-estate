@@ -15,10 +15,11 @@ afterAll(() => {
 	afterAction();
 });
 
+
 test('Agency Profile | create (auth)', async () => {
 	const newUser = await User.create({
 		name: 'Martin Luke',
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 		password2: 'securepassword',
 		phone: '09057373',
@@ -26,7 +27,7 @@ test('Agency Profile | create (auth)', async () => {
 	});
 
 	const loginDetails = {
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 	};
 
@@ -59,7 +60,7 @@ test('Agency Profile | create (auth)', async () => {
 test('Agency Profile | create (user is not a seller)', async () => {
 	const newUser = await User.create({
 		name: 'Martin Luke',
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 		password2: 'securepassword',
 		phone: '09057373',
@@ -67,7 +68,7 @@ test('Agency Profile | create (user is not a seller)', async () => {
 	});
 
 	const loginDetails = {
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 	};
 
@@ -78,7 +79,6 @@ test('Agency Profile | create (user is not a seller)', async () => {
 
 	// generate a token
 	const token = await authService().issue(confirmedUser);
-	console.log(token);
 
 	const res2 = await request(api)
 		.post('/private/create_profile')
@@ -100,7 +100,7 @@ test('Agency Profile | create (user is not a seller)', async () => {
 test('Agency Profile | create (user cannot create a second profile)', async () => {
 	const newUser = await User.create({
 		name: 'Martin Luke',
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 		password2: 'securepassword',
 		phone: '09057373',
@@ -108,7 +108,7 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
 	});
 
 	const loginDetails = {
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 	};
 
@@ -119,7 +119,6 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
 
 	// generate a token
 	const token = await authService().issue(confirmedUser);
-	console.log(token);
 
 	await request(api)
 		.post('/private/create_profile')
@@ -153,7 +152,7 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
 test('User | get all agency profiles (auth)', async () => {
 	const newUser = await User.create({
 		name: 'Martin Luke',
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 		password2: 'securepassword',
 		phone: '09057373',
@@ -161,7 +160,7 @@ test('User | get all agency profiles (auth)', async () => {
 	});
 
 	const loginDetails = {
-		email: 'martin@mail.com',
+		email: 'martinl@mail.com',
 		password: 'securepassword',
 	};
 
@@ -172,7 +171,6 @@ test('User | get all agency profiles (auth)', async () => {
 
 	// generate a token
 	const token = await authService().issue(confirmedUser);
-	console.log(token);
 
 	await request(api)
 		.post('/private/create_profile')
