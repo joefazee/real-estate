@@ -2,7 +2,6 @@ const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 
 const tableName = 'otp';
-const FIFTEEN_MINS = 1000 * 60 * 15;
 const OTP = sequelize.define(
   'OTP',
   {
