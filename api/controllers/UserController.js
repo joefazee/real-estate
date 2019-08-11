@@ -103,7 +103,10 @@ const UserController = () => {
 
       // Return generic success response if user is not found
       if (!user) {
-        return res.json(sendResponse(httpStatus.OK, 'success', response, null));
+        // TODO: Find out from Chibueze the proper payload to send back
+        return res.json(
+          sendResponse(httpStatus.OK, 'success', 'user doesnt exist', null)
+        );
       }
 
       // Create payload for OTP queries
@@ -112,7 +115,7 @@ const UserController = () => {
       const tokenExpiry = timeInMins => Date.now() + 1000 * 60 * timeInMins;
       const payload = {
         user_id: id,
-        otp: temporaryPassword,
+        password: temporaryPassword,
         expiry: tokenExpiry(15)
       };
 
@@ -125,12 +128,13 @@ const UserController = () => {
       }
 
       // Create email with password reset link and send to user
+      // TODO: Restructure mail into proper mail template and abstract into its own file
       const mailTitle = `Diaspora Invest: Password Reset`;
       const resetLink = new URL(
         `http://localhost:${port}/api/v1/auth/reset/${temporaryPassword}`
       );
       const message = `<p>To reset your password, please click on the following link: <a href=${resetLink}>Reset my password</a>.</p>
-                        <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
+                      <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
       const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
 
       const mailResult = new Mail()
@@ -141,7 +145,8 @@ const UserController = () => {
         .send();
 
       // return generic success response
-      return res.json(sendResponse(httpStatus.OK, 'success', response, null));
+      // TODO: Find out from Chibueze the proper payload to send back
+      return res.json(sendResponse(httpStatus.OK, 'success', mailResult, null));
     } catch (err) {
       next(err);
     }
