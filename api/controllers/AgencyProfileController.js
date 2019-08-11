@@ -6,14 +6,15 @@ const agencyProfileQuery = require('../queries/agencyProfile.queries');
 const AgencyProfileController = () => {
 	const createProfile = async (req, res, next) => {
 		try {
-			// confirm that user is a seller
-			if (req.token.user.user_type !== 'seller') {
+						// confirm that user is a seller
+			const user_type = req.token.user_type;
+			if (user_type !== 'seller') {
 				return res.json(sendResponse(httpStatus.UNAUTHORIZED, 'Unauthorized user', {}, { user: 'Unauthorized user' }));
 			}
-
 			// check if the user already has an agency profile
-			const user_id = req.token.user.id;
+			const user_id = req.token.id;
 			const userHasProfile = await agencyProfileQuery.findByUserId(user_id);
+
 			if (userHasProfile) {
 				return res.json(
 					sendResponse(httpStatus.BAD_REQUEST, 'User has an agency profile', {}, { user: 'User has an agency profile' })

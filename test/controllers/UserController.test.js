@@ -1,6 +1,6 @@
-const request = require("supertest");
-const { beforeAction, afterAction } = require("../setup/_setup");
-const User = require("../../api/models/User");
+const request = require('supertest');
+const { beforeAction, afterAction } = require('../setup/_setup');
+const User = require('../../api/models/User');
 
 let api;
 
@@ -38,25 +38,25 @@ test('User | create', async () => {
 
 test('User | login', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin',
 	});
 
 	const res = await request(api)
 		.post('/public/login')
 		.set('Accept', /json/)
+		.set('Content-Type', 'application/json')
 		.send({
 			email: 'martin@mail.com',
 			password: 'securepassword',
-		})
-		.expect(200);
+		});
 
 	expect(res.body.token).toBeTruthy();
-
+	expect(res.body.statusCode).toBe(200);
 	expect(user).toBeTruthy();
 
 	await user.destroy();
@@ -78,12 +78,12 @@ test('User | login | User does not exist', async () => {
 
 test('User | login | invalid email or password', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin2@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin2@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin',
 	});
 
 	const res = await request(api)
@@ -104,12 +104,12 @@ test('User | login | invalid email or password', async () => {
 
 test('User | get all (auth)', async () => {
 	const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin',
+		name: 'Martin Luke',
+		email: 'martin@mail.com',
+		password: 'securepassword',
+		password2: 'securepassword',
+		phone: '09057373',
+		user_type: 'admin',
 	});
 
 	const res = await request(api)
