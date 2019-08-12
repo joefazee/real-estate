@@ -15,7 +15,8 @@ const publicRoutes = {
     middlewares: [
       validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
     ]
-  }
+  },
+  'GET /password-reset/:otp': 'OTPController.checkOTP'
 };
 
 module.exports = publicRoutes;
