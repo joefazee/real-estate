@@ -20,10 +20,10 @@ class OTPQueries {
     });
   }
 
-  findOTP(otp) {
+  findOTP(password) {
     return this.Model.findOne({
       where: {
-        otp
+        password
       }
     });
   }
