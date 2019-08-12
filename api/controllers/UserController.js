@@ -132,7 +132,7 @@ const UserController = () => {
       // TODO: Restructure mail into proper mail template and abstract into its own file
       const mailTitle = `Diaspora Invest: Password Reset`;
       const resetLink = new URL(
-        `http://localhost:${port}/api/v1/auth/reset/${temporaryPassword}`
+        `http://localhost:${port}/api/v1/public/password-reset/${temporaryPassword}`
       );
       const message = `<p>To reset your password, please click on the following link: <a href=${resetLink}>Reset my password</a>.</p>
                       <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
