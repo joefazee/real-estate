@@ -11,9 +11,8 @@ const OTP = sequelize.define(
       primaryKey: true
     },
     user_id: {
-      type: Sequelize.UUID,
-      allowNull: false,
-      unique: true
+      type: Sequelize.STRING,
+      allowNull: false
     },
     password: {
       type: Sequelize.STRING,
@@ -23,7 +22,7 @@ const OTP = sequelize.define(
       type: Sequelize.DATE
     }
   },
-  { tableName }
+  { tableName, timeStamps: true }
 );
 
 module.exports = OTP;
