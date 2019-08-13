@@ -114,19 +114,25 @@ const UserController = () => {
       const { id, name } = user;
       const temporaryPassword = crypto.randomBytes(20).toString('hex');
       const tokenExpiry = timeInMins => Date.now() + 1000 * 60 * timeInMins;
+
+      // If the user has any existing OTPs, set them to expire
+      const existingOTP = await OTPQuery.findByUserID(id);
+
+      if (existingOTP) {
+        const payload = {
+          user_id: id,
+          expiry: tokenExpiry(0)
+        };
+        await OTPQuery.expireOTP(payload);
+      }
+
+      // Create a new OTP for the user
       const payload = {
         user_id: id,
         password: temporaryPassword,
         expiry: tokenExpiry(15)
       };
-
-      // Create new OTP if user hasn't requested one before, otherwise update the OTP
-      const existingOTP = await OTPQuery.findByUserID(id);
-      if (!existingOTP) {
-        OTPQuery.create(payload);
-      } else {
-        OTPQuery.update(payload);
-      }
+      await OTPQuery.create(payload);
 
       // Create email with password reset link and send to user
       // TODO: Restructure mail into proper mail template and abstract into its own file
