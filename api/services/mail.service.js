@@ -1,20 +1,8 @@
 const nodemailer = require('nodemailer');
 const config = require('../../config/mail');
 
-const { NODE_ENV } = process.env;
-
-let host = config[NODE_ENV].host;
-let port = config[NODE_ENV].port;
-let user = config[NODE_ENV].username;
-let pass = config[NODE_ENV].password;
-
 class Mail {
-  constructor() {
-    this.host = host;
-    this.port = port;
-    this.user = user;
-    this.pass = pass;
-  }
+  constructor() {}
 
   /**
    * method for seting sender
@@ -70,13 +58,7 @@ class Mail {
    * @returns {Promise}
    */
   send() {
-    const transport = nodemailer.createTransport({
-      host: this.host,
-      port: this.port,
-      auth: {
-        user: this.user,
-        pass: this.pass
-      },
+    const transport = nodemailer.createTransport(config, {
       pool: true, // use pooled connection
       rateLimit: true, // enable to make sure we are limiting
       maxConnections: 3, // set limit to 3 connection
