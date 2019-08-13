@@ -51,6 +51,11 @@ const privateRoutes = {
       IsInvestor,
       getCategories
     ]
+  },
+
+  'POST /approve-profile/:id': {
+    path: 'AgencyProfileController.approveProfile',
+    middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsAdmin]
   }
 };
 
