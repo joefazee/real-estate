@@ -16,7 +16,8 @@ const publicRoutes = {
       validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
     ]
   },
-  'GET /password-reset/:otp': 'OTPController.checkOTP'
+  'GET /password-reset/:otp': 'OTPController.checkOTP',
+  'POST /password-reset/': 'UserController.resetPassword'
 };
 
 module.exports = publicRoutes;
