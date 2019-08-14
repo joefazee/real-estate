@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const bcryptService = require('../services/bcrypt.service');
-
+const AgencyProfile = require('./AgencyProfile');
 const sequelize = require('../../config/database');
 
 const hooks = {
@@ -58,5 +58,7 @@ User.prototype.toJSON = function() {
 
   return values;
 };
+
+User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 
 module.exports = User;

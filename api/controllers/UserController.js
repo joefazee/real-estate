@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
-const User = require('../models/User');
-const authService = require('../services/auth.service');
-const bcryptService = require('../services/bcrypt.service');
-const httpStatus = require('http-status');
-const sendResponse = require('../../helpers/response');
-const UserQuery = require('../queries/user.queries');
+const User = require("../models/User");
+const authService = require("../services/auth.service");
+const bcryptService = require("../services/bcrypt.service");
+const httpStatus = require("http-status");
+const sendResponse = require("../../helpers/response");
+const UserQuery = require("../queries/user.queries");
 
-const uploadFile = require('../../helpers/fileUpload');
+const uploadFile = require("../../helpers/fileUpload");
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -17,9 +17,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.BAD_REQUEST,
-            'Passwords does not match',
+            "Passwords does not match",
             {},
-            { password: 'password does not match' }
+            { password: "password does not match" }
           )
         );
       }
@@ -29,9 +29,9 @@ const UserController = () => {
         return res.json(
           sendResponse(
             httpStatus.BAD_REQUEST,
-            'email has been taken',
+            "email has been taken",
             {},
-            { email: 'email has been taken' }
+            { email: "email has been taken" }
           )
         );
       }
@@ -44,49 +44,38 @@ const UserController = () => {
         user_type
       });
 
-      return res.json(sendResponse(httpStatus.OK, 'success', user, null));
+      return res.json(sendResponse(httpStatus.OK, "success", user, null));
     } catch (err) {
       next(err);
     }
   };
 
-  const login = async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
+	const login = async (req, res, next) => {
+		try {
+			const { email, password } = req.body;
 
-      const user = await UserQuery.findByEmail(email);
+			const user = await UserQuery.findByEmail(email);
 
-      if (!user) {
-        return res.json(
-          sendResponse(
-            httpStatus.NOT_FOUND,
-            'User does not exist',
-            {},
-            { error: 'User does not exist' }
-          )
-        );
-      }
+			if (!user) {
+				return res.json(
+					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
+				);
+			}
 
-      const { id, useremail, user_type } = user;
+			if (bcryptService().comparePassword(password, user.password)) {
+				// to issue token with the user object, convert it to JSON
+				const token = authService().issue(user.toJSON());
 
-      if (bcryptService().comparePassword(password, user.password)) {
-        const token = authService().issue({ id, useremail, user_type });
+				return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
+			}
 
-        return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
-      }
-
-      return res.json(
-        sendResponse(
-          httpStatus.BAD_REQUEST,
-          'invalid email or password',
-          {},
-          { error: 'invalid email or password' }
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  };
+			return res.json(
+				sendResponse(httpStatus.BAD_REQUEST, 'invalid email or password', {}, { error: 'invalid email or password' })
+			);
+		} catch (err) {
+			next(err);
+		}
+	};
 
   const validate = (req, res) => {
     const { token } = req.body;
@@ -94,7 +83,12 @@ const UserController = () => {
     authService().verify(token, err => {
       if (err) {
         return res.json(
-          sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' })
+          sendResponse(
+            httpStatus.UNAUTHORIZED,
+            "Invalid Token!",
+            {},
+            { error: "Invalid Token!" }
+          )
         );
       }
 
@@ -106,7 +100,7 @@ const UserController = () => {
     try {
       const users = await User.findAll();
 
-      return res.json(sendResponse(httpStatus.OK, 'success!', users, null));
+      return res.json(sendResponse(httpStatus.OK, "success!", users, null));
     } catch (err) {
       next(err);
     }

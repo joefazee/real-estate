@@ -1,21 +1,18 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../../config/database');
-
 const tableName = 'agency_profile';
 
 const AgencyProfile = sequelize.define(
   'AgencyProfile',
   {
-    //attributes
     id: {
       primaryKey: true,
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4
     },
     user_id: {
-      type: Sequelize.INTEGER,
-      // a seller is not allowed to have multiple agency profiles
+      type: Sequelize.UUID,
       unique: true,
       references: {
         model: 'users'
@@ -45,9 +42,14 @@ const AgencyProfile = sequelize.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    approvedAt: {
+      type: 'TIMESTAMP',
+      allowNull: true,
+      defaultValue: null
     }
   },
-  { tableName }
+  { tableName, timestamps: false }
 );
 
 module.exports = AgencyProfile;
