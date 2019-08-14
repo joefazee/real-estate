@@ -5,12 +5,11 @@ const bcryptService = require('../services/bcrypt.service');
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const UserQuery = require('../queries/user.queries');
-
-const uploadFile = require('../../helpers/fileUpload');
 const OTPQuery = require('../queries/otp.queries');
 const Mail = require('../services/mail.service');
 const crypto = require('crypto');
 const { port } = require('../../config');
+const uploadFile = require('../../helpers/fileUpload');
 
 const UserController = () => {
   const register = async (req, res, next) => {
