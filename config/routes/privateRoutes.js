@@ -9,7 +9,13 @@ const privateRoutes = {
   "GET /users": {
     path: "UserController.getAll",
     middlewares: [IsAdmin]
-  },
+	},
+	'GET /agency_profiles': 'AgencyProfileController.getAllProfiles',
+
+	'POST /create_profile': {
+		path: 'AgencyProfileController.createProfile',
+		middlewares: [validate(profileValidation.createProfile, { abortEarly: false }), isSelllerMiddleware],
+	},
 
   "GET /categories": "CategoryController.getAll",
 
