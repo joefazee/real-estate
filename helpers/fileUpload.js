@@ -5,7 +5,7 @@ const path = require('path');
 const uploadFile = async (req, res) => {
 	try {
 		if (Object.keys(req.files).length == 0) {
-			throw new Error("No files were provided.")
+			throw new Error('No files were provided.');
 		}
 	} catch (error) {
 		return res.status(400).send('No files were provided!');
@@ -32,30 +32,32 @@ const uploadFile = async (req, res) => {
 				const image = result.url;
 				successfulCount += 1;
 				overallMessage.push(
-					`${req.files[property].name} has been uploaded successfully to cloudinary `
+					`${
+						req.files[property].name
+					} has been uploaded successfully to cloudinary `
 				);
 				overallObject[fileName] = { image };
 			})
 			.catch(err => {
 				overallMessage.push(
-					`${req.files[property].name} was not uploaded successfully to cloudinary `
+					`${
+						req.files[property].name
+					} was not uploaded successfully to cloudinary `
 				);
 				overallObject[fileName] = { err };
 			});
 	}
-	if(successfulCount > 0){
+	if (successfulCount > 0) {
 		return res.status(200).json({
 			message: overallMessage,
 			data: overallObject
 		});
-	}
-	else{
+	} else {
 		return res.status(200).json({
-			message: "No file was uploaded",
+			message: 'No file was uploaded',
 			data: overallObject
 		});
 	}
-	
 };
 
 module.exports = uploadFile;
