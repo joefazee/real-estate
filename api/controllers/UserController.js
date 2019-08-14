@@ -67,10 +67,9 @@ const UserController = () => {
 				);
 			}
 
-			const { id, useremail, user_type } = user;
-
 			if (bcryptService().comparePassword(password, user.password)) {
-				const token = authService().issue({ id, useremail, user_type });
+				// to issue token with the user object, convert it to JSON
+				const token = authService().issue(user.toJSON());
 
 				return res.json(
 					sendResponse(httpStatus.OK, 'success', user, null, token)
