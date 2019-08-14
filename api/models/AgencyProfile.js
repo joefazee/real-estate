@@ -9,45 +9,45 @@ const AgencyProfile = sequelize.define(
 		id: {
 			primaryKey: true,
 			type: Sequelize.UUID,
-			defaultValue: Sequelize.UUIDV4,
+			defaultValue: Sequelize.UUIDV4
 		},
 		user_id: {
-			type: Sequelize.INTEGER,
+			type: Sequelize.UUID,
 			unique: true,
 			references: {
-				model: 'users',
-			},
+				model: 'users'
+			}
 		},
 		business_name: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		business_address: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		website: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		phone: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		email: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		isApproved: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: false,
+			allowNull: false
 		},
 		approvedAt: {
 			type: 'TIMESTAMP',
 			allowNull: true,
-			defaultValue: null,
-		},
+			defaultValue: null
+		}
 	},
 	{ tableName, timestamps: false }
 );

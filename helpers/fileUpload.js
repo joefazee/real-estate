@@ -16,7 +16,6 @@ const uploadFile = async (req, res) => {
 	let overallObject = {};
 	for (let property in req.files) {
 		fileName = property;
-		console.log(fileName);
 
 		const dUri = new Datauri();
 		const dataUri = req =>
