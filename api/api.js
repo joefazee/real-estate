@@ -17,7 +17,6 @@ const dbService = require('./services/db.service');
 
 const auth = require('../api/policies/auth.policy');
 
-
 // environment: development, staging, testing, production
 const environment = process.env.NODE_ENV;
 /**
@@ -45,7 +44,7 @@ app.use(
 	helmet({
 		dnsPrefetchControl: false,
 		frameguard: false,
-		ieNoOpen: false
+		ieNoOpen: false,
 	})
 );
 
@@ -75,14 +74,10 @@ app.use(error.notFound);
 app.use(error.handler);
 
 server.listen(config.port, () => {
-
-  if (environment !== 'production' && environment !== 'development' && environment !== 'testing') {
-    // eslint-disable-next-line no-console
-    console.error(
-      `NODE_ENV is set to ${environment}, but only production and development are valid.`
-    );
-    process.exit(1);
-  }
-  return DB;
-
+	if (environment !== 'production' && environment !== 'development' && environment !== 'testing') {
+		// eslint-disable-next-line no-console
+		console.error(`NODE_ENV is set to ${environment}, but only production and development are valid.`);
+		process.exit(1);
+	}
+	return DB;
 });
