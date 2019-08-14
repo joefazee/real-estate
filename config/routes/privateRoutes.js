@@ -24,6 +24,16 @@ const privateRoutes = {
 
   'GET /categories': 'CategoryController.getAll',
 
+  'POST /create_profile': {
+    path: 'AgencyProfileController.createProfile',
+    middlewares: [
+      validate(profileValidation.createProfile, { abortEarly: false }),
+      isSelllerMiddleware
+    ]
+  },
+
+  'GET /categories': 'CategoryController.getAll',
+
   'GET /user-categories/:id': {
     path: 'UserCategoryController.getAll',
     middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsInvestor]
