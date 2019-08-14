@@ -63,8 +63,8 @@ AgencyProfile.prototype.approveUserProfile = function() {
       const { email: companyEmail } = this;
       const { email: sellerEmail } = await User.findOne({ id: this.user_id });
 
-      await AgencyProfile.update(
-        { approved: true, approvedAt: Sequelize.literal('CURRENT_TIMESTAMP') },
+      await Profile.update(
+        { isApproved: true, approvedAt: Sequelize.literal('CURRENT_TIMESTAMP') },
         { where: { id: this.id }, transaction }
       );
 
