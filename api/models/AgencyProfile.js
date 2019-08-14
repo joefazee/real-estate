@@ -47,7 +47,7 @@ const AgencyProfile = sequelize.define(
     },
     approvedAt: {
       type: 'TIMESTAMP',
-      allowNull: false
+      allowNull: true
     }
   },
   { tableName, timestamps: false }
