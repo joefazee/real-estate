@@ -1,7 +1,6 @@
 require('dotenv').config();
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
-const User = require('./User');
 const EmailService = require('../services/email.service');
 
 const tableName = 'agency_profile';
@@ -63,7 +62,7 @@ AgencyProfile.prototype.approveUserProfile = function() {
       const { email: companyEmail } = this;
       const { email: sellerEmail } = await User.findOne({ id: this.user_id });
 
-      await Profile.update(
+      await AgencyProfile.update(
         { isApproved: true, approvedAt: Sequelize.literal('CURRENT_TIMESTAMP') },
         { where: { id: this.id }, transaction }
       );
@@ -85,6 +84,4 @@ AgencyProfile.prototype.approveUserProfile = function() {
   });
 };
 
-AgencyProfile.belongsTo(User, { as: 'user-profile', foreignKey: 'id' });
-
-module.exports = Profile;
+module.exports = AgencyProfile;
