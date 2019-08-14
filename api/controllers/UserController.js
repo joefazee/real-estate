@@ -119,11 +119,16 @@ const UserController = () => {
     }
   };
 
+  const fileUpload = async (req, res) => {
+    return await uploadFile(req, res);
+  };
+
   return {
     register,
     login,
     validate,
-    getAll
+    getAll,
+    fileUpload
   };
 };
 
