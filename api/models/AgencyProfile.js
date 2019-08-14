@@ -12,7 +12,7 @@ const AgencyProfile = sequelize.define(
 			defaultValue: Sequelize.UUIDV4,
 		},
 		user_id: {
-			type: Sequelize.INTEGER,
+			type: Sequelize.UUID,
 			unique: true,
 			references: {
 				model: 'users',
@@ -46,7 +46,6 @@ const AgencyProfile = sequelize.define(
 		approvedAt: {
 			type: 'TIMESTAMP',
 			allowNull: true,
-			defaultValue: null,
 		},
 	},
 	{ tableName, timestamps: false }

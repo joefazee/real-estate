@@ -1,7 +1,7 @@
 const AgencyProfile = require('../models/AgencyProfile');
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
-const agencyProfileQuery = require('../queries/agencyProfile.queries');
+const agencyProfileQuery = require('../queries/agency.profile.queries');
 
 const AgencyProfileController = () => {
 	const createProfile = async (req, res, next) => {
@@ -35,7 +35,7 @@ const AgencyProfileController = () => {
 
 	const getAllProfiles = async (req, res) => {
 		try {
-			const profiles = await AgencyProfile.findAll();
+			const profiles = await agencyProfileQuery.findAll();
 
 			return res.json(sendResponse(httpStatus.OK, 'success!', profiles, null));
 		} catch (err) {
