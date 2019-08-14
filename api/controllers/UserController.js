@@ -143,7 +143,7 @@ const UserController = () => {
                       <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
       const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
 
-      const mailResult = new Mail()
+      const mailResult = await new Mail()
         .from()
         .to(`${name}<${email}>`)
         .subject(mailTitle)
@@ -153,6 +153,36 @@ const UserController = () => {
       // return generic success response
       // TODO: Find out from Chibueze the proper payload to send back
       return res.json(sendResponse(httpStatus.OK, 'success', mailResult, null));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  const resetPassword = async (req, res, next) => {
+    try {
+      const { user_id, password, confirmPassword } = req.body;
+
+      if (password !== confirmPassword) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'Passwords do not match',
+            req.body,
+            null
+          )
+        );
+      }
+
+      const payload = {
+        id: user_id,
+        password: bcryptService().hashPassword(req.body)
+      };
+
+      const updatedDetails = await UserQuery.update(payload);
+
+      return res.json(
+        sendResponse(httpStatus.OK, 'success', updatedDetails, null)
+      );
     } catch (err) {
       next(err);
     }
@@ -197,7 +227,8 @@ const UserController = () => {
     validate,
     getAll,
     fileUpload,
-    forgotPassword
+    forgotPassword,
+    resetPassword
   };
 };
 
