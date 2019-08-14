@@ -49,14 +49,14 @@ test('User | login', async () => {
   const res = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
     .send({
       email: 'martin@mail.com',
       password: 'securepassword'
-    });
+    })
+    .expect(200);
 
   expect(res.body.token).toBeTruthy();
-  expect(res.body.statusCode).toBe(200);
+
   expect(user).toBeTruthy();
 
   await user.destroy();

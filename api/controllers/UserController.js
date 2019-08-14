@@ -6,93 +6,120 @@ const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const UserQuery = require('../queries/user.queries');
 
+const uploadFile = require('../../helpers/fileUpload');
+
 const UserController = () => {
-	const register = async (req, res, next) => {
-		try {
-			const { name, email, phone, password, password2, user_type } = req.body;
 
-			if (password !== password2) {
-				return res.json(
-					sendResponse(httpStatus.BAD_REQUEST, 'Passwords does not match', {}, { password: 'password does not match' })
-				);
-			}
+  const register = async (req, res, next) => {
+    try {
+      const { name, email, phone, password, password2, user_type } = req.body;
 
-			const userExist = await UserQuery.findByEmail(email);
-			if (userExist) {
-				return res.json(
-					sendResponse(httpStatus.BAD_REQUEST, 'email has been taken', {}, { email: 'email has been taken' })
-				);
-			}
+      if (password !== password2) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'Passwords does not match',
+            {},
+            { password: 'password does not match' }
+          )
+        );
+      }
 
-			const user = await UserQuery.create({
-				name,
-				email,
-				phone,
-				password,
-				user_type,
-			});
+      const userExist = await UserQuery.findByEmail(email);
+      if (userExist) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'email has been taken',
+            {},
+            { email: 'email has been taken' }
+          )
+        );
+      }
 
-			return res.json(sendResponse(httpStatus.OK, 'success', user, null));
-		} catch (err) {
-			next(err);
-		}
-	};
+      const user = await UserQuery.create({
+        name,
+        email,
+        phone,
+        password,
+        user_type
+      });
 
-	const login = async (req, res, next) => {
-		try {
-			const { email, password } = req.body;
+      return res.json(sendResponse(httpStatus.OK, 'success', user, null));
+    } catch (err) {
+      next(err);
+    }
+  };
 
-			const user = await UserQuery.findByEmail(email);
+  const login = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
 
-			if (!user) {
-				return res.json(
-					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
-				);
-			}
+      const user = await UserQuery.findByEmail(email);
 
-			if (bcryptService().comparePassword(password, user.password)) {
-				// to issue token with the user object, convert it to JSON
-				const token = authService().issue(user.toJSON());
+      if (!user) {
+        return res.json(
+          sendResponse(
+            httpStatus.NOT_FOUND,
+            'User does not exist',
+            {},
+            { error: 'User does not exist' }
+          )
+        );
+      }
 
-				return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
-			}
+      const { id, useremail, user_type } = user;
 
-			return res.json(
-				sendResponse(httpStatus.BAD_REQUEST, 'invalid email or password', {}, { error: 'invalid email or password' })
-			);
-		} catch (err) {
-			next(err);
-		}
-	};
+      if (bcryptService().comparePassword(password, user.password)) {
+        const token = authService().issue({ id, useremail, user_type });
 
-	const validate = (req, res) => {
-		const { token } = req.body;
+        return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
+      }
 
-		authService().verify(token, err => {
-			if (err) {
-				return res.json(sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' }));
-			}
+      return res.json(
+        sendResponse(
+          httpStatus.BAD_REQUEST,
+          'invalid email or password',
+          {},
+          { error: 'invalid email or password' }
+        )
+      );
+    } catch (err) {
+      next(err);
+    }
+  };
 
-			return res.status(200).json({ isvalid: true });
-		});
-	};
+  const validate = (req, res) => {
+    const { token } = req.body;
 
-	const getAll = async (req, res) => {
-		try {
-			const users = await User.findAll();
+    authService().verify(token, err => {
+      if (err) {
+        return res.json(
+          sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' })
+        );
+      }
 
-			return res.json(sendResponse(httpStatus.OK, 'success!', users, null));
-		} catch (err) {
-			next(err);
-		}
-	};
+      return res.status(200).json({ isvalid: true });
+    });
+  };
 
-	return {
-		register,
-		login,
-		validate,
-		getAll,
-	};
+  const getAll = async (req, res) => {
+    try {
+      const users = await User.findAll();
+
+      return res.json(sendResponse(httpStatus.OK, 'success!', users, null));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  return {
+    register,
+    login,
+    validate,
+    getAll
+  };
+
 };
 
 module.exports = UserController;
