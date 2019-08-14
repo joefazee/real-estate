@@ -9,7 +9,6 @@ const UserQuery = require('../queries/user.queries');
 const uploadFile = require('../../helpers/fileUpload');
 
 const UserController = () => {
-
   const register = async (req, res, next) => {
     try {
       const { name, email, phone, password, password2, user_type } = req.body;
@@ -113,13 +112,17 @@ const UserController = () => {
     }
   };
 
+  const fileUpload = async (req, res) => {
+    return await uploadFile(req, res);
+  };
+
   return {
     register,
     login,
     validate,
-    getAll
+    getAll,
+    fileUpload
   };
-
 };
 
 module.exports = UserController;

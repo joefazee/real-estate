@@ -3,14 +3,10 @@ const bcryptService = require('../services/bcrypt.service');
 
 const sequelize = require('../../config/database');
 
-const AgencyProfile = require('../models/AgencyProfile');
-
 const hooks = {
-
   beforeCreate(user) {
     user.password = bcryptService().hashPassword(user);
   }
-
 };
 
 const tableName = 'users';
@@ -53,7 +49,6 @@ const User = sequelize.define(
     }
   },
   { hooks, tableName }
-
 );
 
 User.prototype.toJSON = function() {
@@ -63,7 +58,5 @@ User.prototype.toJSON = function() {
 
   return values;
 };
-
-User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 
 module.exports = User;

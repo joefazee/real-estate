@@ -10,7 +10,7 @@ const privateRoutes = {
     path: 'UserController.getAll',
     middlewares: [IsAdmin]
   },
-  
+
   'GET /categories': 'CategoryController.getAll',
 
   'GET /user-categories/:id': {
