@@ -10,6 +10,7 @@ const Mail = require('../services/mail.service');
 const crypto = require('crypto');
 const { port } = require('../../config');
 const uploadFile = require('../../helpers/fileUpload');
+const tokenExpiry = require('../../helpers/tokenExpiry');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -112,7 +113,6 @@ const UserController = () => {
       // Create payload for OTP queries
       const { id, name } = user;
       const temporaryPassword = crypto.randomBytes(20).toString('hex');
-      const tokenExpiry = timeInMins => Date.now() + 1000 * 60 * timeInMins;
 
       // If the user has any existing OTPs, set them to expire
       const existingOTP = await OTPQuery.findByUserID(id);
@@ -173,12 +173,17 @@ const UserController = () => {
         );
       }
 
-      const payload = {
+      const updatePasswordPayload = {
         id: user_id,
         password: bcryptService().hashPassword(req.body)
       };
+      const updatedDetails = await UserQuery.update(updatePasswordPayload);
 
-      const updatedDetails = await UserQuery.update(payload);
+      const clearOTPPayload = {
+        user_id,
+        expiry: tokenExpiry(0)
+      };
+      OTPQuery.expireOTP(clearOTPPayload);
 
       return res.json(
         sendResponse(httpStatus.OK, 'success', updatedDetails, null)
