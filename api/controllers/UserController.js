@@ -50,45 +50,32 @@ const UserController = () => {
     }
   };
 
-  const login = async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
+	const login = async (req, res, next) => {
+		try {
+			const { email, password } = req.body;
 
-      const user = await UserQuery.findByEmail(email);
+			const user = await UserQuery.findByEmail(email);
 
-      if (!user) {
-        return res.json(
-          sendResponse(
-            httpStatus.NOT_FOUND,
-            "User does not exist",
-            {},
-            { error: "User does not exist" }
-          )
-        );
-      }
+			if (!user) {
+				return res.json(
+					sendResponse(httpStatus.NOT_FOUND, 'User does not exist', {}, { error: 'User does not exist' })
+				);
+			}
 
-      const { id, useremail, user_type } = user;
+			if (bcryptService().comparePassword(password, user.password)) {
+				// to issue token with the user object, convert it to JSON
+				const token = authService().issue(user.toJSON());
 
-      if (bcryptService().comparePassword(password, user.password)) {
-        const token = authService().issue({ id, useremail, user_type });
+				return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
+			}
 
-        return res.json(
-          sendResponse(httpStatus.OK, "success", user, null, token)
-        );
-      }
-
-      return res.json(
-        sendResponse(
-          httpStatus.BAD_REQUEST,
-          "invalid email or password",
-          {},
-          { error: "invalid email or password" }
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  };
+			return res.json(
+				sendResponse(httpStatus.BAD_REQUEST, 'invalid email or password', {}, { error: 'invalid email or password' })
+			);
+		} catch (err) {
+			next(err);
+		}
+	};
 
   const validate = (req, res) => {
     const { token } = req.body;
