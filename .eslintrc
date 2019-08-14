@@ -1,16 +1,16 @@
 {
-  "extends": "prettier",
-  "rules": {
-    "arrow-parens": ["off", "as-needed"]
-  },
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
-    }
-  },
-  "env": {
-    "node": true,
-    "es6": true
-  }
+	"extends": "prettier",
+	"rules": {
+		"arrow-parens": ["off", "as-needed"]
+	},
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"ecmaFeatures": {
+			"experimentalObjectRestSpread": true
+		}
+	},
+	"env": {
+		"node": true,
+		"es6": true
+	}
 }
