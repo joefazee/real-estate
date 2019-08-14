@@ -16,6 +16,10 @@ class UserQueries {
       }
     });
   }
+
+  findById(id) {
+    return this.Model.findOne({ where: { id } });
+  }
 }
 
 const userQuery = new UserQueries(User);

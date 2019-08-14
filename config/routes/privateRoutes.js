@@ -32,8 +32,6 @@ const privateRoutes = {
     ]
   },
 
-  'GET /categories': 'CategoryController.getAll',
-
   'GET /user-categories/:id': {
     path: 'UserCategoryController.getAll',
     middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsInvestor]
