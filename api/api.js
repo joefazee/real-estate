@@ -14,10 +14,18 @@ const cors = require('cors');
 const config = require('../config/');
 const error = require('../config/error');
 const dbService = require('./services/db.service');
+
 const auth = require('../api/policies/auth.policy');
+
 
 // environment: development, staging, testing, production
 const environment = process.env.NODE_ENV;
+/**
+ * File Upload
+ */
+const fileUpload = require('express-fileupload');
+// Environmental variables for the Cloudinary service.
+const { cloudinaryConfig } = require('../config/cloudinaryConfig');
 
 /**
  * express application
@@ -34,16 +42,21 @@ app.use(cors());
 
 // secure express app
 app.use(
-  helmet({
-    dnsPrefetchControl: false,
-    frameguard: false,
-    ieNoOpen: false
-  })
+	helmet({
+		dnsPrefetchControl: false,
+		frameguard: false,
+		ieNoOpen: false
+	})
 );
 
 // parsing the request bodys
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+//Support for uploading files
+app.use(fileUpload());
+//To get all the cloudinary api keys
+app.use('*', cloudinaryConfig);
 
 // secure your private routes with jwt authentication middleware
 app.all('/api/v1/private/*', (req, res, next) => auth(req, res, next));
@@ -62,6 +75,7 @@ app.use(error.notFound);
 app.use(error.handler);
 
 server.listen(config.port, () => {
+
   if (environment !== 'production' && environment !== 'development' && environment !== 'testing') {
     // eslint-disable-next-line no-console
     console.error(
@@ -70,4 +84,5 @@ server.listen(config.port, () => {
     process.exit(1);
   }
   return DB;
+
 });

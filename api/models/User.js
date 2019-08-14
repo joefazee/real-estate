@@ -4,9 +4,11 @@ const bcryptService = require('../services/bcrypt.service');
 const sequelize = require('../../config/database');
 
 const hooks = {
+
   beforeCreate(user) {
     user.password = bcryptService().hashPassword(user);
   }
+
 };
 
 const tableName = 'users';
@@ -49,6 +51,7 @@ const User = sequelize.define(
     }
   },
   { hooks, tableName }
+
 );
 
 User.prototype.toJSON = function() {

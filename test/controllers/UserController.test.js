@@ -13,6 +13,7 @@ afterAll(() => {
 });
 
 test('User | create', async () => {
+
   const res = await request(api)
     .post('/public/signup')
     .set('Accept', /json/)
@@ -63,6 +64,7 @@ test('User | login', async () => {
 });
 
 test('User | login | User does not exist', async () => {
+
   const res = await request(api)
     .post('/public/login')
     .set('Accept', /json/)

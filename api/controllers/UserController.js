@@ -6,7 +6,10 @@ const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const UserQuery = require('../queries/user.queries');
 
+const uploadFile = require('../../helpers/fileUpload');
+
 const UserController = () => {
+
   const register = async (req, res, next) => {
     try {
       const { name, email, phone, password, password2, user_type } = req.body;
@@ -116,6 +119,7 @@ const UserController = () => {
     validate,
     getAll
   };
+
 };
 
 module.exports = UserController;
