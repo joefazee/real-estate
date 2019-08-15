@@ -11,9 +11,7 @@ class Mail extends EventEmitter {
   connect() {
     return new Promise((resolve, reject) => {
       return this.smtpTransport.verify((err, success) => {
-        if (err) return reject(err);
-
-        return resolve(success);
+        return err ? reject(err) : resolve(success);
       });
     });
   }

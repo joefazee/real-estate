@@ -63,21 +63,9 @@ const AgencyProfileController = () => {
         );
       }
 
-      profile
-        .approveUserProfile()
-        .then(() => {
-          return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
-        })
-        .catch(() => {
-          return res.json(
-            sendResponse(
-              httpStatus.INTERNAL_SERVER_ERROR,
-              'Server Error, Please Try Again!',
-              {},
-              { error: 'Server Error, Please Try Again!' }
-            )
-          );
-        });
+      await agencyProfileQuery.approveUserProfile(profile);
+
+      return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
     } catch (err) {
       next(err);
     }

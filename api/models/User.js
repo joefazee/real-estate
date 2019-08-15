@@ -14,7 +14,6 @@ const tableName = 'users';
 const User = sequelize.define(
   'User',
   {
-    //attributes
     name: {
       type: Sequelize.STRING,
       allowNull: false
@@ -52,11 +51,11 @@ const User = sequelize.define(
 );
 
 User.prototype.toJSON = function() {
-	const values = Object.assign({}, this.get());
+  const values = Object.assign({}, this.get());
 
-	delete values.password;
+  delete values.password;
 
-	return values;
+  return values;
 };
 
 User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });

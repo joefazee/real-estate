@@ -10,11 +10,7 @@ class UserQueries {
   }
 
   findByEmail(email) {
-    return this.Model.findOne({
-      where: {
-        email
-      }
-    });
+    return this.Model.findOne({ where: { email } });
   }
 
   findById(id) {
