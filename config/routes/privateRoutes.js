@@ -12,7 +12,10 @@ const privateRoutes = {
     path: 'UserController.getAll',
     middlewares: [IsAdmin]
   },
-  'GET /agency_profiles': 'AgencyProfileController.getAllProfiles',
+  'GET /agency_profiles': {
+    path: 'AgencyProfileController.getAllProfiles',
+    middlewares: [IsAdmin]
+  },
 
   'POST /create_profile': {
     path: 'AgencyProfileController.createProfile',
