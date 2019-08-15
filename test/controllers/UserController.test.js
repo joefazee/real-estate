@@ -148,24 +148,24 @@ test(`UserController.forgotpassword | User doesn't exist`, async () => {
   expect(response.body.message).toBe('User not found');
 });
 
-test('User | forgot password', async () => {
+test(`UserController.forgotpassword | Password reset link was sent`, async () => {
   const user = await User.create({
-    name: 'Luke John',
-    email: 'lukejohn@mail.com',
+    name: 'Test User',
+    email: 'test.user@mail.com',
     password: 'securepassword',
     password2: 'securepassword',
-    phone: '09057373',
+    phone: '08023456789',
     user_type: 'investor'
   });
 
-  const res = await request(api)
-    .post('/public/forgot-password')
-    .set('Accept', /json/)
-    .send({
-      email: 'martin@mail.com'
-    })
-    .expect(200);
-  expect(user).toBeTruthy();
+  const {
+    body: { statusCode }
+  } = await request(api)
+    .post(`/public/forgot-password/`)
+    .set('Content-Type', 'application/json')
+    .send({ email: 'test.user@mail.com' });
+
+  expect(statusCode).toBe(200);
 
   await user.destroy();
 });
