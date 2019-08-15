@@ -12,10 +12,7 @@ const AgencyProfile = sequelize.define(
     },
     user_id: {
       type: Sequelize.UUID,
-      unique: true,
-      references: {
-        model: 'users'
-      }
+      unique: true
     },
     business_name: {
       type: Sequelize.STRING,

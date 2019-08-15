@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const bcryptService = require('../services/bcrypt.service');
 const AgencyProfile = require('./AgencyProfile');
 const sequelize = require('../../config/database');
+const UserCategory = require('./UserCategory');
 
 const hooks = {
   beforeCreate(user) {
@@ -59,5 +60,6 @@ User.prototype.toJSON = function() {
 };
 
 User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
+User.hasMany(UserCategory, { as: 'user_category', foreignKey: 'user_id' });
 
 module.exports = User;
