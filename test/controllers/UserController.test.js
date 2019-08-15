@@ -169,3 +169,31 @@ test(`UserController.forgotpassword | Password reset link was sent`, async () =>
 
   await user.destroy();
 });
+
+test('UserController.resetPassword | Passwords do not match', async () => {
+  const newUser = await User.create({
+    name: 'Test User',
+    email: 'test.user@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '08023456789',
+    user_type: 'investor'
+  });
+
+  const { id } = await UserQuery.findByEmail(newUser.email);
+
+  const payload = {
+    user_id: id,
+    password: 'balderdash',
+    confirmPassword: 'poppycock'
+  };
+
+  const response = await request(api)
+    .post('/public/password-reset')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+
+  expect(response.body.statusCode).toBe(400);
+  expect(response.body.message).toBe('Passwords do not match');
+  await newUser.destroy();
+});
