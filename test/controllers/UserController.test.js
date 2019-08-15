@@ -4,67 +4,64 @@ const User = require('../../api/models/User');
 const UserQuery = require('../../api/queries/user.queries');
 
 let api;
+let ADMIN_ACCOUNT;
 
 beforeAll(async () => {
   api = await beforeAction();
+  ADMIN_ACCOUNT = await User.create({
+    name: 'Martin Luke',
+    email: 'martinking@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '09057367323',
+    user_type: 'admin'
+  });
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await ADMIN_ACCOUNT.destroy();
   afterAction();
 });
 
 test('User | create', async () => {
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/signup')
     .set('Accept', /json/)
     .send({
       name: 'Martin Luke',
-      email: 'martin@mail.com',
+      email: 'martinluther@mail.com',
       password: 'securepassword',
       password2: 'securepassword',
-      phone: '09057373',
-      user_type: 'admin'
+      phone: '0905737783',
+      user_type: 'investor'
     })
     .expect(200);
 
-  expect(res.body.payload).toBeTruthy();
+  expect(body.payload).toBeTruthy();
 
-  const user = await User.findByPk(res.body.payload.id);
+  const user = await User.findByPk(body.payload.id);
 
-  expect(user.id).toBe(res.body.payload.id);
-  expect(user.email).toBe(res.body.payload.email);
+  expect(user.id).toBe(body.payload.id);
+  expect(user.email).toBe(body.payload.email);
 
   await user.destroy();
 });
 
 test('User | login', async () => {
-  const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
-
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
-      email: 'martin@mail.com',
+      email: 'martinking@mail.com',
       password: 'securepassword'
     })
     .expect(200);
 
-  expect(res.body.token).toBeTruthy();
-
-  expect(user).toBeTruthy();
-
-  await user.destroy();
+  expect(body.token).toBeTruthy();
 });
 
 test('User | login | User does not exist', async () => {
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
@@ -72,69 +69,46 @@ test('User | login | User does not exist', async () => {
       password: 'passssword'
     });
 
-  expect(res.body.token).toBeFalsy();
-  expect(res.body).toHaveProperty('message', 'User does not exist');
-  expect(res.body).toHaveProperty('statusCode', 404);
+  expect(body.token).toBeFalsy();
+  expect(body).toHaveProperty('message', 'User does not exist');
+  expect(body).toHaveProperty('statusCode', 404);
 });
 
 test('User | login | invalid email or password', async () => {
-  const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin2@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
-
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
-      email: 'martin2@mail.com',
+      email: 'martinking@mail.com',
       password: 'password'
     });
 
-  expect(res.body.token).toBeFalsy();
-  expect(res.body).toHaveProperty('message', 'invalid email or password');
-  expect(res.body).toHaveProperty('statusCode', 400);
-  expect(user).toBeTruthy();
-
-  await user.destroy();
+  expect(body.token).toBeFalsy();
+  expect(body).toHaveProperty('message', 'invalid email or password');
+  expect(body).toHaveProperty('statusCode', 400);
 });
 
 test('User | get all (auth)', async () => {
-  const user = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
-
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
-      email: 'martin@mail.com',
+      email: 'martinking@mail.com',
       password: 'securepassword'
     })
     .expect(200);
 
-  expect(res.body.token).toBeTruthy();
+  expect(body.token).toBeTruthy();
 
-  const res2 = await request(api)
+  const { body: usersResponse } = await request(api)
     .get('/private/users')
     .set('Accept', /json/)
-    .set('Authorization', `Bearer ${res.body.token}`)
+    .set('Authorization', `Bearer ${body.token}`)
     .set('Content-Type', 'application/json')
     .expect(200);
 
-  expect(res2.body.payload).toBeTruthy();
-  expect(res2.body.payload.length).toBe(1);
-
-  await user.destroy();
+  expect(usersResponse.payload).toBeTruthy();
+  expect(usersResponse.payload.length).toBe(1);
 });
 
 test(`UserController.forgotpassword | User doesn't exist`, async () => {
