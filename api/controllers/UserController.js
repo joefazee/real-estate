@@ -186,7 +186,7 @@ const UserController = () => {
       OTPQuery.expireOTP(clearOTPPayload);
 
       return res.json(
-        sendResponse(httpStatus.OK, 'success', updatedDetails, null)
+        sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
       );
     } catch (err) {
       next(err);
