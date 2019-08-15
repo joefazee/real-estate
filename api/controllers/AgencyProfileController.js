@@ -4,6 +4,9 @@ const agencyProfileQuery = require('../queries/agency.profile.queries');
 const EmailService = require('../services/email.service');
 const UserQuery = require('../queries/user.queries');
 
+const uploadFile = require('../../helpers/fileUpload');
+const documentQuery = require('../queries/document.queries');
+
 const AgencyProfileController = () => {
   const createProfile = async (req, res, next) => {
     try {
