@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../api/models/User');
+const UserQuery = require('../../api/queries/user.queries');
 
 let api;
 
@@ -134,6 +135,17 @@ test('User | get all (auth)', async () => {
   expect(res2.body.payload.length).toBe(1);
 
   await user.destroy();
+});
+
+test(`UserController.forgotpassword | User doesn't exist`, async () => {
+  const email = 'emailThatDoesntExist@mail.com';
+  const response = await request(api)
+    .post(`/public/forgot-password/`)
+    .set('Content-Type', 'application/json')
+    .send({ email });
+
+  expect(response.body.statusCode).toEqual(404);
+  expect(response.body.message).toBe('User not found');
 });
 
 test('User | forgot password', async () => {
