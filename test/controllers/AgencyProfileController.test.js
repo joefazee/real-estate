@@ -190,29 +190,3 @@ test('Admin Error | approve a seller profile that is already approved', async ()
   expect(body.statusCode).toBe(401);
   expect(body.message).toBe('Profile Approved Already!');
 });
-
-// test('Admin | Network Error on admin approving a seller profile', async () => {
-//   // get user details that include id
-//   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
-
-//   // generate a token
-//   const token = await authService().issue(confirmedUser);
-
-//   const {
-//     body: { payload }
-//   } = await request(api)
-//     .get('/private/agency_profiles')
-//     .set('Accept', /json/)
-//     .set('Authorization', `Bearer ${token}`)
-//     .set('Content-Type', 'application/json');
-
-//   const firstProfileOnListId = payload[0].id;
-//   const { body } = await request(api)
-//     .post(`/private/approve-profile/${firstProfileOnListId}`)
-//     .set('Accept', /json/)
-//     .set('Authorization', `Bearer ${token}`)
-//     .set('Content-Type', 'application/json');
-
-//   expect(body.statusCode).toBe(200);
-//   expect(body.message).toBe('Account Approved Successfully!');
-// });
