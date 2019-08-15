@@ -106,7 +106,7 @@ const UserController = () => {
       if (!user) {
         // TODO: Find out from Chibueze the proper payload to send back
         return res.json(
-          sendResponse(httpStatus.OK, 'success', 'user doesnt exist', null)
+          sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null)
         );
       }
 
@@ -143,7 +143,7 @@ const UserController = () => {
                       <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
       const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
 
-      const mailResult = await new Mail()
+      const mailResult = new Mail()
         .from()
         .to(`${name}<${email}>`)
         .subject(mailTitle)
@@ -152,7 +152,7 @@ const UserController = () => {
 
       // return generic success response
       // TODO: Find out from Chibueze the proper payload to send back
-      return res.json(sendResponse(httpStatus.OK, 'success', mailResult, null));
+      return res.json(sendResponse(httpStatus.OK, 'success', payload, null));
     } catch (err) {
       next(err);
     }
