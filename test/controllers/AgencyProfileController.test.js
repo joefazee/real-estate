@@ -51,7 +51,7 @@ test('Agency Profile | create (auth)', async () => {
   // get user details that include id
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinl@mail.com');
 
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const {
     body: { payload }
@@ -78,7 +78,7 @@ test('Agency Profile | create (user is not a seller)', async () => {
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
   // generate a token
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
     .post('/private/create_profile')
@@ -101,7 +101,7 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinl@mail.com');
 
   // generate a token
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
     .post('/private/create_profile')
@@ -124,7 +124,7 @@ test('Admin | get all agency profiles (auth)', async () => {
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
 
   // generate a token
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
     .get('/private/agency_profiles')
@@ -142,7 +142,7 @@ test('Admin | approve a seller profile', async () => {
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
 
   // generate a token
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const {
     body: { payload }
@@ -160,8 +160,6 @@ test('Admin | approve a seller profile', async () => {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
 
-  console.log('BODY ======>>>>>>>>', body);
-
   expect(body.statusCode).toBe(200);
   expect(body.message).toBe('Account Approved Successfully!');
 });
@@ -171,7 +169,7 @@ test('Admin Error | approve a seller profile that is already approved', async ()
   const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
 
   // generate a token
-  const token = await authService().issue(confirmedUser);
+  const token = authService().issue(confirmedUser);
 
   const {
     body: { payload }
