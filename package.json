@@ -1,76 +1,78 @@
 {
-	"name": "real-estate",
-	"version": "0.0.0",
-	"author": "Diaspora-Invest",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/joefazee/real-estate.git"
-	},
-	"homepage": "https://github.com/joefazee/real-estate.git#readme",
-	"bugs": {
-		"url": "https://github.com/joefazee/real-estate.git/issues"
-	},
-	"scripts": {
-		"prestart": "npm run drop-sqlite-db || true",
-		"start": "npm run nodemon",
-		"poststart": "npm run create-sqlite-db",
-		"dev": "cross-env NODE_ENV=development nodemon ./api/api.js",
-		"nodemon": "nodemon --exec npm run dev",
-		"create-sqlite-db": "shx touch ./db/database.sqlite",
-		"drop-sqlite-db": "shx rm ./db/database.sqlite",
-		"lint": "eslint ./api/. ./config/. ./test/.",
-		"prepush": "npm test",
-		"pretest": "npm run lint",
-		"production": "cross-env NODE_ENV=production node ./api/api.js",
-		"test": "npm run create-sqlite-db; cross-env NODE_ENV=testing jest --coverage; npm run drop-sqlite-db",
-		"test-ci": "jest --coverage --forceExit"
-	},
-	"jest": {
-		"globals": {
-			"__DEV__": true
-		},
-		"testEnvironment": "node",
-		"testPathIgnorePatterns": [
-			"/node_modules/"
-		]
-	},
-	"dependencies": {
-		"bcrypt": "^3.0.6",
-		"body-parser": "^1.19.0",
-		"celebrate": "^10.0.1",
-		"cloudinary": "^1.14.0",
-		"core-js": "^2.6.5",
-		"cors": "^2.8.5",
-		"cryptiles": "^4.1.3",
-		"datauri": "^2.0.0",
-		"deep-extend": "^0.6.0",
-		"dotenv": "^8.0.0",
-		"eslint-config-prettier": "^6.0.0",
-		"express": "^4.17.1",
-		"express-fileupload": "^1.1.5",
-		"express-routes-mapper": "^1.1.0",
-		"extend": "^3.0.2",
-		"helmet": "^3.20.0",
-		"http-status": "^1.3.2",
-		"js-yaml": "^3.13.1",
-		"jsonwebtoken": "^8.5.1",
-		"mysql2": "^1.6.5",
-		"path": "^0.12.7",
-		"sequelize": "^6.0.0",
-		"sqlite3": "^4.0.9",
-		"stringstream": "1.0.0",
-		"tar": "^4.4.10"
-	},
-	"devDependencies": {
-		"cross-env": "^5.2.0",
-		"eslint": "^6.1.0",
-		"eslint-config-airbnb-base": "^13.2.0",
-		"eslint-plugin-import": "^2.18.2",
-		"husky": "^3.0.2",
-		"jest": "^24.8.0",
-		"nodemon": "^1.19.1",
-		"shx": "^0.3.2",
-		"supertest": "^4.0.2"
-	}
+  "name": "real-estate",
+  "version": "0.0.0",
+  "author": "Diaspora-Invest",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joefazee/real-estate.git"
+  },
+  "homepage": "https://github.com/joefazee/real-estate.git#readme",
+  "bugs": {
+    "url": "https://github.com/joefazee/real-estate.git/issues"
+  },
+  "scripts": {
+    "prestart": "npm run drop-sqlite-db || true",
+    "start": "npm run nodemon",
+    "poststart": "npm run create-sqlite-db",
+    "dev": "cross-env NODE_ENV=development nodemon ./api/api.js",
+    "nodemon": "nodemon --exec npm run dev",
+    "create-sqlite-db": "shx touch ./db/database.sqlite",
+    "drop-sqlite-db": "shx rm ./db/database.sqlite",
+    "lint": "eslint ./api/. ./config/. ./test/.",
+    "prepush": "npm test",
+    "pretest": "npm run lint",
+    "production": "cross-env NODE_ENV=production node ./api/api.js",
+    "test": "npm run create-sqlite-db; cross-env NODE_ENV=testing jest --coverage; npm run drop-sqlite-db",
+    "test-ci": "jest --coverage --forceExit"
+  },
+  "jest": {
+    "globals": {
+      "__DEV__": true
+    },
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "celebrate": "^10.0.1",
+    "cloudinary": "^1.14.0",
+    "core-js": "^2.6.5",
+    "cors": "^2.8.5",
+    "cryptiles": "^4.1.3",
+    "datauri": "^2.0.0",
+    "deep-extend": "^0.6.0",
+    "dotenv": "^8.0.0",
+    "eslint-config-prettier": "^6.0.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.5",
+    "express-routes-mapper": "^1.1.0",
+    "extend": "^3.0.2",
+    "helmet": "^3.20.0",
+    "http-status": "^1.3.2",
+    "js-yaml": "^3.13.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^1.6.5",
+    "nodemailer": "^6.3.0",
+    "path": "^0.12.7",
+    "sequelize": "^6.0.0",
+    "sqlite3": "^4.0.9",
+    "stringstream": "1.0.0",
+    "tar": "^4.4.10"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "husky": "^3.0.2",
+    "jest": "^24.8.0",
+    "nodemailer-mock": "^1.4.3",
+    "nodemon": "^1.19.1",
+    "shx": "^0.3.2",
+    "supertest": "^4.0.2"
+  }
 }
