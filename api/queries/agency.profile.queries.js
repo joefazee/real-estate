@@ -53,7 +53,6 @@ class AgencyProfileQueries {
 
         EmailService.on('error', async () => reject(await transaction.rollback()));
       } catch (err) {
-        console.log('<<<<<<<<<<<<<<<<<<<<==============>>>>>>>>>>>>>>', err);
         reject(err);
       }
     });
