@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const User = require('../models/User');
 const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
@@ -75,9 +74,7 @@ const UserController = () => {
         // to issue token with the user object, convert it to JSON
         const token = authService().issue(user.toJSON());
 
-        return res.json(
-          sendResponse(httpStatus.OK, 'success', user, null, token)
-        );
+        return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
       }
 
       return res.json(
@@ -199,12 +196,7 @@ const UserController = () => {
     authService().verify(token, err => {
       if (err) {
         return res.json(
-          sendResponse(
-            httpStatus.UNAUTHORIZED,
-            'Invalid Token!',
-            {},
-            { error: 'Invalid Token!' }
-          )
+          sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' })
         );
       }
 
