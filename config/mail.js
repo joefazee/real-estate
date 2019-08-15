@@ -1,7 +1,5 @@
 require('dotenv').config();
-
 let configuration;
-
 
 switch (process.env.NODE_ENV) {
   case 'production':
@@ -11,20 +9,19 @@ switch (process.env.NODE_ENV) {
       auth: {
         user: process.env.SEND_GRID_USERNAME,
         pass: process.env.SEND_GRID_PASSWORD
-      }, 
+      }
     };
     break;
 
   default:
     configuration = {
-      host: process.env.MAILTRAP_HOST,
-      port: process.env.MAILTRAP_PORT,
+      host: process.env.MAIL_TRAP_HOST,
+      port: process.env.MAIL_TRAP_PORT,
       auth: {
-        user: process.env.MAILTRAP_USERNAME,
-        pass: process.env.MAILTRAP_PASSWORD
+        user: process.env.MAIL_TRAP_USERNAME,
+        pass: process.env.MAIL_TRAP_PASSWORD
       }
     };
-    break;
 }
 
 module.exports = configuration;

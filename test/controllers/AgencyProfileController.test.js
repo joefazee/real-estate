@@ -52,7 +52,7 @@ test('Agency Profile | create (auth)', async () => {
 
 	expect(res2.body.payload).toBeTruthy();
 	const agencyProfile = await AgencyProfile.findByPk(res2.body.payload.id);
-	expect(agencyProfile).toBeTruthy;
+	expect(agencyProfile).toBeTruthy();
 	expect(res2.body.payload.user_id).toBe(res.id);
 	await newUser.destroy();
 });
