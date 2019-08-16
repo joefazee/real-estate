@@ -9,12 +9,11 @@ const publicRoutes = {
   },
   'POST /login': 'UserController.login',
   'POST /validate': 'UserController.validate',
+  'POST /verification': 'VerificationController.verify',
   'POST /upload': 'UserController.fileUpload',
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',
-    middlewares: [
-      validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
-    ]
+    middlewares: [validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })]
   }
 };
 
