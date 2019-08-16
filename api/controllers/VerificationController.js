@@ -20,9 +20,9 @@ const VerificationController = () => {
         );
       }
 
-      return res.json(
-        sendResponse(httpStatus.OK, 'Account Verified Successfully!', codeIsValid, null)
-      );
+      const user = await VerificationQuery.verifyEmail(foundCode);
+
+      return res.json(sendResponse(httpStatus.OK, 'Account Verified Successfully!', user, null));
     } catch (err) {
       next(err);
     }
