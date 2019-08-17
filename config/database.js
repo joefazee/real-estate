@@ -47,6 +47,13 @@ switch (process.env.NODE_ENV) {
         host: connection.development.host,
         port: connection.development.port,
         dialect: connection.development.dialect,
+        dialectOptions: {
+          useUTC: false,
+          dateStrings: true,
+          typeCast: true,
+          timezone: '+01:00'
+        },
+        timezone: '+01:00',
         pool: {
           max: 5,
           min: 0,
