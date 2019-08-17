@@ -11,8 +11,7 @@ class VerificationQueries {
   }
 
   verifyCode(code) {
-    const { expiryAt } = code;
-    return new Date() < new Date(expiryAt);
+    return new Date() < new Date(code.expireAt);
   }
 
   findCode(code) {
@@ -22,7 +21,7 @@ class VerificationQueries {
   verifyEmail({ user_id }) {
     const payload = { email_verified: true };
     const where = { where: { id: user_id } };
-    return UserQuery.update(payload, where);
+    return UserQuery.update(payload, where).then(() => UserQuery.findById(user_id));
   }
 }
 

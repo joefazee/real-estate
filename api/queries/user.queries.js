@@ -1,3 +1,5 @@
+require('dotenv').config();
+const sequelize = require('../../config/database');
 const User = require('../models/User');
 
 class UserQueries {
@@ -5,8 +7,9 @@ class UserQueries {
     this.Model = Model;
   }
 
-  create(payload) {
-    return this.Model.create(payload);
+  async create(signupDetails) {
+    const transaction = await sequelize.transaction({ autocommit: false });
+    return this.Model.create(signupDetails, { transaction });
   }
 
   findByEmail(email) {
@@ -15,6 +18,10 @@ class UserQueries {
 
   findById(id) {
     return this.Model.findOne({ where: { id } });
+  }
+
+  update(payload, where) {
+    return this.Model.update(payload, where);
   }
 }
 
