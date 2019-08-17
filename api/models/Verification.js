@@ -1,6 +1,14 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
-const User = require('./User');
+
+const tableName = 'verifications';
+
+const hooks = {
+  beforeCreate(verification) {
+    const codeExpiry = timeInMins => Date.now() + 1000 * 60 * timeInMins;
+    verification.expireAt = codeExpiry(1440);
+  }
+};
 
 const Verification = sequelize.define(
   'Verification',
@@ -16,16 +24,15 @@ const Verification = sequelize.define(
       allowNull: false
     },
     code: {
-      type: Sequelize.UUID,
+      type: Sequelize.STRING,
       allowNull: false
     },
     expireAt: {
-      type: Sequelize.DATE
+      type: Sequelize.DATE,
+      allowNull: true
     }
   },
-  { tableName: 'verification', timestamps: false }
+  { tableName, hooks }
 );
-
-Verification.belongsTo(User, { as: 'verification', foreignKey: 'user_id' });
 
 module.exports = Verification;
