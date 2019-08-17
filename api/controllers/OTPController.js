@@ -8,29 +8,16 @@ const OTPController = () => {
     try {
       const { otp } = req.params;
       const otpDetails = await OTPQuery.findOTP(otp);
+      const otpValid = otpDetails && new Date() < new Date(otpDetails.expiry);
 
-      if (!otpDetails) {
+      if (otpValid) {
         return res.json(
-          sendResponse(httpStatus.NOT_FOUND, 'otp does not exist', {}, err)
-        );
-      }
-
-      const { expiry } = otpDetails;
-      const otpValid = new Date() < new Date(expiry);
-
-      if (!otpValid) {
-        return res.json(
-          sendResponse(
-            httpStatus.UNAUTHORIZED,
-            'otp has expired',
-            otpValid,
-            null
-          )
+          sendResponse(httpStatus.OK, 'otp is valid', otpDetails, null)
         );
       }
 
       return res.json(
-        sendResponse(httpStatus.OK, 'otp is valid', otpDetails, null)
+        sendResponse(httpStatus.NOT_FOUND, 'otp is not valid', {}, null)
       );
     } catch (err) {}
   };

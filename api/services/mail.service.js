@@ -45,15 +45,6 @@ class Mail {
   }
 
   /**
-   * sets the mail text property
-   * @param {string} text
-   */
-  text(text) {
-    this.mailText = text;
-    return this;
-  }
-
-  /**
    * Sends the mail to the recipient
    * @returns {Promise}
    */
