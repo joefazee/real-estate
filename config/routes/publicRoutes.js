@@ -9,7 +9,7 @@ const publicRoutes = {
   },
   'POST /login': 'UserController.login',
   'POST /validate': 'UserController.validate',
-  'POST /verify-email': 'VerificationController.verify',
+  'GET /verify-email/:code': 'VerificationController.verify',
   'POST /upload': 'UserController.fileUpload',
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',
