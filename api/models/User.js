@@ -1,39 +1,13 @@
 const Sequelize = require('sequelize');
-const crypto = require('crypto');
 const sequelize = require('../../config/database');
-const { port } = require('../../config');
 const bcryptService = require('../services/bcrypt.service');
-const EmailService = require('../services/email.service');
 const Verification = require('./Verification');
 const AgencyProfile = require('./AgencyProfile');
 const UserCategory = require('./UserCategory');
 
 const hooks = {
-  async beforeSave(user, { transaction }) {
-    await EmailService.connect();
-
+  beforeCreate(user) {
     user.password = bcryptService().hashPassword(user);
-    const code = crypto.randomBytes(5).toString('hex');
-    const payload = { user_id: user.id, code };
-
-    await Verification.create(payload, { transaction });
-
-    const mailTitle = 'Diaspora Invest: Verify Account';
-    const verifyLink = new URL(`http://localhost:${port}/api/v1/public/verify-email/${code}`);
-    const message = `<p>To very your account, please click on the following link: <a href=${verifyLink}>Verify my account</a>.</p>
-      <p>If the link does not work, please copy this URL into your browser and click enter: ${verifyLink}</p>`;
-    const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
-
-    EmailService.send({
-      from: process.env.EMAIL_SERVICE_FROM,
-      to: `${user.email}`,
-      subject: `${mailTitle}`,
-      text: 'TEST MAIL',
-      html: `${mailBody}`
-    });
-
-    EmailService.on('success', () => transaction.commit());
-    EmailService.on('error', () => transaction.rollback());
   }
 };
 
@@ -57,7 +31,8 @@ const User = sequelize.define(
     },
     phone: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     user_type: {
       type: Sequelize.ENUM(['admin', 'investor', 'seller']),

@@ -31,7 +31,7 @@ test('Investor | signup | login | Investor select a category', async () => {
   const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
-    .post('/private/user-category')
+    .post('/private/select-category')
     .set('Accept', /json/)
     .set('Content-Type', 'application/json')
     .set('Authorization', `Bearer ${token}`)
@@ -50,7 +50,7 @@ test('Investor | login | Investor get all his categories', async () => {
   const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
-    .get(`/private/user-categories/${confirmedUser.id}`)
+    .get(`/private/user-category/${confirmedUser.id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')

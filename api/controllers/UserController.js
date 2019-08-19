@@ -9,6 +9,9 @@ const Mail = require('../services/mail.service');
 const crypto = require('crypto');
 const { port } = require('../../config');
 const uploadFile = require('../../helpers/fileUpload');
+const EmailService = require('../services/email.service');
+const encodeUserEmail = require('../templates/signup.email');
+const VerificationQuery = require('../queries/verification.queries');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -38,15 +41,35 @@ const UserController = () => {
         );
       }
 
-      const user = await UserQuery.create({
-        name,
-        email,
-        phone,
-        password,
-        user_type
+      const { mailBody, mailTitle, code } = encodeUserEmail(email);
+
+      EmailService.send({
+        from: process.env.EMAIL_SERVICE_FROM,
+        to: `${email}`,
+        subject: `${mailTitle}`,
+        text: 'TEST MAIL',
+        html: `${mailBody}`
       });
 
-      return res.json(sendResponse(httpStatus.OK, 'success', user, null));
+      EmailService.on('error', err => next(err));
+
+      EmailService.on('success', async () => {
+        try {
+          const user = await UserQuery.create({
+            name,
+            email,
+            phone,
+            password,
+            user_type
+          });
+
+          VerificationQuery.create({ user_id: user.id, code });
+
+          return res.json(sendResponse(httpStatus.OK, 'success', user, null));
+        } catch (err) {
+          next(err);
+        }
+      });
     } catch (err) {
       next(err);
     }

@@ -10,18 +10,15 @@ class VerificationQueries {
     return this.Model.create(payload, args);
   }
 
-  verifyCode(code) {
-    return new Date() < new Date(code.expireAt);
-  }
-
   findCode(code) {
     return this.Model.findOne({ where: { code } });
   }
 
-  verifyEmail({ user_id }) {
+  verifyEmail({ email, code }) {
     const payload = { email_verified: true };
-    const where = { where: { id: user_id } };
-    return UserQuery.update(payload, where).then(() => UserQuery.findById(user_id));
+    const where = { where: { email } };
+    this.Model.destroy({ where: { code } });
+    return UserQuery.update(payload, where);
   }
 }
 
