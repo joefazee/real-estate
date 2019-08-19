@@ -16,6 +16,20 @@ const CategoryController = () => {
   const create = async (req, res, next) => {
     try {
       const { name } = req.body;
+
+      const exitingCategory = await CategoryQuery.findOne({ name });
+
+      if (exitingCategory) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            `${name} already exits`,
+            {},
+            { name: `${name} already exits` }
+          )
+        );
+      }
+
       const category = await CategoryQuery.create({ name });
 
       return res.json(sendResponse(httpStatus.OK, 'success', category, null));

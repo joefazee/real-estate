@@ -1,6 +1,7 @@
 const { celebrate: validate } = require('celebrate');
 const paramValidation = require('../../api/validations/user.validation');
 const forgotPasswordValidation = require('../../api/validations/forgotpassword.validation');
+const verifyEmail = require('../../api/middlewares/verifyEmail');
 
 const publicRoutes = {
   'POST /signup': {
@@ -9,7 +10,10 @@ const publicRoutes = {
   },
   'POST /login': 'UserController.login',
   'POST /validate': 'UserController.validate',
-  'GET /verify-email/:code': 'VerificationController.verify',
+  'GET /verify-email/:code': {
+    path: 'VerificationController.verify',
+    middlewares: [verifyEmail]
+  },
   'POST /upload': 'UserController.fileUpload',
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',

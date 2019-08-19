@@ -12,7 +12,7 @@ const privateRoutes = {
     path: 'UserController.getAll',
     middlewares: [IsAdmin]
   },
-  'GET /agency_profiles': {
+  'GET /agency-profiles': {
     path: 'AgencyProfileController.getAllProfiles',
     middlewares: [IsAdmin]
   },
@@ -27,7 +27,7 @@ const privateRoutes = {
 
   'GET /categories': 'CategoryController.getAll',
 
-  'POST /create_profile': {
+  'POST /create-profile': {
     path: 'AgencyProfileController.createProfile',
     middlewares: [
       validate(profileValidation.createProfile, { abortEarly: false }),
@@ -35,7 +35,7 @@ const privateRoutes = {
     ]
   },
 
-  'GET /user-categories/:id': {
+  'GET /user-category/:id': {
     path: 'UserCategoryController.getAll',
     middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsInvestor]
   },
@@ -45,7 +45,7 @@ const privateRoutes = {
     middlewares: [validate(paramValidation.createCategory, { abortEarly: false }), IsAdmin]
   },
 
-  'POST /user-category': {
+  'POST /select-category': {
     path: 'UserCategoryController.create',
     middlewares: [
       validate(paramValidation.createCategory, { abortEarly: false }),

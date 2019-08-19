@@ -56,7 +56,7 @@ test('Agency Profile | create (auth)', async () => {
   const {
     body: { payload }
   } = await request(api)
-    .post('/private/create_profile')
+    .post('/private/create-profile')
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .send({
@@ -81,7 +81,7 @@ test('Agency Profile | create (user is not a seller)', async () => {
   const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
-    .post('/private/create_profile')
+    .post('/private/create-profile')
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .send({
@@ -104,7 +104,7 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
   const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
-    .post('/private/create_profile')
+    .post('/private/create-profile')
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .send({
@@ -127,7 +127,7 @@ test('Admin | get all agency profiles (auth)', async () => {
   const token = authService().issue(confirmedUser);
 
   const { body } = await request(api)
-    .get('/private/agency_profiles')
+    .get('/private/agency-profiles')
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
@@ -147,7 +147,7 @@ test('Admin | approve a seller profile', async () => {
   const {
     body: { payload }
   } = await request(api)
-    .get('/private/agency_profiles')
+    .get('/private/agency-profiles')
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
@@ -174,7 +174,7 @@ test('Admin Error | approve a seller profile that is already approved', async ()
   const {
     body: { payload }
   } = await request(api)
-    .get('/private/agency_profiles')
+    .get('/private/agency-profiles')
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');

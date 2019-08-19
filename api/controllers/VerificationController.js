@@ -5,24 +5,11 @@ const VerificationQuery = require('../queries/verification.queries');
 const VerificationController = () => {
   const verify = async (req, res, next) => {
     try {
-      const { code } = req.params;
-      const foundCode = await VerificationQuery.findCode(code);
+      const { email, code } = req.params;
 
-      if (!foundCode) {
-        return res.json(sendResponse(httpStatus.NOT_FOUND, 'Code does not exist', {}, null));
-      }
+      await VerificationQuery.verifyEmail({ email, code });
 
-      const codeIsValid = VerificationQuery.verifyCode(foundCode);
-
-      if (!codeIsValid) {
-        return res.json(
-          sendResponse(httpStatus.UNAUTHORIZED, 'Code has expired', codeIsValid, null)
-        );
-      }
-
-      const user = await VerificationQuery.verifyEmail(foundCode);
-
-      return res.json(sendResponse(httpStatus.OK, 'Account Verified Successfully!', user, null));
+      return res.json(sendResponse(httpStatus.OK, 'Account Verified Successfully!', {}, null));
     } catch (err) {
       next(err);
     }

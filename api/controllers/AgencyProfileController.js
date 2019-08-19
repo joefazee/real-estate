@@ -1,6 +1,8 @@
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const agencyProfileQuery = require('../queries/agency.profile.queries');
+const EmailService = require('../services/email.service');
+const UserQuery = require('../queries/user.queries');
 
 const AgencyProfileController = () => {
   const createProfile = async (req, res, next) => {
@@ -63,9 +65,28 @@ const AgencyProfileController = () => {
         );
       }
 
-      await agencyProfileQuery.approveUserProfile(profile);
+      const { email: companyEmail, user_id } = profile;
 
-      return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
+      const { email: sellerEmail } = await UserQuery.findById(user_id);
+
+      EmailService.send({
+        from: process.env.EMAIL_SERVICE_FROM,
+        to: `${companyEmail}, ${sellerEmail}`,
+        subject: 'subject',
+        text: 'FINAL TEST MAIL',
+        html: '<p>REFACTOR TEST THREE FOR BETTER PERFORMANCE<p>'
+      });
+
+      EmailService.on('error', err => next(err));
+
+      EmailService.on('success', async () => {
+        try {
+          await agencyProfileQuery.approveUserProfile(profile);
+          return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
+        } catch (err) {
+          next(err);
+        }
+      });
     } catch (err) {
       next(err);
     }

@@ -5,7 +5,6 @@ const UserQuery = require('../../api/queries/user.queries');
 const authService = require('../../api/services/auth.service');
 
 let api;
-let SELLER_ACCOUNT;
 let INVESTOR_ACCOUNT;
 let ADMIN_ACCOUNT;
 
@@ -95,7 +94,7 @@ test('Investor | signup | login | Investor select a category', async () => {
   expect(token).toBeTruthy();
 
   const { body } = await request(api)
-    .post('/private/user-category')
+    .post('/private/select-category')
     .set('Content-Type', 'application/json')
     .set('Authorization', `Bearer ${token}`)
     .send({
@@ -116,16 +115,15 @@ test('Investor | login | Investor get all his categories', async () => {
   expect(token).toBeTruthy();
 
   const { body } = await request(api)
-    .get(`/private/user-categories/${confirmedUser.id}`)
+    .get(`/private/user-category/${confirmedUser.id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .expect(200);
+    .set('Content-Type', 'application/json');
 
   expect(body.payload).toBeTruthy();
   expect(body.statusCode).toBe(200);
   expect(body).toHaveProperty('message', 'success');
-  expect(body.payload).toContainEqual({ name: 'Sports & entertainment' });
+  expect(Array.isArray(body.payload)).toEqual(true);
 });
 
 test('Unauthorized user aside Admin | login | Unauthorized user aside Admin to create a category', async () => {
