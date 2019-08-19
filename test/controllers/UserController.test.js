@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../api/models/User');
+const UserQuery = require('../../api/queries/user.queries');
 
 let api;
 
@@ -136,24 +137,91 @@ test('User | get all (auth)', async () => {
   await user.destroy();
 });
 
-test('User | forgot password', async () => {
+test(`UserController.forgotpassword | User doesn't exist`, async () => {
+  const email = 'emailThatDoesntExist@mail.com';
+  const response = await request(api)
+    .post(`/public/forgot-password/`)
+    .set('Content-Type', 'application/json')
+    .send({ email });
+
+  expect(response.body.statusCode).toEqual(404);
+  expect(response.body.message).toBe('User not found');
+});
+
+test(`UserController.forgotpassword | Password reset link was sent`, async () => {
   const user = await User.create({
-    name: 'Luke John',
-    email: 'lukejohn@mail.com',
+    name: 'Test User',
+    email: 'test.user@mail.com',
     password: 'securepassword',
     password2: 'securepassword',
-    phone: '09057373',
+    phone: '08023456789',
     user_type: 'investor'
   });
 
-  const res = await request(api)
-    .post('/public/forgot-password')
-    .set('Accept', /json/)
-    .send({
-      email: 'martin@mail.com'
-    })
-    .expect(200);
-  expect(user).toBeTruthy();
+  const {
+    body: { statusCode }
+  } = await request(api)
+    .post(`/public/forgot-password/`)
+    .set('Content-Type', 'application/json')
+    .send({ email: 'test.user@mail.com' });
+
+  expect(statusCode).toBe(200);
 
   await user.destroy();
+});
+
+test('UserController.resetPassword | Passwords do not match', async () => {
+  const newUser = await User.create({
+    name: 'Test User',
+    email: 'test.user@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '08023456789',
+    user_type: 'investor'
+  });
+
+  const { id } = await UserQuery.findByEmail(newUser.email);
+
+  const payload = {
+    user_id: id,
+    password: 'balderdash',
+    confirmPassword: 'poppycock'
+  };
+
+  const response = await request(api)
+    .post('/public/password-reset')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+
+  expect(response.body.statusCode).toBe(400);
+  expect(response.body.message).toBe('Passwords do not match');
+  await newUser.destroy();
+});
+
+test('UserController.resetPassword | Password was reset', async () => {
+  const newUser = await User.create({
+    name: 'Test User',
+    email: 'test.user@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '08023456789',
+    user_type: 'investor'
+  });
+
+  const { id } = await UserQuery.findByEmail(newUser.email);
+
+  const payload = {
+    user_id: id,
+    password: 'balderdash',
+    confirmPassword: 'balderdash'
+  };
+
+  const response = await request(api)
+    .post('/public/password-reset')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+
+  expect(response.body.statusCode).toBe(200);
+  expect(response.body.message).toBe('Password has been reset');
+  await newUser.destroy();
 });
