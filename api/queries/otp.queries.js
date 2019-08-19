@@ -1,6 +1,6 @@
-const User = require('../models/User');
+const OTP = require('../models/OTP');
 
-class UserQueries {
+class OTPQueries {
   constructor(Model) {
     this.Model = Model;
   }
@@ -9,26 +9,34 @@ class UserQueries {
     return this.Model.create(payload);
   }
 
-  update(payload) {
+  expireOTP(payload) {
     const updates = { ...payload };
-    const { id } = updates;
+    const { user_id } = updates;
     delete updates.user_id;
     return this.Model.update(updates, {
       where: {
-        id
+        user_id
       }
     });
   }
 
-  findByEmail(email) {
+  findOTP(password) {
     return this.Model.findOne({
       where: {
-        email
+        password
+      }
+    });
+  }
+
+  findByUserID(user_id) {
+    return this.Model.findOne({
+      where: {
+        user_id
       }
     });
   }
 }
 
-const userQuery = new UserQueries(User);
+const userQuery = new OTPQueries(OTP);
 
 module.exports = userQuery;
