@@ -64,6 +64,6 @@ User.prototype.toJSON = function() {
 User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 User.hasMany(UserCategory, { as: 'user_category', foreignKey: 'user_id' });
 
-User.hasOne(PropertyListing, { as: 'property', foreignKey: 'user_id' });
+User.hasMany(PropertyListing, { as: 'property', foreignKey: 'user_id' });
 
 module.exports = User;

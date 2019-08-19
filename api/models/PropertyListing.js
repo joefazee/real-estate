@@ -57,12 +57,12 @@ const PropertyListing = sequelize.define(
 		payment_duration: {
 			type: Sequelize.STRING,
 			allowNull: false,
-    },
-    status: {
-      type: Sequelize.ENUM(['active', 'non_active']),
-      defaultValue:'non_active',
-      allowNull: false,
-    }
+		},
+		status: {
+			type: Sequelize.ENUM(['active', 'non_active']),
+			defaultValue: 'non_active',
+			allowNull: false,
+		},
 	},
 	{ tableName }
 );

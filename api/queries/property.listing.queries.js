@@ -30,6 +30,6 @@ class PropertyListingQueries {
 	}
 }
 
-const propertyListingQueries = new PropertyListingQueries(PropertyListing);
+const propertyListingQuery = new PropertyListingQueries(PropertyListing);
 
-module.exports = propertyListingQueries;
+module.exports = propertyListingQuery;
