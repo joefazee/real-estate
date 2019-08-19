@@ -1,10 +1,8 @@
-const { uploader } = require('../config/cloudinaryConfig');
+const { uploader } = require('../../config/cloudinaryConfig');
 const Datauri = require('datauri');
 const path = require('path');
 
-const uploadFile = async (req, res) => {
-	console.log(req.files);
-
+const uploadFile = async (req, _res, next) => {
 	try {
 		if (Object.keys(req.files).length == 0) {
 			throw new Error('No files were provided.');
@@ -18,7 +16,8 @@ const uploadFile = async (req, res) => {
 	}
 	let fileName;
 	let successfulCount = 0;
-	let overallMessage = [];
+	let successfulUpload = {};
+	let unsuccessfulUpload = {};
 	let overallObject = {};
 	for (let property in req.files) {
 		fileName = property;
@@ -37,23 +36,17 @@ const uploadFile = async (req, res) => {
 			.then(result => {
 				const image = result.url;
 				successfulCount += 1;
-				overallMessage.push(
-					`${
-						req.files[property].name
-					} has been uploaded successfully to cloudinary `
-				);
-				overallObject[fileName] = { filename: req.files[property].name, image };
+				successfulUpload[fileName] = {
+					filename: req.files[property].name,
+					image
+				};
 			})
 			.catch(err => {
-				overallMessage.push(
-					`${
-						req.files[property].name
-					} was not uploaded successfully to cloudinary `
-				);
-				overallObject[fileName] = { filename: null, err };
+				unsuccessfulUpload[fileName] = { filename: null, err };
 			});
 	}
-	return { successfulCount, overallMessage, overallObject };
+	req.uploadedFiles = { successfulCount, successfulUpload, unsuccessfulUpload };
+	next();
 };
 
 module.exports = uploadFile;

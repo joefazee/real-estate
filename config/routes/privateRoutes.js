@@ -6,6 +6,8 @@ const IsInvestor = require('../../api/middlewares/IsInvestor');
 const getCategories = require('../../helpers/categories');
 const profileValidation = require('../../api/validations/agencyProfile.valiation');
 const isSelllerMiddleware = require('../../api/middlewares/isSellerMiddleware');
+const hasCreatedProfile = require('../../api/middlewares/hasCreatedProfile');
+const uploadFile = require('../../api/middlewares/fileUpload');
 
 const privateRoutes = {
   'GET /users': {
@@ -18,22 +20,11 @@ const privateRoutes = {
   },
 
   'POST /create-profile': {
-    path: 'AgencyProfileController.createProfile',
-    middlewares: [
-      validate(profileValidation.createProfile, { abortEarly: false }),
-      isSelllerMiddleware
-    ]
-  },
+		path: 'AgencyProfileController.createProfile',
+		middlewares: [validate(profileValidation.createProfile, { abortEarly: false }), isSelllerMiddleware, hasCreatedProfile, uploadFile],
+	},
 
   'GET /categories': 'CategoryController.getAll',
-
-  'POST /create-profile': {
-    path: 'AgencyProfileController.createProfile',
-    middlewares: [
-      validate(profileValidation.createProfile, { abortEarly: false }),
-      isSelllerMiddleware
-    ]
-  },
 
   'GET /user-category/:id': {
     path: 'UserCategoryController.getAll',
