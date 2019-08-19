@@ -10,6 +10,8 @@ const documentQuery = require('../queries/document.queries');
 const AgencyProfileController = () => {
 	const createProfile = async (req, res, next) => {
 		try {
+			const { id: user_id } = req.token;
+
 			const {
 				business_name,
 				business_address,
@@ -18,7 +20,7 @@ const AgencyProfileController = () => {
 				email
 			} = req.body;
 
-			const { id: user_id } = req.token;
+			
 			const profile = await agencyProfileQuery.create({
 				business_name,
 				business_address,
@@ -28,19 +30,19 @@ const AgencyProfileController = () => {
 				user_id
 			});
 
-			const { successfulUpload } = req.uploadedFiles;
+			// const { successfulUpload } = req.uploadedFiles;
 
-			let documentArray = [];
-			for (property in successfulUpload) {
-				documentArray.push({
-					name: property,
-					profile_id: profile.id,
-					link: successfulUpload[property].image,
-					filename: successfulUpload[property].filename
-				});
-			}
+			// let documentArray = [];
+			// for (property in successfulUpload) {
+			// 	documentArray.push({
+			// 		name: property,
+			// 		profile_id: profile.id,
+			// 		link: successfulUpload[property].image,
+			// 		filename: successfulUpload[property].filename
+			// 	});
+			// }
 
-			const documents = await documentQuery.bulkCreate(documentArray);
+			// const documents = await documentQuery.bulkCreate(documentArray);
 
 			return res.json(
 				sendResponse(httpStatus.OK, 'success', { ...profile.dataValues }, null)
