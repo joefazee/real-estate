@@ -67,26 +67,12 @@ const AgencyProfileController = () => {
 
       const { email: companyEmail, user_id } = profile;
 
-      const { email: sellerEmail } = await UserQuery.findById(user_id);
+      const { email: sellerEmail, name } = await UserQuery.findById(user_id);
 
-      EmailService.send({
-        from: process.env.EMAIL_SERVICE_FROM,
-        to: `${companyEmail}, ${sellerEmail}`,
-        subject: 'subject',
-        text: 'FINAL TEST MAIL',
-        html: '<p>REFACTOR TEST THREE FOR BETTER PERFORMANCE<p>'
-      });
+      await agencyProfileQuery.approveUserProfile(profile);
 
-      EmailService.on('error', err => next(err));
-
-      EmailService.on('success', async () => {
-        try {
-          await agencyProfileQuery.approveUserProfile(profile);
-          return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
-        } catch (err) {
-          next(err);
-        }
-      });
+      EmailService.emit('send-approval-email', { companyEmail, sellerEmail, name });
+      return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
     } catch (err) {
       next(err);
     }
