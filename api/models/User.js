@@ -1,14 +1,13 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 const bcryptService = require('../services/bcrypt.service');
-const Verification = require('./Verification');
 const AgencyProfile = require('./AgencyProfile');
 const UserCategory = require('./UserCategory');
 
 const hooks = {
-	beforeCreate(user) {
-		user.password = bcryptService().hashPassword(user);
-	}
+  beforeCreate(user) {
+    user.password = bcryptService().hashPassword(user);
+  }
 };
 
 const tableName = 'users';
@@ -61,7 +60,6 @@ User.prototype.toJSON = function() {
   return values;
 };
 
-User.hasOne(Verification, { as: 'verification', foreignKey: 'user_id' });
 User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 User.hasMany(UserCategory, { as: 'user_category', foreignKey: 'user_id' });
 

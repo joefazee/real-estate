@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
+const User = require('./User');
 
 const tableName = 'verifications';
 
@@ -20,7 +21,7 @@ const Verification = sequelize.define(
       allowNull: false
     },
     user_id: {
-      type: Sequelize.STRING,
+      type: Sequelize.UUID,
       allowNull: false
     },
     code: {
@@ -32,7 +33,9 @@ const Verification = sequelize.define(
       allowNull: true
     }
   },
-  { tableName, hooks }
+  { tableName, hooks, timestamps: false }
 );
+
+Verification.belongsTo(User, { as: 'user_verification', foreignKey: ' user_id' });
 
 module.exports = Verification;
