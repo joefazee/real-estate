@@ -10,6 +10,7 @@ const { host, port } = require('../../config');
 const tokenExpiry = require('../../helpers/tokenExpiry');
 const generateOTP = require('../../helpers/otpGenerator');
 const EmailService = require('../services/email.service');
+const validateToken = require('../services/validateToken.service');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -161,31 +162,54 @@ const UserController = () => {
 
   const resetPassword = async (req, res, next) => {
     try {
-      const { user_id, password, confirmPassword } = req.body;
+      const { email, resetPasswordToken, password, confirmPassword } = req.body;
 
       if (password !== confirmPassword) {
         return res.json(
           sendResponse(
             httpStatus.BAD_REQUEST,
             'Passwords do not match',
-            req.body,
+            {},
             null
           )
         );
       }
 
-      const updatePasswordPayload = {
-        id: user_id,
+      const user = await UserQuery.findByEmail(email);
+
+      // Return generic success response if user is not found
+      if (!user) {
+        // TODO: Find out from Chibueze the proper payload to send back
+        return res.json(
+          sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null)
+        );
+      }
+
+      const { id } = user;
+
+      const otpDetails = await OTPQuery.findByUserID(id);
+
+      const otpValid = await validateToken(id, resetPasswordToken);
+
+      if (!otpValid) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'Password reset token is not valid',
+            {},
+            null
+          )
+        );
+      }
+
+      const { otp_id } = otpDetails;
+      const payload = {
+        id: id,
         password: bcryptService().hashPassword(req.body)
       };
-      const updatedDetails = await UserQuery.update(updatePasswordPayload);
 
-      const clearOTPPayload = {
-        user_id,
-        expiry: tokenExpiry(0)
-      };
-      OTPQuery.expireOTP(clearOTPPayload);
-
+      UserQuery.update(payload);
+      OTPQuery.delete(otp_id);
       return res.json(
         sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
       );
