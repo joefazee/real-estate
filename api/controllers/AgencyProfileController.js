@@ -30,19 +30,19 @@ const AgencyProfileController = () => {
 				user_id
 			});
 
-			// const { successfulUpload } = req.uploadedFiles;
+			const { successfulUpload } = req.uploadedFiles;
 
-			// let documentArray = [];
-			// for (property in successfulUpload) {
-			// 	documentArray.push({
-			// 		name: property,
-			// 		profile_id: profile.id,
-			// 		link: successfulUpload[property].image,
-			// 		filename: successfulUpload[property].filename
-			// 	});
-			// }
+			let documentArray = [];
+			for (let property in successfulUpload) {
+				documentArray.push({
+					name: property,
+					profile_id: profile.id,
+					link: successfulUpload[property].image,
+					filename: successfulUpload[property].filename
+				});
+			}
 
-			// const documents = await documentQuery.bulkCreate(documentArray);
+			const documents = await documentQuery.bulkCreate(documentArray);
 
 			return res.json(
 				sendResponse(httpStatus.OK, 'success', { ...profile.dataValues }, null)
