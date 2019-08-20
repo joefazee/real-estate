@@ -20,6 +20,14 @@ class OTPQueries {
     });
   }
 
+  delete(otp_id) {
+    return this.Model.destroy({
+      where: {
+        otp_id
+      }
+    });
+  }
+
   findOTP(password) {
     return this.Model.findOne({
       where: {
