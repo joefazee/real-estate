@@ -1,233 +1,148 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../api/models/User');
+const UserQuery = require('../../api/queries/user.queries');
+const authService = require('../../api/services/auth.service');
 
 let api;
+let INVESTOR_ACCOUNT;
+let ADMIN_ACCOUNT;
 
 beforeAll(async () => {
   api = await beforeAction();
+
+  INVESTOR_ACCOUNT = await User.create({
+    name: 'Martin Luke',
+    email: 'martinluther@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '090573673',
+    user_type: 'investor'
+  });
+
+  ADMIN_ACCOUNT = await User.create({
+    name: 'Martin Luke',
+    email: 'martinking@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '09057367323',
+    user_type: 'admin'
+  });
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await ADMIN_ACCOUNT.destroy();
+  await INVESTOR_ACCOUNT.destroy();
   afterAction();
 });
 
 test('Admin | login | Admin get all categories', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
-
-  const res = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
-      email: 'martin@mail.com',
+      email: 'martinking@mail.com',
       password: 'securepassword'
     })
     .expect(200);
 
-  expect(res.body.token).toBeTruthy();
+  expect(body.token).toBeTruthy();
 
-  const res2 = await request(api)
+  const { body: categoryResponse } = await request(api)
     .get('/private/categories')
     .set('Accept', /json/)
-    .set('Authorization', `Bearer ${res.body.token}`)
+    .set('Authorization', `Bearer ${body.token}`)
     .set('Content-Type', 'application/json')
     .expect(200);
 
-  expect(res2.body.payload).toBeTruthy();
-  await admin.destroy();
+  expect(categoryResponse).toHaveProperty('message', 'success!');
+  expect(categoryResponse.payload).toBeTruthy();
 });
 
 test('Admin | signup | login | Admin create a category', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
-
-  const res1 = await request(api)
+  const { body } = await request(api)
     .post('/public/login')
     .set('Accept', /json/)
     .send({
-      email: 'martin@mail.com',
+      email: 'martinking@mail.com',
       password: 'securepassword'
     })
     .expect(200);
 
-  expect(res1.body.token).toBeTruthy();
+  expect(body.token).toBeTruthy();
 
-  const category = await request(api)
+  const { body: categoryResponse } = await request(api)
     .post('/private/category')
     .set('Accept', /json/)
-    .set('Authorization', `Bearer ${res1.body.token}`)
+    .set('Authorization', `Bearer ${body.token}`)
     .set('Content-Type', 'application/json')
     .send({
       name: 'Sports & entertainment'
     })
     .expect(200);
 
-  expect(category.body.payload).toBeTruthy();
-
-  await admin.destroy();
+  expect(categoryResponse.payload).toBeTruthy();
+  expect(categoryResponse.payload).toHaveProperty('id');
+  expect(categoryResponse.payload).toHaveProperty('name', 'Sports & entertainment');
 });
 
 test('Investor | signup | login | Investor select a category', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
+  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const investor = await request(api)
-    .post('/public/signup')
-    .set('Accept', /json/)
+  const token = authService().issue(confirmedUser);
+
+  expect(token).toBeTruthy();
+
+  const { body } = await request(api)
+    .post('/private/select-category')
     .set('Content-Type', 'application/json')
-    .send({
-      name: 'Blake Freeman',
-      email: 'BFreeman@gmail.com',
-      password: 'password',
-      password2: 'password',
-      phone: '09012345',
-      user_type: 'investor'
-    })
-    .expect(200);
-
-  expect(investor.body.payload).toBeTruthy();
-
-  const investorLogin = await request(api)
-    .post('/public/login')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      email: 'BFreeman@gmail.com',
-      password: 'password'
-    })
-    .expect(200);
-
-  expect(investorLogin.body.token).toBeTruthy();
-
-  const InvestorSelectCategory = await request(api)
-    .post('/private/user-category')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .set('Authorization', `Bearer ${investorLogin.body.token}`)
+    .set('Authorization', `Bearer ${token}`)
     .send({
       name: 'Sports & entertainment'
     });
 
-  // expected truthy but got falsy because sqlite does not support bulkCreate
-  // tested and works properly on mysql with post
-  //   expect(InvestorSelectCategory.body.token).toBeTruthy();
-
-  await admin.destroy();
+  expect(body.payload).toBeTruthy();
+  expect(body.statusCode).toBe(200);
+  expect(body).toHaveProperty('message', 'success');
+  expect(body.payload[0].user_id).toEqual(confirmedUser.id);
 });
 
 test('Investor | login | Investor get all his categories', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
+  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const investor = await User.create({
-    name: 'Blake Dep',
-    email: 'BlakeDep@gmail.com',
-    password: 'password',
-    password2: 'password',
-    phone: '09012345',
-    user_type: 'investor'
-  });
+  const token = authService().issue(confirmedUser);
 
-  const investorLogin = await request(api)
-    .post('/public/login')
+  expect(token).toBeTruthy();
+
+  const { body } = await request(api)
+    .get(`/private/user-category/${confirmedUser.id}`)
     .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      email: 'BlakeDep@gmail.com',
-      password: 'password'
-    })
-    .expect(200);
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
 
-  expect(investorLogin.body.token).toBeTruthy();
-
-  const investorCategory = await request(api)
-    .get(`/private/user-categories/${investor.dataValues.id}`)
-    .set('Accept', /json/)
-    .set('Authorization', `Bearer ${investorLogin.body.token}`)
-    .set('Content-Type', 'application/json')
-    .expect(200);
-
-  expect(investorCategory.body.payload).toBeTruthy();
-
-  await investor.destroy();
-  await admin.destroy();
+  expect(body.payload).toBeTruthy();
+  expect(body.statusCode).toBe(200);
+  expect(body).toHaveProperty('message', 'success');
+  expect(Array.isArray(body.payload)).toEqual(true);
 });
 
 test('Unauthorized user aside Admin | login | Unauthorized user aside Admin to create a category', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
+  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const investor = await request(api)
-    .post('/public/signup')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      name: 'Blake Freeman',
-      email: 'BFreeman@gmail.com',
-      password: 'password',
-      password2: 'password',
-      phone: '09012345',
-      user_type: 'investor'
-    })
-    .expect(200);
+  const token = authService().issue(confirmedUser);
 
-  expect(investor.body.payload).toBeTruthy();
+  expect(token).toBeTruthy();
 
-  const investorLogin = await request(api)
-    .post('/public/login')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      email: 'BFreeman@gmail.com',
-      password: 'password'
-    })
-    .expect(200);
-
-  expect(investorLogin.body.token).toBeTruthy();
-
-  const category = await request(api)
+  const { body } = await request(api)
     .post('/private/category')
     .set('Accept', /json/)
-    .set('Authorization', `Bearer ${investorLogin.body.token}`)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .send({
       name: 'Office'
     });
 
-  expect(category.body.statusCode).toBe(401);
+  expect(body.statusCode).toBe(401);
 
-  expect(category.body.message).toMatch(/You are not Authorized to perform this operation!/);
-
-  await admin.destroy();
+  expect(body.message).toMatch(/You are not Authorized to perform this operation!/);
 });

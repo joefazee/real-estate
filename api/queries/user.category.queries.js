@@ -13,7 +13,7 @@ class UserCategoryQueries {
 
   findByUserId(user_id) {
     const QUERY = `
-    SELECT categories.name 
+    SELECT categories.name, categories.id 
     FROM categories 
     INNER JOIN user_categories ON user_categories.category_id = categories.id 
     INNER JOIN users ON user_categories.user_id = users.id 
