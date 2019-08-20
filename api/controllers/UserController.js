@@ -204,11 +204,10 @@ const UserController = () => {
 
       const { otp_id } = otpDetails;
       const payload = {
-        id: id,
         password: bcryptService().hashPassword(req.body)
       };
 
-      UserQuery.update(payload);
+      UserQuery.update(payload, { where: { id } });
       OTPQuery.delete(otp_id);
       return res.json(
         sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
