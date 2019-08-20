@@ -5,10 +5,22 @@ const User = require('../../api/models/User');
 const authService = require('../../api/services/auth.service');
 const UserQuery = require('../../api/queries/user.queries');
 
+const sendMailMock = jest.fn();
+
+jest.mock('nodemailer');
+
+const nodemailer = require('nodemailer');
+nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
+
 let api;
 let SELLER_ACCOUNT;
 let INVESTOR_ACCOUNT;
 let ADMIN_ACCOUNT;
+
+beforeEach(() => {
+  sendMailMock.mockClear();
+  nodemailer.createTransport.mockClear();
+});
 
 beforeAll(async () => {
   api = await beforeAction();
@@ -162,6 +174,8 @@ test('Admin | approve a seller profile', async () => {
 
   expect(body.statusCode).toBe(200);
   expect(body.message).toBe('Account Approved Successfully!');
+
+  expect(sendMailMock).toHaveBeenCalled();
 });
 
 test('Admin Error | approve a seller profile that is already approved', async () => {

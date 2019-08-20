@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { port } = require('../../config');
 const authService = require('../services/auth.service');
 
