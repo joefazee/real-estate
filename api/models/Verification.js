@@ -20,7 +20,7 @@ const Verification = sequelize.define(
       allowNull: false
     },
     user_id: {
-      type: Sequelize.UUID,
+      type: Sequelize.STRING,
       allowNull: false
     },
     code: {
