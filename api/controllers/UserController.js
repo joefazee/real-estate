@@ -8,7 +8,6 @@ const OTPQuery = require('../queries/otp.queries');
 const Mail = require('../services/mail.service');
 const crypto = require('crypto');
 const { port } = require('../../config');
-const uploadFile = require('../../helpers/fileUpload');
 const tokenExpiry = require('../../helpers/tokenExpiry');
 const EmailService = require('../services/email.service');
 
@@ -208,16 +207,12 @@ const UserController = () => {
     }
   };
 
-  const fileUpload = async (req, res) => {
-    return await uploadFile(req, res);
-  };
 
   return {
     register,
     login,
     validate,
     getAll,
-    fileUpload,
     forgotPassword,
     resetPassword
   };

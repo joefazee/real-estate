@@ -21,7 +21,9 @@ const privateRoutes = {
 
   'POST /create-profile': {
 		path: 'AgencyProfileController.createProfile',
-		middlewares: [validate(profileValidation.createProfile, { abortEarly: false }), isSelllerMiddleware, hasCreatedProfile, uploadFile],
+    middlewares: [validate(profileValidation.createProfile, { abortEarly: false }), isSelllerMiddleware, hasCreatedProfile, 
+      uploadFile('documents')
+    ],
 	},
 
   'GET /categories': 'CategoryController.getAll',

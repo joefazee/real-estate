@@ -20,7 +20,6 @@ const AgencyProfileController = () => {
 				email
 			} = req.body;
 
-			
 			const profile = await agencyProfileQuery.create({
 				business_name,
 				business_address,
@@ -30,23 +29,22 @@ const AgencyProfileController = () => {
 				user_id
 			});
 
-			const { successfulUpload } = req.uploadedFiles;
+			if (Object.keys(req.uploadedFiles).length) {
+				const { successfulUpload } = req.uploadedFiles;
 
-			let documentArray = [];
-			for (let property in successfulUpload) {
-				documentArray.push({
-					name: property,
-					profile_id: profile.id,
-					link: successfulUpload[property].image,
-					filename: successfulUpload[property].filename
-				});
+				let documentArray = [];
+				for (let property in successfulUpload) {
+					documentArray.push({
+						name: property,
+						profile_id: profile.id,
+						link: successfulUpload[property].image,
+						filename: successfulUpload[property].filename
+					});
+				}
+
+				documentQuery.bulkCreate(documentArray);
 			}
-
-			const documents = await documentQuery.bulkCreate(documentArray);
-
-			return res.json(
-				sendResponse(httpStatus.OK, 'success', { ...profile.dataValues }, null)
-			);
+			return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
 		} catch (error) {
 			next(error);
 		}
@@ -63,34 +61,40 @@ const AgencyProfileController = () => {
 	};
 
 	const approveProfile = async (req, res, next) => {
-    try {
-      const { id } = req.params;
+		try {
+			const { id } = req.params;
 
-      const profile = await agencyProfileQuery.findByProfileId(id);
+			const profile = await agencyProfileQuery.findByProfileId(id);
 
-      if (profile.isApproved) {
-        return res.json(
-          sendResponse(
-            httpStatus.UNAUTHORIZED,
-            'Profile Approved Already!',
-            {},
-            { error: 'Profile Approved Already!' }
-          )
-        );
-      }
+			if (profile.isApproved) {
+				return res.json(
+					sendResponse(
+						httpStatus.UNAUTHORIZED,
+						'Profile Approved Already!',
+						{},
+						{ error: 'Profile Approved Already!' }
+					)
+				);
+			}
 
-      const { email: companyEmail, user_id } = profile;
+			const { email: companyEmail, user_id } = profile;
 
-      const { email: sellerEmail, name } = await UserQuery.findById(user_id);
+			const { email: sellerEmail, name } = await UserQuery.findById(user_id);
 
-      await agencyProfileQuery.approveUserProfile(profile);
+			await agencyProfileQuery.approveUserProfile(profile);
 
-      EmailService.emit('send-approval-email', { companyEmail, sellerEmail, name });
-      return res.json(sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null));
-    } catch (err) {
-      next(err);
-    }
-  };
+			EmailService.emit('send-approval-email', {
+				companyEmail,
+				sellerEmail,
+				name
+			});
+			return res.json(
+				sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null)
+			);
+		} catch (err) {
+			next(err);
+		}
+	};
 
 	return {
 		createProfile,

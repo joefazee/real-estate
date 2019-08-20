@@ -14,7 +14,6 @@ const publicRoutes = {
     path: 'VerificationController.verify',
     middlewares: [verifyEmail]
   },
-  'POST /upload': 'UserController.fileUpload',
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',
     middlewares: [
