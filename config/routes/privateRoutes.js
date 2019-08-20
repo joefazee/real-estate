@@ -8,8 +8,8 @@ const profileValidation = require('../../api/validations/agencyProfile.valiation
 const IsSeller = require('../../api/middlewares/IsSeller');
 const hasCreatedProfile = require('../../api/middlewares/hasCreatedProfile');
 const uploadFile = require('../../api/middlewares/fileUpload');
+
 const propertyValidation = require('../../api/validations/propertyListing.validation');
-const uploadFile = require('../../api/middlewares/fileUpload');
 
 const privateRoutes = {
 	'GET /users': {
@@ -26,7 +26,7 @@ const privateRoutes = {
 		path: 'AgencyProfileController.createProfile',
 		middlewares: [
 			validate(profileValidation.createProfile, { abortEarly: false }),
-			isSelllerMiddleware,
+			IsSeller,
 			hasCreatedProfile,
 			uploadFile('documents'),
 		],
@@ -61,7 +61,7 @@ const privateRoutes = {
 
 	'POST /property-listing': {
 		path: 'PropertyListingController.createProperty',
-		middlewares: [validate(propertyValidation.createProperty, { abortEarly: false }), IsSeller, uploadFile],
+		middlewares: [validate(propertyValidation.createProperty, { abortEarly: false }), IsSeller, uploadFile('images')],
 	},
 };
 

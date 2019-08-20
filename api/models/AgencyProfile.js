@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
+const Document = require('./Document');
 
 const tableName = 'agency_profiles';
 

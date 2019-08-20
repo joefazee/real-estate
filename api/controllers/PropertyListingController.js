@@ -36,17 +36,19 @@ const PropertyListingController = () => {
 				user_id,
 			});
 
-			const { successfulUpload } = req.uploadedFiles;
+			if (Object.keys(req.uploadedFiles).length) {
+				const { successfulUpload } = req.uploadedFiles;
 
-			let documentArray = [];
-			for (let uploadedImage in successfulUpload) {
-				documentArray.push({
-					property_id: property.id,
-					link: successfulUpload[uploadedImage].image,
-				});
+				let documentArray = [];
+				for (let uploadedImage in successfulUpload) {
+					documentArray.push({
+						property_id: property.id,
+						link: successfulUpload[uploadedImage].image,
+					});
+				}
+
+				imageQuery.bulkCreate(documentArray);
 			}
-
-			const propertyImages = await imageQuery.bulkCreate(documentArray);
 
 			return res.json(sendResponse(httpStatus.OK, 'property created successfully', property, null));
 		} catch (error) {
