@@ -9,7 +9,7 @@ class OTPQueries {
     return this.Model.create(payload);
   }
 
-  expireOTP(payload) {
+  update(payload) {
     const updates = { ...payload };
     const { user_id } = updates;
     delete updates.user_id;
