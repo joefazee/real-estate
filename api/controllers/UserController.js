@@ -11,8 +11,6 @@ const { port } = require('../../config');
 const uploadFile = require('../../helpers/fileUpload');
 const tokenExpiry = require('../../helpers/tokenExpiry');
 const EmailService = require('../services/email.service');
-const encodeUserEmail = require('../templates/signup.email');
-const VerificationQuery = require('../queries/verification.queries');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -42,35 +40,17 @@ const UserController = () => {
         );
       }
 
-      const { mailBody, mailTitle, code } = encodeUserEmail(email);
-
-      EmailService.send({
-        from: process.env.EMAIL_SERVICE_FROM,
-        to: `${email}`,
-        subject: `${mailTitle}`,
-        text: 'TEST MAIL',
-        html: `${mailBody}`
+      const user = await UserQuery.create({
+        name,
+        email,
+        phone,
+        password,
+        user_type
       });
 
-      EmailService.on('error', err => next(err));
+      await EmailService.emit('send-verification-email', { email, user_id: user.id });
 
-      EmailService.on('success', async () => {
-        try {
-          const user = await UserQuery.create({
-            name,
-            email,
-            phone,
-            password,
-            user_type
-          });
-
-          VerificationQuery.create({ user_id: user.id, code });
-
-          return res.json(sendResponse(httpStatus.OK, 'success', user, null));
-        } catch (err) {
-          next(err);
-        }
-      });
+      return res.json(sendResponse(httpStatus.OK, 'success', user, null));
     } catch (err) {
       next(err);
     }
@@ -125,9 +105,7 @@ const UserController = () => {
       // Return generic success response if user is not found
       if (!user) {
         // TODO: Find out from Chibueze the proper payload to send back
-        return res.json(
-          sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null)
-        );
+        return res.json(sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null));
       }
 
       // Create payload for OTP queries
@@ -184,12 +162,7 @@ const UserController = () => {
 
       if (password !== confirmPassword) {
         return res.json(
-          sendResponse(
-            httpStatus.BAD_REQUEST,
-            'Passwords do not match',
-            req.body,
-            null
-          )
+          sendResponse(httpStatus.BAD_REQUEST, 'Passwords do not match', req.body, null)
         );
       }
 
@@ -205,9 +178,7 @@ const UserController = () => {
       };
       OTPQuery.expireOTP(clearOTPPayload);
 
-      return res.json(
-        sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
-      );
+      return res.json(sendResponse(httpStatus.OK, 'Password has been reset', {}, null));
     } catch (err) {
       next(err);
     }
