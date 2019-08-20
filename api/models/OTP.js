@@ -11,7 +11,7 @@ const OTP = sequelize.define(
       primaryKey: true
     },
     user_id: {
-      type: Sequelize.STRING,
+      type: Sequelize.UUID,
       allowNull: false
     },
     password: {
