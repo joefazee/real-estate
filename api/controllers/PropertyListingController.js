@@ -20,7 +20,7 @@ const PropertyListingController = () => {
 				payment_duration,
 			} = req.body;
 
-			const [{ category_id }] = await CategoryQuery.findByCategory(category);
+			const { id: category_id } = await CategoryQuery.findByName(category);
 
 			const property = await propertyListingQuery.create({
 				name,
@@ -34,8 +34,6 @@ const PropertyListingController = () => {
 				payment_duration,
 				user_id,
 			});
-
-			console.log(property);
 
 			return res.json(sendResponse(httpStatus.OK, 'property created successfully', property, null));
 		} catch (error) {

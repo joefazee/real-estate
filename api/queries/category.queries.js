@@ -14,15 +14,19 @@ class CategoryQueries {
 		return this.Model.findAll();
 	}
 
-  findOne(payload) {
-    return this.Model.findOne({ where: payload });
-  }
+	findOne(payload) {
+		return this.Model.findOne({ where: payload });
+	}
 
-  findByCategory(category) {
-    return sequelize.query(`SELECT id AS category_id FROM categories WHERE ${category}`, {
-      type: sequelize.QueryTypes.SELECT
-    });
-  }
+	findByCategory(category) {
+		return sequelize.query(`SELECT id AS category_id FROM categories WHERE ${category}`, {
+			type: sequelize.QueryTypes.SELECT,
+		});
+	}
+
+	findByName(name) {
+		return this.Model.findOne({ where: { name } });
+	}
 }
 
 const CategoryQuery = new CategoryQueries(Category);

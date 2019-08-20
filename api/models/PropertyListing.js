@@ -13,14 +13,12 @@ const PropertyListing = sequelize.define(
 		},
 		user_id: {
 			type: Sequelize.UUID,
-			unique: true,
 			references: {
 				model: 'users',
 			},
 		},
 		category_id: {
-			type: Sequelize.UUID,
-			unique: true,
+			type: Sequelize.STRING(36),
 			references: {
 				model: 'categories',
 			},
