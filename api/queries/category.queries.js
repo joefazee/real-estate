@@ -14,6 +14,10 @@ class CategoryQueries {
     return this.Model.findAll();
   }
 
+  findOne(payload) {
+    return this.Model.findOne({ where: payload });
+  }
+
   findByCategory(category) {
     return sequelize.query(`SELECT id AS category_id FROM categories WHERE ${category}`, {
       type: sequelize.QueryTypes.SELECT

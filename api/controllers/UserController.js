@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const User = require('../models/User');
 const authService = require('../services/auth.service');
 const bcryptService = require('../services/bcrypt.service');
@@ -11,6 +10,7 @@ const crypto = require('crypto');
 const { port } = require('../../config');
 const uploadFile = require('../../helpers/fileUpload');
 const tokenExpiry = require('../../helpers/tokenExpiry');
+const EmailService = require('../services/email.service');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -48,6 +48,8 @@ const UserController = () => {
         user_type
       });
 
+      await EmailService.emit('send-verification-email', { email, user_id: user.id });
+
       return res.json(sendResponse(httpStatus.OK, 'success', user, null));
     } catch (err) {
       next(err);
@@ -75,9 +77,7 @@ const UserController = () => {
         // to issue token with the user object, convert it to JSON
         const token = authService().issue(user.toJSON());
 
-        return res.json(
-          sendResponse(httpStatus.OK, 'success', user, null, token)
-        );
+        return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
       }
 
       return res.json(
@@ -105,9 +105,7 @@ const UserController = () => {
       // Return generic success response if user is not found
       if (!user) {
         // TODO: Find out from Chibueze the proper payload to send back
-        return res.json(
-          sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null)
-        );
+        return res.json(sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null));
       }
 
       // Create payload for OTP queries
@@ -164,12 +162,7 @@ const UserController = () => {
 
       if (password !== confirmPassword) {
         return res.json(
-          sendResponse(
-            httpStatus.BAD_REQUEST,
-            'Passwords do not match',
-            req.body,
-            null
-          )
+          sendResponse(httpStatus.BAD_REQUEST, 'Passwords do not match', req.body, null)
         );
       }
 
@@ -185,9 +178,7 @@ const UserController = () => {
       };
       OTPQuery.expireOTP(clearOTPPayload);
 
-      return res.json(
-        sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
-      );
+      return res.json(sendResponse(httpStatus.OK, 'Password has been reset', {}, null));
     } catch (err) {
       next(err);
     }
@@ -199,12 +190,7 @@ const UserController = () => {
     authService().verify(token, err => {
       if (err) {
         return res.json(
-          sendResponse(
-            httpStatus.UNAUTHORIZED,
-            'Invalid Token!',
-            {},
-            { error: 'Invalid Token!' }
-          )
+          sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' })
         );
       }
 

@@ -1,117 +1,61 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../api/models/User');
+const authService = require('../../api/services/auth.service');
+const UserQuery = require('../../api/queries/user.queries');
 
 let api;
+let INVESTOR_ACCOUNT;
 
 beforeAll(async () => {
   api = await beforeAction();
+  INVESTOR_ACCOUNT = await User.create({
+    name: 'Martin Luke',
+    email: 'martinluther@mail.com',
+    password: 'securepassword',
+    password2: 'securepassword',
+    phone: '090573673',
+    user_type: 'investor'
+  });
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await INVESTOR_ACCOUNT.destroy();
   afterAction();
 });
 
 test('Investor | signup | login | Investor select a category', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
+  // get user details that include id
+  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const investor = await request(api)
-    .post('/public/signup')
+  const token = authService().issue(confirmedUser);
+
+  const { body } = await request(api)
+    .post('/private/select-category')
     .set('Accept', /json/)
     .set('Content-Type', 'application/json')
-    .send({
-      name: 'Blake Freeman',
-      email: 'BFreeman@gmail.com',
-      password: 'password',
-      password2: 'password',
-      phone: '09012345',
-      user_type: 'investor'
-    })
-    .expect(200);
-
-  expect(investor.body.payload).toBeTruthy();
-
-  const investorLogin = await request(api)
-    .post('/public/login')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      email: 'BFreeman@gmail.com',
-      password: 'password'
-    })
-    .expect(200);
-
-  expect(investorLogin.body.token).toBeTruthy();
-
-  const InvestorSelectCategory = await request(api)
-    .post('/private/user-category')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .set('Authorization', `Bearer ${investorLogin.body.token}`)
+    .set('Authorization', `Bearer ${token}`)
     .send({
       name: 'Sports & entertainment, Office'
     });
 
-  // expected truthy but got falsy because sqlite does not support bulkCreate
-  // tested and works properly on mysql with post
-  //   expect(InvestorSelectCategory.body.token).toBeTruthy();
-
-  await admin.destroy();
+  expect(body).toBeTruthy();
+  expect(body.statusCode).toEqual(200);
 });
 
 test('Investor | login | Investor get all his categories', async () => {
-  const admin = await User.create({
-    name: 'Martin Luke',
-    email: 'martin@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '09057373',
-    user_type: 'admin'
-  });
+  // get user details that include id
+  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const investor = await request(api)
-    .post('/public/signup')
+  const token = authService().issue(confirmedUser);
+
+  const { body } = await request(api)
+    .get(`/private/user-category/${confirmedUser.id}`)
     .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      name: 'Blake Freeman',
-      email: 'BFreeman1@gmail.com',
-      password: 'password',
-      password2: 'password',
-      phone: '09012345',
-      user_type: 'investor'
-    })
-    .expect(200);
-
-  expect(investor.body.payload).toBeTruthy();
-
-  const investorLogin = await request(api)
-    .post('/public/login')
-    .set('Accept', /json/)
-    .set('Content-Type', 'application/json')
-    .send({
-      email: 'BFreeman@gmail.com',
-      password: 'password'
-    })
-    .expect(200);
-
-  expect(investorLogin.body.token).toBeTruthy();
-
-  const investorCategory = await request(api)
-    .get(`/private/user-categories/${investor.body.payload.id}`)
-    .set('Accept', /json/)
-    .set('Authorization', `Bearer ${investorLogin.body.token}`)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .expect(200);
 
-  expect(investorCategory.body.payload).toBeTruthy();
-
-  await admin.destroy();
+  expect(body.payload).toBeTruthy();
+  expect(body.statusCode).toEqual(200);
 });
