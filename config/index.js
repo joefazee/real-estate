@@ -6,6 +6,7 @@ const config = {
   privateRoutes,
   publicRoutes,
   port: process.env.PORT || '5000',
+  host: process.env.PORT || 'localhost'
 };
 
 module.exports = config;
