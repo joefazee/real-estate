@@ -18,7 +18,7 @@ const PropertyListing = sequelize.define(
 			},
 		},
 		category_id: {
-			type: Sequelize.STRING(36),
+			type: Sequelize.UUID,
 			references: {
 				model: 'categories',
 			},
