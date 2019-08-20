@@ -6,9 +6,9 @@ const AgencyProfile = require('./AgencyProfile');
 const UserCategory = require('./UserCategory');
 
 const hooks = {
-  beforeCreate(user) {
-    user.password = bcryptService().hashPassword(user);
-  }
+	beforeCreate(user) {
+		user.password = bcryptService().hashPassword(user);
+	}
 };
 
 const tableName = 'users';

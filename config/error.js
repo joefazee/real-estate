@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const { isCelebrate } = require('celebrate');
 
 const APIError = require('../helpers/APIError');
+const { customErrorMessage : JoiErrorFormatter } = require('../helpers/JoiErrorFormatter');
 
 /**
  * Error handler. Send stacktrace only during development
@@ -34,7 +35,7 @@ exports.converter = (err, req, res, next) => {
 		convertedError = new APIError({
 			message: 'Invalid fields',
 			status: httpStatus.BAD_REQUEST, //unprocessible entity
-			errors: err.joi.details || {},
+			errors: JoiErrorFormatter(err.joi.details) || {},
 			payload: {}
 		});
 	} else if (!(err instanceof APIError)) {

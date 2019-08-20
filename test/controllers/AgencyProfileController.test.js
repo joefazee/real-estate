@@ -83,7 +83,7 @@ test('Agency Profile | create (auth)', async () => {
   const agencyProfile = await AgencyProfile.findByPk(payload.id);
   expect(agencyProfile).toBeTruthy;
   expect(payload.user_id).toBe(confirmedUser.id);
-});
+}, 30000);
 
 test('Agency Profile | create (user is not a seller)', async () => {
   // get user details that include id

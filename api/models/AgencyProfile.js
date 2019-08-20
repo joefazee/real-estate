@@ -2,6 +2,8 @@ const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 const tableName = 'agency_profile';
 
+const Document = require('./Document');
+
 const AgencyProfile = sequelize.define(
   'AgencyProfile',
   {
@@ -46,5 +48,10 @@ const AgencyProfile = sequelize.define(
   },
   { tableName, timestamps: false }
 );
+
+AgencyProfile.hasMany(Document, {
+	as: 'profile_document',
+	foreignKey: 'profile_id'
+});
 
 module.exports = AgencyProfile;

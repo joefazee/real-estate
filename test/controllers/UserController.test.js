@@ -44,7 +44,7 @@ test('User | create', async () => {
   expect(user.id).toBe(body.payload.id);
   expect(user.email).toBe(body.payload.email);
 
-  await user.destroy();
+	await user.destroy();
 });
 
 test('User | login', async () => {
