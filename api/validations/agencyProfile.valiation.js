@@ -1,14 +1,14 @@
 const { Joi } = require('celebrate');
 
 module.exports = {
-	// POST /api/v1/private/agency_profile
+	// POST /api/v1/private/agency-profile
 	createProfile: {
 		body: {
 			business_name: Joi.string()
 				.max(200)
 				.required(),
 			business_address: Joi.string()
-				.max(200)
+				.max(300)
 				.required(),
 			website: Joi.string()
 				.max(200)
