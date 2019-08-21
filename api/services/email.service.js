@@ -4,6 +4,7 @@ const EventEmitter = require('eventemitter3').EventEmitter;
 const transportConfig = require('../../config/mail');
 const signUpMail = require('../templates/signup.email');
 const approveProfileMail = require('../templates/approve.profile.email');
+const resetPasswordMail = require('../templates/reset.password.email');
 const APIError = require('../../helpers/APIError');
 const VerificationQuery = require('../queries/verification.queries');
 
@@ -37,6 +38,21 @@ class Mail extends EventEmitter {
         html: `${mailBody}`
       });
     });
+
+    this.on(
+      'send-password-reset-email',
+      ({ email, name, passwordResetToken }) => {
+        const { mailBody, mailTitle } = resetPasswordMail(passwordResetToken);
+
+        this.sendPasswordResetEmail({
+          from: process.env.EMAIL_SERVICE_FROM,
+          to: `${name} <${email}>`,
+          subject: `${mailTitle}`,
+          text: '',
+          html: `${mailBody}`
+        });
+      }
+    );
   }
 
   sendVerificationMail({ from, to, subject, text, html, user_id, code }) {
@@ -61,6 +77,19 @@ class Mail extends EventEmitter {
         throw new APIError({
           message: 'Approval mail not sent',
           errors: { error: 'ERROR SENDING USER APPROVAL EMAIL' }
+        });
+    });
+  }
+
+  sendPasswordResetEmail({ from, to, subject, text, html }) {
+    const options = { from, to, subject, text, html };
+
+    // console.log(options);
+    this.smtpTransport.sendMail(options, (err, success) => {
+      if (err)
+        throw new APIError({
+          message: 'Password reset mail not sent',
+          errors: { error: 'ERROR SENDING PASSWORD RESET EMAIL' }
         });
     });
   }

@@ -6,10 +6,11 @@ const sendResponse = require('../../helpers/response');
 const UserQuery = require('../queries/user.queries');
 const OTPQuery = require('../queries/otp.queries');
 const Mail = require('../services/mail.service');
-const crypto = require('crypto');
-const { port } = require('../../config');
+const { host, port } = require('../../config');
 const tokenExpiry = require('../../helpers/tokenExpiry');
+const generateOTP = require('../../helpers/otpGenerator');
 const EmailService = require('../services/email.service');
+const validateToken = require('../services/validateToken.service');
 
 const UserController = () => {
   const register = async (req, res, next) => {
@@ -47,7 +48,10 @@ const UserController = () => {
         user_type
       });
 
-      await EmailService.emit('send-verification-email', { email, user_id: user.id });
+      await EmailService.emit('send-verification-email', {
+        email,
+        user_id: user.id
+      });
 
       return res.json(sendResponse(httpStatus.OK, 'success', user, null));
     } catch (err) {
@@ -76,7 +80,9 @@ const UserController = () => {
         // to issue token with the user object, convert it to JSON
         const token = authService().issue(user.toJSON());
 
-        return res.json(sendResponse(httpStatus.OK, 'success', user, null, token));
+        return res.json(
+          sendResponse(httpStatus.OK, 'success', user, null, token)
+        );
       }
 
       return res.json(
@@ -103,53 +109,37 @@ const UserController = () => {
 
       // Return generic success response if user is not found
       if (!user) {
-        // TODO: Find out from Chibueze the proper payload to send back
-        return res.json(sendResponse(httpStatus.NOT_FOUND, 'User not found', {}, null));
+        return res.json(
+          sendResponse(httpStatus.NOT_FOUND, 'Email does not exist', {}, null)
+        );
       }
 
       // Create payload for OTP queries
       const { id, name } = user;
-      const temporaryPassword = crypto.randomBytes(20).toString('hex');
-
-      // If the user has any existing OTPs, set them to expire
-      const existingOTP = await OTPQuery.findByUserID(id);
-
-      if (existingOTP) {
-        const payload = {
-          user_id: id,
-          expiry: tokenExpiry(0)
-        };
-        await OTPQuery.expireOTP(payload);
-      }
-
-      // Create a new OTP for the user
+      const passwordResetToken = generateOTP(6);
       const payload = {
         user_id: id,
-        password: temporaryPassword,
-        expiry: tokenExpiry(15)
+        password: passwordResetToken,
+        expiry: tokenExpiry(60)
       };
-      await OTPQuery.create(payload);
 
-      // Create email with password reset link and send to user
-      // TODO: Restructure mail into proper mail template and abstract into its own file
-      const mailTitle = `Diaspora Invest: Password Reset`;
-      const resetLink = new URL(
-        `http://localhost:${port}/api/v1/public/password-reset/${temporaryPassword}`
-      );
-      const message = `<p>To reset your password, please click on the following link: <a href=${resetLink}>Reset my password</a>.</p>
-                      <p>If the link does not work, please copy this URL into your browser and click enter: ${resetLink}</p>`;
-      const mailBody = `<!DOCTYPE html><html><head><title>Message</title></head><body>${message}</body></html>`;
+      // If the user has any existing OTP, update it, else create a new OTP
+      const existingOTP = await OTPQuery.findByUserID(id);
+      if (existingOTP) {
+        OTPQuery.update(payload);
+      } else {
+        OTPQuery.create(payload);
+      }
 
-      const mailResult = new Mail()
-        .from()
-        .to(`${name}<${email}>`)
-        .subject(mailTitle)
-        .html(mailBody)
-        .send();
+      await EmailService.emit('send-password-reset-email', {
+        email,
+        name,
+        passwordResetToken
+      });
 
       // return generic success response
       // TODO: Find out from Chibueze the proper payload to send back
-      return res.json(sendResponse(httpStatus.OK, 'success', payload, null));
+      return res.json(sendResponse(httpStatus.OK, response, payload, null));
     } catch (err) {
       next(err);
     }
@@ -157,27 +147,56 @@ const UserController = () => {
 
   const resetPassword = async (req, res, next) => {
     try {
-      const { user_id, password, confirmPassword } = req.body;
+      const { email, resetPasswordToken, password, confirmPassword } = req.body;
 
       if (password !== confirmPassword) {
         return res.json(
-          sendResponse(httpStatus.BAD_REQUEST, 'Passwords do not match', req.body, null)
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'Passwords do not match',
+            {},
+            null
+          )
         );
       }
 
-      const updatePasswordPayload = {
-        id: user_id,
+      const user = await UserQuery.findByEmail(email);
+
+      // Return generic success response if user is not found
+      if (!user) {
+        // TODO: Find out from Chibueze the proper payload to send back
+        return res.json(
+          sendResponse(httpStatus.NOT_FOUND, 'Email does not exist', {}, null)
+        );
+      }
+
+      const { id } = user;
+
+      const otpDetails = await OTPQuery.findByUserID(id);
+
+      const otpValid = await validateToken(id, resetPasswordToken);
+
+      if (!otpValid) {
+        return res.json(
+          sendResponse(
+            httpStatus.BAD_REQUEST,
+            'Password reset token is not valid',
+            {},
+            null
+          )
+        );
+      }
+
+      const { otp_id } = otpDetails;
+      const payload = {
         password: bcryptService().hashPassword(req.body)
       };
-      const updatedDetails = await UserQuery.update(updatePasswordPayload);
 
-      const clearOTPPayload = {
-        user_id,
-        expiry: tokenExpiry(0)
-      };
-      OTPQuery.expireOTP(clearOTPPayload);
-
-      return res.json(sendResponse(httpStatus.OK, 'Password has been reset', {}, null));
+      UserQuery.update(payload, { where: { id } });
+      OTPQuery.delete(otp_id);
+      return res.json(
+        sendResponse(httpStatus.OK, 'Password has been reset', {}, null)
+      );
     } catch (err) {
       next(err);
     }
@@ -189,7 +208,12 @@ const UserController = () => {
     authService().verify(token, err => {
       if (err) {
         return res.json(
-          sendResponse(httpStatus.UNAUTHORIZED, 'Invalid Token!', {}, { error: 'Invalid Token!' })
+          sendResponse(
+            httpStatus.UNAUTHORIZED,
+            'Invalid Token!',
+            {},
+            { error: 'Invalid Token!' }
+          )
         );
       }
 
@@ -206,7 +230,6 @@ const UserController = () => {
       next(err);
     }
   };
-
 
   return {
     register,
