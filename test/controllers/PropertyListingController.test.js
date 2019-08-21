@@ -72,3 +72,5 @@ test('Search Property | user search for property', async () => {
   expect(body.statusCode).toBe(200);
   expect(body.message).toBe('success!');
 });
+
+

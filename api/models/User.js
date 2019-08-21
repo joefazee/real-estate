@@ -4,6 +4,7 @@ const bcryptService = require('../services/bcrypt.service');
 const AgencyProfile = require('./AgencyProfile');
 const UserCategory = require('./UserCategory');
 const PropertyListing = require('../models/PropertyListing');
+const SavedProperties = require('./SavedProperties');
 
 const hooks = {
 	beforeCreate(user) {
@@ -65,5 +66,6 @@ User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 User.hasMany(UserCategory, { as: 'user_category', foreignKey: 'user_id' });
 
 User.hasMany(PropertyListing, { as: 'property', foreignKey: 'user_id' });
+User.hasMany(SavedProperties, { as: 'SavedProperties', foreignKey: 'user_id' });
 
 module.exports = User;

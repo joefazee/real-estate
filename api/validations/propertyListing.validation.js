@@ -27,7 +27,15 @@ module.exports = {
 				.required(),
 			payment_duration: Joi.string()
 				.max(200)
-				.required(),
-		},
+				.required()
+		}
 	},
+
+	savePropertyListing: {
+		body: {
+			property_id: Joi.string()
+				.max(200)
+				.required()
+		}
+	}
 };

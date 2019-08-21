@@ -63,6 +63,11 @@ const privateRoutes = {
 		path: 'PropertyListingController.createProperty',
 		middlewares: [validate(propertyValidation.createProperty, { abortEarly: false }), IsSeller, uploadFile('images')],
 	},
+
+	'POST /save-property': {
+		path: 'SavedPropertiesController.savePropertyListing',
+		middlewares: [validate(propertyValidation.savePropertyListing, { abortEarly: false }), IsInvestor]
+	}
 };
 
 module.exports = privateRoutes;
