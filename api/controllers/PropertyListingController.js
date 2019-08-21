@@ -56,8 +56,23 @@ const PropertyListingController = () => {
 		}
 	};
 
+	const viewPropertyListing = async (req, res, next) => {
+		const user_id = req.params.id;
+
+		const viewedListing = await propertyListingQuery.findByPropertyId(user_id)
+
+		if(!viewedListing) {
+			res.json(
+				sendResponse(httpStatus.BAD_REQUEST, 'Property Listing not found', req.params, null)
+			);
+		}
+		// console.log(listing);
+		res.json(sendResponse(httpStatus.OK, 'Property Found', viewedListing, null))
+	}
+
 	return {
 		createProperty,
+		viewPropertyListing
 	};
 };
 module.exports = PropertyListingController;
