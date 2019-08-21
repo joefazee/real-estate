@@ -81,7 +81,7 @@ test('Agency Profile | create (auth)', async () => {
 
   expect(payload).toBeTruthy();
   const agencyProfile = await AgencyProfile.findByPk(payload.id);
-  expect(agencyProfile).toBeTruthy;
+  expect(agencyProfile).toBeTruthy();
   expect(payload.user_id).toBe(confirmedUser.id);
 }, 30000);
 
