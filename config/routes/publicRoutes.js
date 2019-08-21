@@ -1,6 +1,7 @@
 const { celebrate: validate } = require('celebrate');
 const paramValidation = require('../../api/validations/user.validation');
 const forgotPasswordValidation = require('../../api/validations/forgotpassword.validation');
+const resetPasswordValidation = require('../../api/validations/reset.password.validation');
 const verifyEmail = require('../../api/middlewares/verifyEmail');
 
 const publicRoutes = {
@@ -20,8 +21,12 @@ const publicRoutes = {
       validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
     ]
   },
-  'GET /password-reset/:otp': 'OTPController.checkOTP',
-  'POST /password-reset/': 'UserController.resetPassword'
+  'POST /password-reset': {
+    path: 'UserController.resetPassword',
+    middlewares: [
+      validate(resetPasswordValidation.resetPassword, { abortEarly: false })
+    ]
+  }
 };
 
 module.exports = publicRoutes;
