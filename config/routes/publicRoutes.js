@@ -3,6 +3,7 @@ const paramValidation = require('../../api/validations/user.validation');
 const forgotPasswordValidation = require('../../api/validations/forgotpassword.validation');
 const verifyEmail = require('../../api/middlewares/verifyEmail');
 
+
 const publicRoutes = {
   'POST /signup': {
     path: 'UserController.register',
@@ -21,7 +22,8 @@ const publicRoutes = {
     ]
   },
   'GET /password-reset/:otp': 'OTPController.checkOTP',
-  'POST /password-reset/': 'UserController.resetPassword'
+  'POST /password-reset/': 'UserController.resetPassword',
+  'GET /property/view/:id': 'PropertyListingController.viewPropertyListing'
 };
 
 module.exports = publicRoutes;

@@ -28,6 +28,7 @@ class PropertyListingQueries {
 			},
 		});
 	}
+
 }
 
 const propertyListingQuery = new PropertyListingQueries(PropertyListing);
