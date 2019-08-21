@@ -1,96 +1,89 @@
 const httpStatus = require('http-status');
 const sendResponse = require('../../helpers/response');
 const CategoryQuery = require('../queries/category.queries');
-const propertyListingQuery = require('../queries/property.listing.queries');
+const PropertyListingQuery = require('../queries/property.listing.queries');
 const imageQuery = require('../queries/property.image.queries');
 
 const PropertyListingController = () => {
-	const createProperty = async (req, res, next) => {
-		try {
-			const user_id = req.token.id;
+  const createProperty = async (req, res, next) => {
+    try {
+      const user_id = req.token.id;
 
-			const {
-				name,
-				description,
-				address,
-				location,
-				category,
-				price,
-				has_C_of_O,
-				avg_monthly_payment,
-				payment_duration
-			} = req.body;
+      const {
+        name,
+        description,
+        address,
+        location,
+        category,
+        price,
+        has_C_of_O,
+        avg_monthly_payment,
+        payment_duration
+      } = req.body;
 
-			const { id: category_id } = await CategoryQuery.findByName(category);
+      const { id: category_id } = await CategoryQuery.findByName(category);
 
-			const property = await propertyListingQuery.create({
-				name,
-				description,
-				address,
-				location,
-				category_id,
-				price,
-				has_C_of_O,
-				avg_monthly_payment,
-				payment_duration,
-				user_id
-			});
+      const property = await PropertyListingQuery.create({
+        name,
+        description,
+        address,
+        location,
+        category_id,
+        price,
+        has_C_of_O,
+        avg_monthly_payment,
+        payment_duration,
+        user_id
+      });
 
-			if (Object.keys(req.uploadedFiles).length) {
-				const { successfulUpload } = req.uploadedFiles;
+      if (Object.keys(req.uploadedFiles).length) {
+        const { successfulUpload } = req.uploadedFiles;
 
-				let documentArray = [];
-				for (let uploadedImage in successfulUpload) {
-					documentArray.push({
-						property_id: property.id,
-						link: successfulUpload[uploadedImage].image
-					});
-				}
+        let documentArray = [];
+        for (let uploadedImage in successfulUpload) {
+          documentArray.push({
+            property_id: property.id,
+            link: successfulUpload[uploadedImage].image
+          });
+        }
 
-				imageQuery.bulkCreate(documentArray);
-			}
+        imageQuery.bulkCreate(documentArray);
+      }
 
-			return res.json(
-				sendResponse(
-					httpStatus.OK,
-					'property created successfully',
-					property,
-					null
-				)
-			);
-		} catch (error) {
-			next(error);
-		}
-	};
+      return res.json(sendResponse(httpStatus.OK, 'property created successfully', property, null));
+    } catch (error) {
+      next(error);
+    }
+  };
 
-	const viewPropertyListing = async (req, res, next) => {
-		try {
-			const { id } = req.params;
+  const getAllProperties = async (req, res, next) => {
+    try {
+      const {
+        location = '',
+        category_id = '',
+        minPrice = 0,
+        maxPrice = Math.pow(10, 5),
+        name = ''
+      } = req.body;
 
-			const viewedListing = await propertyListingQuery.findByPropertyId(id);
+      const { limit = 20, skip = 0 } = req.query;
 
-			if (!viewedListing) {
-				res.json(
-					sendResponse(
-						httpStatus.NOT_FOUND,
-						'Property Listing not found',
-						{},
-						{ error: 'property no found' }
-					)
-				);
-			}
-			// console.log(listing);
-			res.json(
-				sendResponse(httpStatus.OK, 'success', viewedListing, null)
-			);
-		} catch (error) {
-			next(error);
-		}
-	};
+      const searchName = `%${name}%`;
 
-	return {
-		createProperty,
-		viewPropertyListing
-	};
+      const search = { location, category_id, name: searchName, minPrice, maxPrice };
+
+      const offset = +limit * +skip;
+
+      const properties = await PropertyListingQuery.hasNoFilterOrFilter(search, { limit, offset });
+      return res.json(sendResponse(httpStatus.OK, 'success!', properties, null));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  return {
+    createProperty,
+    getAllProperties
+  };
 };
 module.exports = PropertyListingController;
