@@ -70,7 +70,6 @@ test('User | Signup | user already exists', async () => {
 		name: 'Martin Luke',
 		email: 'martinluther1@mail.com',
 		password: 'securepassword',
-		// password2: 'securepassword1',
 		phone: '0905737783',
 		user_type: 'investor'
 	});
@@ -85,17 +84,13 @@ test('User | Signup | user already exists', async () => {
 			password2: 'securepassword',
 			phone: '0905737783',
 			user_type: 'investor'
-		})
-		// .expect(400);
-
-
-    console.log(body);
+		});
 
 	expect(body.payload).toEqual({});
 	expect(body.statusCode).toBe(400);
 	expect(body.message).toBe('email has been taken');
 
-  await user.destroy();
+	await user.destroy();
 });
 
 test('User | login', async () => {
