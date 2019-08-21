@@ -18,9 +18,7 @@ const publicRoutes = {
   },
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',
-    middlewares: [
-      validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
-    ]
+    middlewares: [validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })]
   },
   'POST /password-reset': {
     path: 'UserController.resetPassword',
@@ -28,7 +26,8 @@ const publicRoutes = {
       validate(resetPasswordValidation.resetPassword, { abortEarly: false })
     ]
   },
-  'GET /property/view/:id': 'PropertyListingController.viewPropertyListing'
+  'GET /property/view/:id': 'PropertyListingController.viewPropertyListing',
+  'GET /search-property/': 'PropertyListingController.getAllProperties'
 };
 
 module.exports = publicRoutes;
