@@ -119,41 +119,21 @@ test(`UserController.forgotpassword | User doesn't exist`, async () => {
     .send({ email });
 
   expect(response.body.statusCode).toEqual(404);
-  expect(response.body.message).toBe('User not found');
+  expect(response.body.message).toBe('Email does not exist');
 });
 
 test(`UserController.forgotpassword | Password reset link was sent`, async () => {
-  const user = await User.create({
-    name: 'Test User',
-    email: 'test.user@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '08023456789',
-    user_type: 'investor'
-  });
-
   const {
     body: { statusCode }
   } = await request(api)
     .post(`/public/forgot-password/`)
     .set('Content-Type', 'application/json')
-    .send({ email: 'test.user@mail.com' });
+    .send({ email: 'martinking@mail.com' });
 
   expect(statusCode).toBe(200);
-
-  await user.destroy();
 });
 
 test('UserController.resetPassword | Passwords do not match', async () => {
-  const newUser = await User.create({
-    name: 'Test User',
-    email: 'test.user@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '08023456789',
-    user_type: 'investor'
-  });
-
   const {
     body: {
       payload: { password: otp }
@@ -161,7 +141,7 @@ test('UserController.resetPassword | Passwords do not match', async () => {
   } = await request(api)
     .post(`/public/forgot-password/`)
     .set('Content-Type', 'application/json')
-    .send({ email: 'test.user@mail.com' });
+    .send({ email: 'martinking@mail.com' });
 
   const payload = {
     email: 'test.user@mail.com',
@@ -177,19 +157,9 @@ test('UserController.resetPassword | Passwords do not match', async () => {
 
   expect(response.statusCode).toBe(400);
   expect(response.message).toBe('Passwords do not match');
-  await newUser.destroy();
 });
 
 test('UserController.resetPassword | Password was reset', async () => {
-  const newUser = await User.create({
-    name: 'Reset Password',
-    email: 'test.user@mail.com',
-    password: 'securepassword',
-    password2: 'securepassword',
-    phone: '08023456789',
-    user_type: 'investor'
-  });
-
   const {
     body: {
       payload: { password }
@@ -197,10 +167,10 @@ test('UserController.resetPassword | Password was reset', async () => {
   } = await request(api)
     .post(`/public/forgot-password/`)
     .set('Content-Type', 'application/json')
-    .send({ email: 'test.user@mail.com' });
+    .send({ email: 'martinking@mail.com' });
 
   const payload = {
-    email: 'test.user@mail.com',
+    email: 'martinking@mail.com',
     resetPasswordToken: password,
     password: 'balderdash',
     confirmPassword: 'balderdash'
@@ -213,5 +183,4 @@ test('UserController.resetPassword | Password was reset', async () => {
 
   expect(response.statusCode).toBe(200);
   expect(response.message).toBe('Password has been reset');
-  await newUser.destroy();
 });
