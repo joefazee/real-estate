@@ -32,8 +32,24 @@ class PropertyListingQueries {
 
   hasFilterByCategory() {}
 
-  findByPropertyId(id) {
-    return this.Model.findOne({ where: { id } });
+  async findByPropertyId (id) {
+    const property= await sequelize.query(
+      `SELECT * FROM property_listings PL where PL.id= :id`,
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+
+    const propertyImages = await sequelize.query(
+      `SELECT link FROM property_images PI where PI.property_id= :id`,
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+    
+    return { property, propertyImages};
   }
 }
 
