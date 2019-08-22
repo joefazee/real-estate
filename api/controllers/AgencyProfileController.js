@@ -29,10 +29,18 @@ const AgencyProfileController = () => {
 				user_id
 			});
 
+			let documentArray = [];
+			documentArray.push({
+				name: 'avatar',
+				profile_id: profile.id,
+				link:
+					'https://res.cloudinary.com/eoverse/image/upload/v1566491246/profile-pic-placeholder_wojqhq.png',
+				filename: 'avatar'
+			});
+
 			if (Object.keys(req.uploadedFiles).length) {
 				const { successfulUpload } = req.uploadedFiles;
 
-				let documentArray = [];
 				for (let property in successfulUpload) {
 					documentArray.push({
 						name: property,
@@ -41,9 +49,10 @@ const AgencyProfileController = () => {
 						filename: successfulUpload[property].filename
 					});
 				}
-
-				documentQuery.bulkCreate(documentArray);
+				console.log(documentArray);
 			}
+
+			documentQuery.bulkCreate(documentArray);
 			return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
 		} catch (error) {
 			next(error);
