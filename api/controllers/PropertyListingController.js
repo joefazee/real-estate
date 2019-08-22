@@ -56,6 +56,28 @@ const PropertyListingController = () => {
     }
   };
 
+  const viewPropertyListing = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      const viewedListing = await propertyListingQuery.findByPropertyId(id);
+
+      if (!viewedListing) {
+        res.json(
+          sendResponse(
+            httpStatus.NOT_FOUND,
+            'Property Listing not found',
+            {},
+            { error: 'property no found' }
+          )
+        );
+      }
+      res.json(sendResponse(httpStatus.OK, 'success', viewedListing, null));
+    } catch (error) {
+      next(error);
+    }
+  };
+
   const getAllProperties = async (req, res, next) => {
     try {
       const {
@@ -81,6 +103,7 @@ const PropertyListingController = () => {
 
   return {
     createProperty,
+    viewPropertyListing,
     getAllProperties
   };
 };
