@@ -11,7 +11,7 @@ const cors = require('cors');
 /**
  * server configuration
  */
-const config = require('../config/');
+const config = require('../config');
 const error = require('../config/error');
 const dbService = require('./services/db.service');
 
@@ -41,11 +41,11 @@ app.use(cors());
 
 // secure express app
 app.use(
-	helmet({
-		dnsPrefetchControl: false,
-		frameguard: false,
-		ieNoOpen: false
-	})
+  helmet({
+    dnsPrefetchControl: false,
+    frameguard: false,
+    ieNoOpen: false
+  })
 );
 
 // parsing the request bodys
@@ -74,16 +74,12 @@ app.use(error.notFound);
 app.use(error.handler);
 
 server.listen(config.port, () => {
-	if (
-		environment !== 'production' &&
-		environment !== 'development' &&
-		environment !== 'testing'
-	) {
-		// eslint-disable-next-line no-console
-		console.error(
-			`NODE_ENV is set to ${environment}, but only production and development are valid.`
-		);
-		process.exit(1);
-	}
-	return DB;
+  if (environment !== 'production' && environment !== 'development' && environment !== 'testing') {
+    // eslint-disable-next-line no-console
+    console.error(
+      `NODE_ENV is set to ${environment}, but only production and development are valid.`
+    );
+    process.exit(1);
+  }
+  return DB;
 });

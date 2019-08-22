@@ -4,7 +4,6 @@ const forgotPasswordValidation = require('../../api/validations/forgotpassword.v
 const resetPasswordValidation = require('../../api/validations/reset.password.validation');
 const verifyEmail = require('../../api/middlewares/verifyEmail');
 
-
 const publicRoutes = {
   'POST /signup': {
     path: 'UserController.register',
@@ -18,17 +17,14 @@ const publicRoutes = {
   },
   'POST /forgot-password': {
     path: 'UserController.forgotPassword',
-    middlewares: [
-      validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })
-    ]
+    middlewares: [validate(forgotPasswordValidation.forgotPassword, { abortEarly: false })]
   },
   'POST /password-reset': {
     path: 'UserController.resetPassword',
-    middlewares: [
-      validate(resetPasswordValidation.resetPassword, { abortEarly: false })
-    ]
+    middlewares: [validate(resetPasswordValidation.resetPassword, { abortEarly: false })]
   },
-  'GET /property/view/:id': 'PropertyListingController.viewPropertyListing'
+  'GET /property/view/:id': 'PropertyListingController.viewPropertyListing',
+  'GET /search-property': 'PropertyListingController.getAllProperties'
 };
 
 module.exports = publicRoutes;
