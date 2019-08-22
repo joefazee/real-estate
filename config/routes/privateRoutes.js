@@ -14,12 +14,12 @@ const propertyValidation = require('../../api/validations/propertyListing.valida
 const privateRoutes = {
 	'GET /users': {
 		path: 'UserController.getAll',
-		middlewares: [IsAdmin],
+		middlewares: [IsAdmin]
 	},
 
 	'GET /agency-profiles': {
 		path: 'AgencyProfileController.getAllProfiles',
-		middlewares: [IsAdmin],
+		middlewares: [IsAdmin]
 	},
 
 	'POST /create-profile': {
@@ -28,45 +28,69 @@ const privateRoutes = {
 			validate(profileValidation.createProfile, { abortEarly: false }),
 			IsSeller,
 			hasCreatedProfile,
-			uploadFile('documents'),
-		],
+			uploadFile('documents')
+		]
 	},
 
 	'GET /categories': 'CategoryController.getAll',
 
 	'GET /user-category/:id': {
 		path: 'UserCategoryController.getAll',
-		middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsInvestor],
+		middlewares: [
+			validate(UserIdValidation.validateUserId, { abortEarly: false }),
+			IsInvestor
+		]
 	},
 
 	'POST /category': {
 		path: 'CategoryController.create',
-		middlewares: [validate(paramValidation.createCategory, { abortEarly: false }), IsAdmin],
+		middlewares: [
+			validate(paramValidation.createCategory, { abortEarly: false }),
+			IsAdmin
+		]
 	},
 
 	'POST /select-category': {
 		path: 'UserCategoryController.create',
-		middlewares: [validate(paramValidation.createCategory, { abortEarly: false }), IsInvestor, getCategories],
+		middlewares: [
+			validate(paramValidation.createCategory, { abortEarly: false }),
+			IsInvestor,
+			getCategories
+		]
 	},
 
 	'POST /approve-profile/:id': {
 		path: 'AgencyProfileController.approveProfile',
-		middlewares: [validate(UserIdValidation.validateUserId, { abortEarly: false }), IsAdmin],
+		middlewares: [
+			validate(UserIdValidation.validateUserId, { abortEarly: false }),
+			IsAdmin
+		]
 	},
 
 	'POST /user-category': {
 		path: 'UserCategoryController.create',
-		middlewares: [validate(paramValidation.createCategory, { abortEarly: false }), IsInvestor, getCategories],
+		middlewares: [
+			validate(paramValidation.createCategory, { abortEarly: false }),
+			IsInvestor,
+			getCategories
+		]
 	},
 
 	'POST /property-listing': {
 		path: 'PropertyListingController.createProperty',
-		middlewares: [validate(propertyValidation.createProperty, { abortEarly: false }), IsSeller, uploadFile('images')],
+		middlewares: [
+			validate(propertyValidation.createProperty, { abortEarly: false }),
+			IsSeller,
+			uploadFile('images')
+		]
 	},
 
 	'POST /save-property': {
 		path: 'SavedPropertiesController.savePropertyListing',
-		middlewares: [validate(propertyValidation.savePropertyListing, { abortEarly: false }), IsInvestor]
+		middlewares: [
+			validate(propertyValidation.savePropertyListing, { abortEarly: false }),
+			IsInvestor
+		]
 	}
 };
 

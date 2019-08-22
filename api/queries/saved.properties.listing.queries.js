@@ -17,7 +17,7 @@ class SavedPropertiesQueries {
 		});
 	}
 
-	findAlreadyExisting({user_id, property_id}){
+	find({user_id, property_id}){
 		return this.Model.findOne({
 			where: {
 				user_id,

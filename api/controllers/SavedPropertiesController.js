@@ -7,31 +7,28 @@ const SavedPropertiesController = () => {
 		try {
 			const { id: user_id } = req.token;
 			const { property_id } = req.body;
-			console.log(user_id, property_id);
-			const alreadyExists = await savedPropertiesQuery.findAlreadyExisting({
+
+      const alreadyExists = await savedPropertiesQuery.find({
 				user_id,
 				property_id
 			});
-			// console.log(alreadyExists);
 			if (alreadyExists) {
-				// console.log('here1');
-
 				return res.json(
 					sendResponse(
 						httpStatus.BAD_REQUEST,
-						'failure',
+						'property already saved by user',
 						{},
 						{ error: 'property already saved by user' }
 					)
 				);
 			}
-			// console.log('here2');
+
 			const savedPropertyListing = await savedPropertiesQuery.create({
 				user_id,
 				property_id
 			});
-			// console.log(savedPropertyListing);
-			res.json(sendResponse(httpStatus.OK, 'success', {}, null));
+
+			return res.json(sendResponse(httpStatus.OK, 'success', {}, null));
 		} catch (error) {
 			next(error);
 		}
