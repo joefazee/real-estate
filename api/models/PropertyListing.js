@@ -9,60 +9,70 @@ const PropertyListing = sequelize.define(
 		id: {
 			primaryKey: true,
 			type: Sequelize.UUID,
-			defaultValue: Sequelize.UUIDV4,
+			defaultValue: Sequelize.UUIDV4
 		},
 		user_id: {
 			type: Sequelize.UUID,
 			references: {
-				model: 'users',
-			},
+				model: 'users'
+			}
 		},
 		category_id: {
 			type: Sequelize.UUID,
 			references: {
-				model: 'categories',
-			},
+				model: 'categories'
+			}
 		},
 		name: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		description: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		address: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		location: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		price: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		has_C_of_O: {
 			type: Sequelize.BOOLEAN,
 			defaultValue: false,
-			allowNull: false,
+			allowNull: false
 		},
 		avg_monthly_payment: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		payment_duration: {
 			type: Sequelize.STRING,
-			allowNull: false,
+			allowNull: false
 		},
 		status: {
 			type: Sequelize.ENUM(['active', 'non_active']),
 			defaultValue: 'non_active',
-			allowNull: false,
+			allowNull: false
 		},
+		images: {
+			type: Sequelize.TEXT('long'),
+			allowNull: true
+		}
 	},
 	{ tableName }
 );
+
+PropertyListing.prototype.toJSON = function() {
+	const property = Object.assign({}, this.get());
+	property.images = JSON.parse(property.images);
+	return property;
+};
 
 module.exports = PropertyListing;

@@ -50,6 +50,10 @@ const User = sequelize.define(
 			primaryKey: true,
 			defaultValue: Sequelize.UUIDV4,
 		},
+		avatar: {
+			type: Sequelize.STRING,
+			defaultValue: 'https://res.cloudinary.com/eoverse/image/upload/v1566491246/profile-pic-placeholder_wojqhq.png'
+		}
 	},
 	{ hooks, tableName }
 );
