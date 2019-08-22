@@ -63,14 +63,12 @@ const PropertyListingController = () => {
         category_id = '',
         minPrice = 0,
         maxPrice = Math.pow(10, 5),
-        name = ''
-      } = req.body;
+        name = '',
+        limit = 20,
+        skip = 0
+      } = req.query;
 
-      const { limit = 20, skip = 0 } = req.query;
-
-      const searchName = `%${name}%`;
-
-      const search = { location, category_id, name: searchName, minPrice, maxPrice };
+      const search = { location, category_id, name: `%${name}%`, minPrice, maxPrice };
 
       const offset = +limit * +skip;
 
