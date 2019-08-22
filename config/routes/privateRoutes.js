@@ -91,6 +91,14 @@ const privateRoutes = {
 			validate(propertyValidation.savePropertyListing, { abortEarly: false }),
 			IsInvestor
 		]
+	},
+
+	'POST /delete-saved-property': {
+		path: 'SavedPropertiesController.deleteSavedPropertyListing',
+		middlewares: [
+			validate(propertyValidation.deletePropertyListing, { abortEarly: false }),
+			IsInvestor
+		]
 	}
 };
 

@@ -8,7 +8,7 @@ const SavedPropertiesController = () => {
 			const { id: user_id } = req.token;
 			const { property_id } = req.body;
 
-      const alreadyExists = await savedPropertiesQuery.find({
+			const alreadyExists = await savedPropertiesQuery.find({
 				user_id,
 				property_id
 			});
@@ -28,14 +28,48 @@ const SavedPropertiesController = () => {
 				property_id
 			});
 
-			return res.json(sendResponse(httpStatus.OK, 'success', {}, null));
+			return res.json(sendResponse(httpStatus.OK, 'property saved', {}, null));
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	const deleteSavedPropertyListing = async (req, res, next) => {
+		try {
+			const { id: user_id } = req.token;
+			const { property_id } = req.body;
+
+			const alreadyExists = await savedPropertiesQuery.find({
+				user_id,
+				property_id
+			});
+			if (!alreadyExists) {
+				return res.json(
+					sendResponse(
+						httpStatus.BAD_REQUEST,
+						'this property was not saved by user',
+						{},
+						{ error: 'this property was not saved by user' }
+					)
+				);
+			}
+
+			const deletePropertyListing = await savedPropertiesQuery.delete({
+				user_id,
+				property_id
+			});
+
+			return res.json(
+				sendResponse(httpStatus.OK, 'saved property removed', {}, null)
+			);
 		} catch (error) {
 			next(error);
 		}
 	};
 
 	return {
-		savePropertyListing
+		savePropertyListing,
+		deleteSavedPropertyListing
 	};
 };
 

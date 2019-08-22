@@ -17,7 +17,7 @@ class SavedPropertiesQueries {
 		});
 	}
 
-	find({user_id, property_id}){
+	find({ user_id, property_id }) {
 		return this.Model.findOne({
 			where: {
 				user_id,
@@ -26,9 +26,18 @@ class SavedPropertiesQueries {
 		});
 	}
 
-	findAll() {
-		return this.Model.findAll();
+	delete({ user_id, property_id }) {
+		return this.Model.destroy({
+			where: {
+				user_id,
+				property_id
+			}
+		});
 	}
+
+	// findAll() {
+	// 	return this.Model.findAll();
+	// }
 }
 
 const savedPropertiesQuery = new SavedPropertiesQueries(SavedProperties);

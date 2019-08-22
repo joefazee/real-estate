@@ -60,7 +60,7 @@ const PropertyListingController = () => {
     try {
       const { id } = req.params;
 
-      const viewedListing = await propertyListingQuery.findByPropertyId(id);
+      const viewedListing = await PropertyListingQuery.findByPropertyId(id);
 
       if (!viewedListing) {
         res.json(

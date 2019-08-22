@@ -37,5 +37,13 @@ module.exports = {
 				.max(200)
 				.required()
 		}
+	},
+
+	deletePropertyListing: {
+		body: {
+			property_id: Joi.string()
+				.max(200)
+				.required()
+		}
 	}
 };
