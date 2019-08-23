@@ -4,6 +4,7 @@ const bcryptService = require('../services/bcrypt.service');
 const AgencyProfile = require('./AgencyProfile');
 const UserCategory = require('./UserCategory');
 const PropertyListing = require('../models/PropertyListing');
+const SavedProperties = require('./SavedProperties');
 
 const hooks = {
 	beforeCreate(user) {
@@ -49,6 +50,10 @@ const User = sequelize.define(
 			primaryKey: true,
 			defaultValue: Sequelize.UUIDV4,
 		},
+		avatar: {
+			type: Sequelize.STRING,
+			defaultValue: 'https://res.cloudinary.com/eoverse/image/upload/v1566491246/profile-pic-placeholder_wojqhq.png'
+		}
 	},
 	{ hooks, tableName }
 );
@@ -65,5 +70,6 @@ User.hasOne(AgencyProfile, { as: 'profile', foreignKey: 'user_id' });
 User.hasMany(UserCategory, { as: 'user_category', foreignKey: 'user_id' });
 
 User.hasMany(PropertyListing, { as: 'property', foreignKey: 'user_id' });
+User.hasMany(SavedProperties, { as: 'SavedProperties', foreignKey: 'user_id' });
 
 module.exports = User;
