@@ -8,98 +8,94 @@ const uploadFile = require('../middlewares/fileUpload');
 const documentQuery = require('../queries/document.queries');
 
 const AgencyProfileController = () => {
-	const createProfile = async (req, res, next) => {
-		try {
-			const { id: user_id } = req.token;
+  const createProfile = async (req, res, next) => {
+    try {
+      const { id: user_id } = req.token;
 
-			const {
-				business_name,
-				business_address,
-				website,
-				phone,
-				email
-			} = req.body;
+      const {
+        business_name,
+        business_address,
+        website,
+        phone,
+        email,
+      } = req.body;
 
-			const profile = await agencyProfileQuery.create({
-				business_name,
-				business_address,
-				website,
-				phone,
-				email,
-				user_id
-			});
+      const documents = [];
 
-			if (Object.keys(req.uploadedFiles).length) {
-				const { successfulUpload } = req.uploadedFiles;
+      if (Object.keys(req.uploadedFiles).length) {
+        const { successfulUpload } = req.uploadedFiles;
 
-				let documentArray = [];
-				for (let property in successfulUpload) {
-					documentArray.push({
-						name: property,
-						profile_id: profile.id,
-						link: successfulUpload[property].image,
-						filename: successfulUpload[property].filename
-					});
-				}
+        for (let document in successfulUpload) {
+          documents.push(successfulUpload[document].image);
+        }
+      }
 
-				documentQuery.bulkCreate(documentArray);
-			}
-			return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
-		} catch (error) {
-			next(error);
-		}
-	};
+      const profile = await agencyProfileQuery.create({
+        business_name,
+        business_address,
+        website,
+        phone,
+        email,
+        user_id,
+        images: JSON.stringify(documents),
+      });
 
-	const getAllProfiles = async (req, res) => {
-		try {
-			const profiles = await agencyProfileQuery.findAll();
+      return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
+    } catch (error) {
+      next(error);
+    }
+  };
 
-			return res.json(sendResponse(httpStatus.OK, 'success!', profiles, null));
-		} catch (err) {
-			next(err);
-		}
-	};
+  const getAllProfiles = async (req, res) => {
+    try {
+      const profiles = await agencyProfileQuery.findAll();
 
-	const approveProfile = async (req, res, next) => {
-		try {
-			const { id } = req.params;
+      return res.json(sendResponse(httpStatus.OK, 'success!', profiles, null));
+    } catch (err) {
+      next(err);
+    }
+  };
 
-			const profile = await agencyProfileQuery.findByProfileId(id);
+  const approveProfile = async (req, res, next) => {
+    try {
+      const { id } = req.params;
 
-			if (profile.isApproved) {
-				return res.json(
-					sendResponse(
-						httpStatus.UNAUTHORIZED,
-						'Profile Approved Already!',
-						{},
-						{ error: 'Profile Approved Already!' }
-					)
-				);
-			}
+      const profile = await agencyProfileQuery.findByProfileId(id);
 
-			const { email: companyEmail, user_id } = profile;
+      if (profile.isApproved) {
+        return res.json(
+          sendResponse(
+            httpStatus.UNAUTHORIZED,
+            'Profile Approved Already!',
+            {},
+            { error: 'Profile Approved Already!' }
+          )
+        );
+      }
 
-			const { email: sellerEmail, name } = await UserQuery.findById(user_id);
+      const { email: companyEmail, user_id } = profile;
 
-			await agencyProfileQuery.approveUserProfile(profile);
+      const { email: sellerEmail, name } = await UserQuery.findById(user_id);
 
-			EmailService.emit('send-approval-email', {
-				companyEmail,
-				sellerEmail,
-				name
-			});
-			return res.json(
-				sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null)
-			);
-		} catch (err) {
-			next(err);
-		}
-	};
+      await agencyProfileQuery.approveUserProfile(profile);
 
-	return {
-		createProfile,
-		getAllProfiles,
-		approveProfile
-	};
+      EmailService.emit('send-approval-email', {
+        companyEmail,
+        sellerEmail,
+        name,
+      });
+      return res.json(
+        sendResponse(httpStatus.OK, 'Account Approved Successfully!', {}, null)
+      );
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  return {
+    createProfile,
+    getAllProfiles,
+    approveProfile,
+  };
 };
 module.exports = AgencyProfileController;
