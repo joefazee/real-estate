@@ -58,4 +58,10 @@ AgencyProfile.hasMany(Document, {
   foreignKey: 'profile_id',
 });
 
+AgencyProfile.prototype.toJSON = function() {
+  const document = Object.assign({}, this.get());
+  document.images = JSON.parse(document.images);
+  return document;
+};
+
 module.exports = AgencyProfile;
