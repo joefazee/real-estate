@@ -46,9 +46,28 @@ const AgencyProfileController = () => {
     }
   };
 
-  const getAllProfiles = async (req, res) => {
+  const getAllProfiles = async (req, res, next) => {
     try {
-      const profiles = await agencyProfileQuery.findAll();
+      let profiles;
+      let { approved = '', limit = 20, skip = 0 } = req.query;
+
+      if (approved === 'true' || approved === 'false') {
+        approved = approved === 'true' ? 1 : 0;
+        const search = { approved };
+        const offset = Number(limit) * Number(skip);
+
+        profiles = await agencyProfileQuery.filterBy(search, {
+          limit,
+          offset,
+        });
+      } else {
+        const search = { approved };
+        const offset = Number(limit) * Number(skip);
+        profiles = await agencyProfileQuery.findAll(search, {
+          limit,
+          offset,
+        });
+      }
 
       return res.json(sendResponse(httpStatus.OK, 'success!', profiles, null));
     } catch (err) {
