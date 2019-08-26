@@ -75,7 +75,6 @@ class AgencyProfileQueries {
      avatar 
     FROM agency_profiles
     JOIN users ON users.id = agency_profiles.user_id
-    ORDER BY agency_profiles.business_name ASC 
     WHERE agency_profiles.isApproved = :approved
     ORDER BY agency_profiles.business_name ASC 
     LIMIT :offset, :limit`,
