@@ -1,3 +1,4 @@
+require('dotenv').config()
 const Sequelize = require('sequelize');
 const sequelize = require('../../config/database');
 const Document = require('./Document');
@@ -45,9 +46,9 @@ const AgencyProfile = sequelize.define(
       type: 'TIMESTAMP',
       allowNull: true,
     },
-    images: {
+    documents: {
       type: Sequelize.TEXT('long'),
-      allowNull: true,
+      allowNull: true
     },
   },
   { tableName, timestamps: false }
@@ -58,10 +59,10 @@ AgencyProfile.hasMany(Document, {
   foreignKey: 'profile_id',
 });
 
-AgencyProfile.prototype.toJSON = function() {
-  const document = Object.assign({}, this.get());
-  document.images = JSON.parse(document.images);
-  return document;
-};
 
+
+AgencyProfile.prototype.toJSON = function() {
+  const profile = Object.assign({}, this.get());
+  return { ...profile, documents: JSON.parse(profile.documents) };
+};
 module.exports = AgencyProfile;

@@ -24,9 +24,11 @@ const AgencyProfileController = () => {
 
       if (Object.keys(req.uploadedFiles).length) {
         const { successfulUpload } = req.uploadedFiles;
-
         for (let document in successfulUpload) {
-          documents.push(successfulUpload[document].image);
+          documents.push({
+           image: successfulUpload[document].image,
+           name: document
+            });
         }
       }
 
@@ -37,7 +39,7 @@ const AgencyProfileController = () => {
         phone,
         email,
         user_id,
-        images: JSON.stringify(documents),
+        documents: JSON.stringify(documents),
       });
 
       return res.json(sendResponse(httpStatus.OK, 'success', profile, null));
@@ -69,7 +71,11 @@ const AgencyProfileController = () => {
         });
       }
 
-      return res.json(sendResponse(httpStatus.OK, 'success!', profiles, null));
+      const transformProfile = profiles.map(profile => {
+        return { ...profile, documents: JSON.parse(profile.documents) };
+      });
+
+      return res.json(sendResponse(httpStatus.OK, 'success!', transformProfile, null));
     } catch (err) {
       next(err);
     }
@@ -84,7 +90,7 @@ const AgencyProfileController = () => {
       if (profile.isApproved) {
         return res.json(
           sendResponse(
-            httpStatus.UNAUTHORIZED,
+            httpStatus.BAD_REQUEST,
             'Profile Approved Already!',
             {},
             { error: 'Profile Approved Already!' }

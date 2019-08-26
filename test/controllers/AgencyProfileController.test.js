@@ -15,6 +15,7 @@ let api;
 let SELLER_ACCOUNT;
 let INVESTOR_ACCOUNT;
 let ADMIN_ACCOUNT;
+let agencyProfile;
 
 beforeEach(() => {
   sendMailMock.mockClear();
@@ -78,7 +79,7 @@ test('Agency Profile | create (auth)', async () => {
     });
 
   expect(payload).toBeTruthy();
-  const agencyProfile = await AgencyProfile.findByPk(payload.id);
+  agencyProfile = await AgencyProfile.findByPk(payload.id);
   expect(agencyProfile).toBeTruthy();
   expect(payload.user_id).toBe(SELLER_ACCOUNT.toJSON().id);
 }, 30000);
@@ -138,25 +139,17 @@ test('Admin | get all agency profiles (auth)', async () => {
   expect(body.payload.length).toBe(1);
 });
 
-test('Admin | approve a seller profile', async () => {
+
+test('Admin | approve a business profile', async () => {
   // generate a token
   const token = authService().issue(ADMIN_ACCOUNT.toJSON());
 
-  const {
-    body: { payload }
-  } = await request(api)
-    .get('/private/agency-profiles')
-    .set('Accept', /json/)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
-
-  const firstProfileOnListId = payload[0].id;
+  const { id } = agencyProfile;
 
   const { body } = await request(api)
-    .post(`/private/approve-profile/${firstProfileOnListId}`)
+    .post(`/private/approve-profile/${id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
 
   expect(body.statusCode).toBe(200);
   expect(body.message).toBe('Account Approved Successfully!');
@@ -164,26 +157,18 @@ test('Admin | approve a seller profile', async () => {
   expect(sendMailMock).toHaveBeenCalled();
 });
 
-test('Admin Error | approve a seller profile that is already approved', async () => {
+test('Admin Error | approve a business profile that is already approved', async () => {
   // get user details that include id
   const token = authService().issue(ADMIN_ACCOUNT.toJSON());
 
-  const {
-    body: { payload }
-  } = await request(api)
-    .get('/private/agency-profiles')
-    .set('Accept', /json/)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
-
-  const firstProfileOnListId = payload[0].id;
+  const { id } = agencyProfile;
 
   const { body } = await request(api)
-    .post(`/private/approve-profile/${firstProfileOnListId}`)
+    .post(`/private/approve-profile/${id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
 
-  expect(body.statusCode).toBe(401);
+  expect(body.statusCode).toBe(400);
   expect(body.message).toBe('Profile Approved Already!');
 });
