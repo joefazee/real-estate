@@ -26,9 +26,8 @@ afterAll(async () => {
 
 test('Investor | signup | login | Investor select a category', async () => {
   // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   const { body } = await request(api)
     .post('/private/select-category')
@@ -45,12 +44,11 @@ test('Investor | signup | login | Investor select a category', async () => {
 
 test('Investor | login | Investor get all his categories', async () => {
   // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
 
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   const { body } = await request(api)
-    .get(`/private/user-category/${confirmedUser.id}`)
+    .get(`/private/user-category/${INVESTOR_ACCOUNT.toJSON().id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
