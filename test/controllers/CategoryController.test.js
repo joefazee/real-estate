@@ -87,9 +87,7 @@ test('Admin | signup | login | Admin create a category', async () => {
 });
 
 test('Investor | signup | login | Investor select a category', async () => {
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
-
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   expect(token).toBeTruthy();
 
@@ -104,18 +102,16 @@ test('Investor | signup | login | Investor select a category', async () => {
   expect(body.payload).toBeTruthy();
   expect(body.statusCode).toBe(200);
   expect(body).toHaveProperty('message', 'success');
-  expect(body.payload[0].user_id).toEqual(confirmedUser.id);
+  expect(body.payload[0].user_id).toEqual(INVESTOR_ACCOUNT.toJSON().id);
 });
 
 test('Investor | login | Investor get all his categories', async () => {
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
-
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   expect(token).toBeTruthy();
 
   const { body } = await request(api)
-    .get(`/private/user-category/${confirmedUser.id}`)
+    .get(`/private/user-category/${INVESTOR_ACCOUNT.toJSON().id}`)
     .set('Accept', /json/)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
@@ -127,9 +123,7 @@ test('Investor | login | Investor get all his categories', async () => {
 });
 
 test('Unauthorized user aside Admin | login | Unauthorized user aside Admin to create a category', async () => {
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
-
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   expect(token).toBeTruthy();
 

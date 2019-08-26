@@ -3,7 +3,6 @@ const { beforeAction, afterAction } = require('../setup/_setup');
 const AgencyProfile = require('../../api/models/AgencyProfile');
 const User = require('../../api/models/User');
 const authService = require('../../api/services/auth.service');
-const UserQuery = require('../../api/queries/user.queries');
 
 const sendMailMock = jest.fn();
 
@@ -61,9 +60,8 @@ afterAll(async () => {
 
 test('Agency Profile | create (auth)', async () => {
   // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinl@mail.com');
 
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(SELLER_ACCOUNT.toJSON());
 
   const {
     body: { payload }
@@ -82,15 +80,12 @@ test('Agency Profile | create (auth)', async () => {
   expect(payload).toBeTruthy();
   const agencyProfile = await AgencyProfile.findByPk(payload.id);
   expect(agencyProfile).toBeTruthy();
-  expect(payload.user_id).toBe(confirmedUser.id);
+  expect(payload.user_id).toBe(SELLER_ACCOUNT.toJSON().id);
 }, 30000);
 
 test('Agency Profile | create (user is not a seller)', async () => {
-  // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinluther@mail.com');
-
   // generate a token
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(INVESTOR_ACCOUNT.toJSON());
 
   const { body } = await request(api)
     .post('/private/create-profile')
@@ -109,11 +104,8 @@ test('Agency Profile | create (user is not a seller)', async () => {
 });
 
 test('Agency Profile | create (user cannot create a second profile)', async () => {
-  // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinl@mail.com');
-
   // generate a token
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(SELLER_ACCOUNT.toJSON());
 
   const { body } = await request(api)
     .post('/private/create-profile')
@@ -132,11 +124,8 @@ test('Agency Profile | create (user cannot create a second profile)', async () =
 });
 
 test('Admin | get all agency profiles (auth)', async () => {
-  // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
-
   // generate a token
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(ADMIN_ACCOUNT.toJSON());
 
   const { body } = await request(api)
     .get('/private/agency-profiles')
@@ -150,11 +139,8 @@ test('Admin | get all agency profiles (auth)', async () => {
 });
 
 test('Admin | approve a seller profile', async () => {
-  // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
-
   // generate a token
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(ADMIN_ACCOUNT.toJSON());
 
   const {
     body: { payload }
@@ -180,10 +166,7 @@ test('Admin | approve a seller profile', async () => {
 
 test('Admin Error | approve a seller profile that is already approved', async () => {
   // get user details that include id
-  const { dataValues: confirmedUser } = await UserQuery.findByEmail('martinking@mail.com');
-
-  // generate a token
-  const token = authService().issue(confirmedUser);
+  const token = authService().issue(ADMIN_ACCOUNT.toJSON());
 
   const {
     body: { payload }
