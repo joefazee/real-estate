@@ -5,7 +5,8 @@ const development = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
-  dialect: process.env.DB_DIALECT
+  port: process.env.DB_PORT,
+  dialect: process.env.DB_DIALECT,
 };
 
 const testing = {
@@ -13,7 +14,7 @@ const testing = {
   username: 'username',
   password: 'password',
   host: 'localhost',
-  dialect: 'sqlite'
+  dialect: 'sqlite',
 };
 
 const production = {
@@ -21,11 +22,12 @@ const production = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   host: process.env.DB_HOST || 'localhost',
-  dialect: 'mysql'
+  port: process.env.DB_PORT,
+  dialect: 'mysql',
 };
 
 module.exports = {
   development,
   testing,
-  production
+  production,
 };
