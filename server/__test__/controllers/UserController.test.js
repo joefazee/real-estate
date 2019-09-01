@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
-const User = require('../../api/models/User');
-const UserQuery = require('../../api/queries/user.queries');
+const User = require('../../models/user.model');
+const UserQuery = require('../../queries/user.query');
 
 let api;
 let ADMIN_ACCOUNT;
@@ -25,7 +25,7 @@ afterAll(async () => {
 
 test('User | Signup | create successfully', async () => {
 	const { body } = await request(api)
-		.post('/public/signup')
+		.post('/api/v1/auth/signup')
 		.set('Accept', /json/)
 		.send({
 			name: 'Martin Luke',
@@ -49,20 +49,20 @@ test('User | Signup | create successfully', async () => {
 
 test('User | Signup | passwords do not match', async () => {
 	const { body } = await request(api)
-		.post('/public/signup')
-		.set('Accept', /json/)
-		.send({
-			name: 'Martin Luke',
-			email: 'martinluther@mail.com',
-			password: 'securepassword',
-			password2: 'securepassword1',
-			phone: '0905737783',
-			user_type: 'investor'
-		});
+    .post("/api/v1/auth/signup")
+    .set("Accept", /json/)
+    .send({
+      name: "Martin Luke",
+      email: "martinluther@mail.com",
+      password: "securepassword",
+      password2: "securepassword1",
+      phone: "0905737783",
+      user_type: "investor"
+    });
 
-	expect(body.payload).toEqual({});
+	expect(body.payload).toEqual(null);
 	expect(body.statusCode).toBe(400);
-	expect(body.message).toBe('Passwords does not match');
+	expect(body.message).toBe("invalid credentials");
 });
 
 test('User | Signup | user already exists', async () => {
@@ -75,16 +75,16 @@ test('User | Signup | user already exists', async () => {
 	});
 
 	const { body } = await request(api)
-		.post('/public/signup')
-		.set('Accept', /json/)
-		.send({
-			name: 'Martin Luke',
-			email: 'martinluther1@mail.com',
-			password: 'securepassword',
-			password2: 'securepassword',
-			phone: '0905737783',
-			user_type: 'investor'
-		});
+    .post("/api/v1/auth/signup")
+    .set("Accept", /json/)
+    .send({
+      name: "Martin Luke",
+      email: "martinluther1@mail.com",
+      password: "securepassword",
+      password2: "securepassword",
+      phone: "0905737783",
+      user_type: "investor"
+    });
 
 	expect(body.payload).toEqual({});
 	expect(body.statusCode).toBe(400);
@@ -95,25 +95,25 @@ test('User | Signup | user already exists', async () => {
 
 test('User | login', async () => {
 	const { body } = await request(api)
-		.post('/public/login')
-		.set('Accept', /json/)
-		.send({
-			email: 'martinking@mail.com',
-			password: 'securepassword'
-		})
-		.expect(200);
+    .post("/api/v1/auth/login")
+    .set("Accept", /json/)
+    .send({
+      email: "martinking@mail.com",
+      password: "securepassword"
+    })
+    .expect(200);
 
 	expect(body.token).toBeTruthy();
 });
 
 test('User | login | User does not exist', async () => {
 	const { body } = await request(api)
-		.post('/public/login')
-		.set('Accept', /json/)
-		.send({
-			email: 'martinil@ttt.co',
-			password: 'passssword'
-		});
+    .post("/api/v1/auth/login")
+    .set("Accept", /json/)
+    .send({
+      email: "martinil@ttt.co",
+      password: "passssword"
+    });
 
 	expect(body.token).toBeFalsy();
 	expect(body).toHaveProperty('message', 'User does not exist');
@@ -122,12 +122,12 @@ test('User | login | User does not exist', async () => {
 
 test('User | login | invalid email or password', async () => {
 	const { body } = await request(api)
-		.post('/public/login')
-		.set('Accept', /json/)
-		.send({
-			email: 'martinking@mail.com',
-			password: 'password'
-		});
+    .post("/api/v1/auth/login")
+    .set("Accept", /json/)
+    .send({
+      email: "martinking@mail.com",
+      password: "password"
+    });
 
 	expect(body.token).toBeFalsy();
 	expect(body).toHaveProperty('message', 'invalid email or password');
@@ -136,22 +136,22 @@ test('User | login | invalid email or password', async () => {
 
 test('User | get all (auth)', async () => {
 	const { body } = await request(api)
-		.post('/public/login')
-		.set('Accept', /json/)
-		.send({
-			email: 'martinking@mail.com',
-			password: 'securepassword'
-		})
-		.expect(200);
+    .post("/api/v1/auth/login")
+    .set("Accept", /json/)
+    .send({
+      email: "martinking@mail.com",
+      password: "securepassword"
+    })
+    .expect(200);
 
 	expect(body.token).toBeTruthy();
 
 	const { body: usersResponse } = await request(api)
-		.get('/private/users')
-		.set('Accept', /json/)
-		.set('Authorization', `Bearer ${body.token}`)
-		.set('Content-Type', 'application/json')
-		.expect(200);
+    .get("/us/api/v1/users")
+    .set("Accept", /json/)
+    .set("Authorization", `Bearer ${body.token}`)
+    .set("Content-Type", "application/json")
+    .expect(200);
 
 	expect(usersResponse.payload).toBeTruthy();
 	expect(usersResponse.payload.length).toBe(1);
@@ -160,8 +160,8 @@ test('User | get all (auth)', async () => {
 test(`UserController.forgotpassword | User doesn't exist`, async () => {
   const email = 'emailThatDoesntExist@mail.com';
   const response = await request(api)
-    .post(`/public/forgot-password/`)
-    .set('Content-Type', 'application/json')
+    .post(`/api/v1/auth/forgot-password/`)
+    .set("Content-Type", "application/json")
     .send({ email });
 
   expect(response.body.statusCode).toEqual(404);
@@ -172,9 +172,9 @@ test(`UserController.forgotpassword | Password reset link was sent`, async () =>
   const {
     body: { statusCode }
   } = await request(api)
-    .post(`/public/forgot-password/`)
-    .set('Content-Type', 'application/json')
-    .send({ email: 'martinking@mail.com' });
+    .post(`/api/v1/auth/forgot-password/`)
+    .set("Content-Type", "application/json")
+    .send({ email: "martinking@mail.com" });
 
   expect(statusCode).toBe(200);
 });
@@ -185,9 +185,9 @@ test('UserController.resetPassword | Passwords do not match', async () => {
       payload: { password: otp }
     }
   } = await request(api)
-    .post(`/public/forgot-password/`)
-    .set('Content-Type', 'application/json')
-    .send({ email: 'martinking@mail.com' });
+    .post(`/api/v1/auth/forgot-password/`)
+    .set("Content-Type", "application/json")
+    .send({ email: "martinking@mail.com" });
 
   const payload = {
     email: 'test.user@mail.com',
@@ -197,8 +197,8 @@ test('UserController.resetPassword | Passwords do not match', async () => {
   };
 
   const { body: response } = await request(api)
-    .post('/public/password-reset')
-    .set('Content-Type', 'application/json')
+    .post("/api/v1/auth/reset-password")
+    .set("Content-Type", "application/json")
     .send(payload);
 
   expect(response.statusCode).toBe(400);
@@ -211,9 +211,9 @@ test('UserController.resetPassword | Password was reset', async () => {
       payload: { password }
     }
   } = await request(api)
-    .post(`/public/forgot-password/`)
-    .set('Content-Type', 'application/json')
-    .send({ email: 'martinking@mail.com' });
+    .post(`/api/v1/auth/forgot-password/`)
+    .set("Content-Type", "application/json")
+    .send({ email: "martinking@mail.com" });
 
   const payload = {
     email: 'martinking@mail.com',
@@ -223,8 +223,8 @@ test('UserController.resetPassword | Password was reset', async () => {
   };
 
   const { body: response } = await request(api)
-    .post('/public/password-reset')
-    .set('Content-Type', 'application/json')
+    .post("/api/v1/auth/reset-password")
+    .set("Content-Type", "application/json")
     .send(payload);
 
   expect(response.statusCode).toBe(200);

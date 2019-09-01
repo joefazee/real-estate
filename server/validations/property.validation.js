@@ -40,7 +40,7 @@ module.exports = {
 	},
 
 	deleteProperty: {
-		body: {
+		params: {
 			property_id: Joi.string()
 				.max(200)
 				.required()

@@ -85,7 +85,7 @@ exports.approveProfile = async (req, res, next) => {
         sendResponse(
           httpStatus.BAD_REQUEST,
           "Profile Approved Already!",
-          {},
+          null,
           { error: "Profile Approved Already!" }
         )
       );
@@ -103,7 +103,7 @@ exports.approveProfile = async (req, res, next) => {
       name
     });
     return res.json(
-      sendResponse(httpStatus.OK, "Account Approved Successfully!", {}, null)
+      sendResponse(httpStatus.OK, "Account Approved Successfully!", null, null)
     );
   } catch (err) {
     next(err);

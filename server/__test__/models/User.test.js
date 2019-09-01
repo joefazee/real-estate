@@ -1,5 +1,5 @@
 const { beforeAction, afterAction } = require('../setup/_setup');
-const User = require('../../api/models/User');
+const User = require('../../models/user.model');
 
 let user;
 

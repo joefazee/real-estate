@@ -15,7 +15,7 @@ router
   .post([ validate(savedPropValidation.saveProperty, { abortEarly: false }), IsInvestor ], savePropCtrl.saveProperty)
 
 router
-  .route('/property_id')
+  .route('/:property_id')
   .delete([ validate(savedPropValidation.deleteProperty, { abortEarly: false }), IsInvestor ], savePropCtrl.deleteSavedProperty);
 
 module.exports = router;

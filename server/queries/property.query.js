@@ -1,7 +1,7 @@
-const PropertyListing = require('../models/property.model');
+const Property = require('../models/property.model');
 const sequelize = require('../config/database');
 
-class PropertyListingQueries {
+class PropertyQueries {
 	constructor(Model) {
 		this.Model = Model;
 	}
@@ -20,8 +20,8 @@ class PropertyListingQueries {
 
 	hasNoFilterOrFilter(search, { limit, offset }) {
 		return sequelize.query(
-			`SELECT * FROM property_listings WHERE id IN
-	(SELECT id FROM property_listings WHERE location = :location OR category_id = :category_id OR name LIKE :name)
+			`SELECT * FROM properties WHERE id IN
+	(SELECT id FROM properties WHERE location = :location OR category_id = :category_id OR name LIKE :name)
 	 AND price BETWEEN :minPrice and :maxPrice ORDER by price ASC LIMIT :offset, :limit`,
 			{
 				replacements: { ...search, offset, limit },
@@ -35,6 +35,6 @@ class PropertyListingQueries {
 	}
 }
 
-const propertyListingQuery = new PropertyListingQueries(PropertyListing);
+const propertyQuery = new PropertyQueries(Property);
 
-module.exports = propertyListingQuery;
+module.exports = propertyQuery;
