@@ -108,6 +108,7 @@ exports.propertyFeed = async (req, res, next) => {
     };
 
     const offset = +limit * +skip;
+    console.log(name)
 
     const properties = await PropertyQuery.hasNoFilterOrFilter(search, {
       limit,

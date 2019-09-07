@@ -2,6 +2,9 @@ const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
 const User = require('../../models/user.model');
 const UserQuery = require('../../queries/user.query');
+const OTP = require('../../models/otp.model');
+const OTPQuery = require('../../queries/otp.query');
+const tokenExpiry = require("../../helpers/token-expiry");
 
 let api;
 let ADMIN_ACCOUNT;
@@ -19,7 +22,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-	await ADMIN_ACCOUNT.destroy();
+  await ADMIN_ACCOUNT.destroy();
+  await OTP.destroy({where: {}});
 	afterAction();
 });
 
@@ -86,9 +90,10 @@ test('User | Signup | user already exists', async () => {
       user_type: "investor"
     });
 
-	expect(body.payload).toEqual({});
+	expect(body.payload).toEqual(null);
 	expect(body.statusCode).toBe(400);
-	expect(body.message).toBe('email has been taken');
+	expect(body.message).toBe("invalid credentials");
+	expect(body.errors["email"]).toEqual("email has been taken");
 
 	await user.destroy();
 });
@@ -147,7 +152,7 @@ test('User | get all (auth)', async () => {
 	expect(body.token).toBeTruthy();
 
 	const { body: usersResponse } = await request(api)
-    .get("/us/api/v1/users")
+    .get("/api/v1/users")
     .set("Accept", /json/)
     .set("Authorization", `Bearer ${body.token}`)
     .set("Content-Type", "application/json")
@@ -170,63 +175,125 @@ test(`UserController.forgotpassword | User doesn't exist`, async () => {
 
 test(`UserController.forgotpassword | Password reset link was sent`, async () => {
   const {
-    body: { statusCode }
+    body
   } = await request(api)
     .post(`/api/v1/auth/forgot-password/`)
     .set("Content-Type", "application/json")
     .send({ email: "martinking@mail.com" });
 
-  expect(statusCode).toBe(200);
+		expect(body['statusCode']).toBe(200);
+		expect(body['message']).toEqual('Please check your email for your password reset link');
+		await OTPQuery.delete("martinking@mail.com");
+});
+
+test(`UserController.forgotpassword | Password reset link was sent`, async () => {
+  await OTPQuery.create({
+    email: "martinking@mail.com",
+    password: "d1ye3H",
+    expiry: tokenExpiry(60)
+  });
+  const { body } = await request(api)
+    .post(`/api/v1/auth/forgot-password/`)
+    .set("Content-Type", "application/json")
+    .send({ email: "martinking@mail.com" });
+
+  expect(body["statusCode"]).toBe(200);
+  expect(body["message"]).toEqual(
+    "Please check your email for your password reset link"
+  );
+  await OTPQuery.delete("martinking@mail.com");
+});
+
+test("UserController.resetPassword | Invalid reset Token", async () => {
+  await OTPQuery.create({
+    email: "martinking@mail.com",
+    password: "d1ye3H",
+    expiry: tokenExpiry(60)
+  });
+
+  const payload = {
+    email: "martinking@mail.com",
+    token: "diye3H",
+    password: "balderdash",
+    confirmPassword: "balderdash"
+  };
+
+  const { body } = await request(api)
+    .post("/api/v1/auth/reset-password")
+    .set("Content-Type", "application/json")
+    .send(payload);
+  expect(body.statusCode).toBe(404);
+	expect(body.message).toBe("Password reset token is not valid");
+	await OTPQuery.delete("martinking@mail.com");
 });
 
 test('UserController.resetPassword | Passwords do not match', async () => {
-  const {
-    body: {
-      payload: { password: otp }
-    }
-  } = await request(api)
-    .post(`/api/v1/auth/forgot-password/`)
-    .set("Content-Type", "application/json")
-    .send({ email: "martinking@mail.com" });
+  await OTPQuery.create({
+    email: "martinking@mail.com",
+    password: "d1ye3H",
+    expiry: tokenExpiry(60)
+  });
 
   const payload = {
-    email: 'test.user@mail.com',
-    resetPasswordToken: otp,
-    password: 'balderdash',
-    confirmPassword: 'poppycock'
+    email: "martinking@mail.com",
+    token: "d1ye3H",
+    password: "balderdash",
+    confirmPassword: "poppycock"
   };
 
-  const { body: response } = await request(api)
+  const { body } = await request(api)
     .post("/api/v1/auth/reset-password")
     .set("Content-Type", "application/json")
-    .send(payload);
-
-  expect(response.statusCode).toBe(400);
-  expect(response.message).toBe('Passwords do not match');
+		.send(payload);
+		
+	expect(body.statusCode).toBe(400);
+	expect(body.message).toBe('Passwords do not match');
+	await OTPQuery.delete("martinking@mail.com");
 });
 
 test('UserController.resetPassword | Password was reset', async () => {
-  const {
-    body: {
-      payload: { password }
-    }
-  } = await request(api)
-    .post(`/api/v1/auth/forgot-password/`)
-    .set("Content-Type", "application/json")
-    .send({ email: "martinking@mail.com" });
+  await OTPQuery.create({
+    email: "martinking@mail.com",
+    password: "d1ye3H",
+    expiry: tokenExpiry(60)
+  });
 
   const payload = {
-    email: 'martinking@mail.com',
-    resetPasswordToken: password,
-    password: 'balderdash',
-    confirmPassword: 'balderdash'
+    email: "martinking@mail.com",
+    token: "d1ye3H",
+    password: "balderdash",
+    confirmPassword: "balderdash"
   };
 
-  const { body: response } = await request(api)
+  const { body } = await request(api)
     .post("/api/v1/auth/reset-password")
     .set("Content-Type", "application/json")
     .send(payload);
 
-  expect(response.statusCode).toBe(200);
-  expect(response.message).toBe('Password has been reset');
+  expect(body.statusCode).toBe(200);
+	expect(body.message).toBe('Password has been reset');	
+	await OTPQuery.delete("martinking@mail.com");
+});
+
+test("UserController.resetPassword | User\'s email does not exist", async () => {
+    await OTPQuery.create({
+      email: "dont-exist@mail.com",
+      password: "d1ye3H",
+      expiry: tokenExpiry(60)
+    });
+
+  const payload = {
+    email: "dont-exist@mail.com",
+    token: "d1ye3H",
+    password: "balderdash",
+    confirmPassword: "balderdash"
+  };
+
+  const { body } = await request(api)
+    .post("/api/v1/auth/reset-password")
+    .set("Content-Type", "application/json")
+    .send(payload);
+
+  expect(body.statusCode).toBe(404);
+  expect(body.message).toBe("Email does not exist");
 });
