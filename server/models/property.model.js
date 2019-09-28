@@ -28,7 +28,7 @@ const Property = sequelize.define(
       allowNull: false
     },
     description: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT('long'),
       allowNull: false
     },
     address: {
