@@ -4,7 +4,7 @@ const { Joi } = require('celebrate');
 const envVarsSchema = Joi.object({
   PORT: Joi.number().default(5000),
   HOST: Joi.string().default('localhost'),
-  NODE_ENV: Joi.string().allow(['development', 'production', 'test', 'provision']).default('development'),
+  NODE_ENV: Joi.string().allow(['development', 'production', 'staging', 'testing']).default('development'),
   DB_DATABASE: Joi.string().required().description('Database name'),
   DB_USERNAME: Joi.string().required().description('Database Username'),
   DB_PASSWORD: Joi.string().required().description('Database Password'),

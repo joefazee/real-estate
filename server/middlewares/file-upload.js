@@ -17,15 +17,15 @@ const uploadFile = location => async (req, _res, next) => {
 			const dUri = new Datauri();
 			const dataUri = req =>
 				dUri.format(
-					path.extname(`JJ${req.files[fileName].name}`),
+					path.extname(req.files[fileName].name),
 					req.files[fileName].data
 				);
 
 			const file = dataUri(req).content;
+
 			await v2.uploader
 				.upload(file, { folder: location, use_filename: true})
 				.then(result => {
-					console.log(result);
 					const image = result.url;
 					successfulUpload[fileName] = {
 						filename: req.files[property].name,

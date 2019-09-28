@@ -1,12 +1,12 @@
 const request = require('supertest');
 const { beforeAction, afterAction } = require('../setup/_setup');
-const Category = require('../../api/models/Category');
-const PropertyListing = require('../../api/models/PropertyListing');
-const User = require('../../api/models/User');
-const authService = require('../../api/services/auth.service');
-const UserQuery = require('../../api/queries/user.queries');
-const propertyListingQuery = require('../../api/queries/property.listing.queries');
-const savedPropertiesQuery = require('../../api/queries/saved.properties.listing.queries');
+const Category = require('../../models/category.model');
+const PropertyListing = require('../../models/property.model');
+const User = require('../../models/user.model');
+const authService = require('../../services/auth.service');
+const UserQuery = require('../../queries/user.query');
+const propertyQuery = require('../../queries/property.query');
+const savedPropertiesQuery = require('../../queries/saved-property.query');
 
 let api;
 let SELLER_ACCOUNT;
@@ -38,10 +38,10 @@ beforeAll(async () => {
     name: 'Office'
   });
 
-  const token = authService().issue(SELLER_ACCOUNT.toJSON());
+  const token = authService.issue(SELLER_ACCOUNT.toJSON());
 
   const { body } = await request(api)
-    .post('/private/property-listing')
+    .post('/api/v1/property/create')
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .send({
@@ -60,13 +60,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await SELLER_ACCOUNT.destroy();
-  await INVESTOR_ACCOUNT.destroy();
-  await CATEGORY.destroy();
+  await User.destroy({ where: {} });
+  await Category.destroy({where:{}});
   afterAction();
 });
 
-test('Property Listing | get created property (auth)', async () => {
+test('Property | get created property (auth)', async () => {
   const propertyListing = await PropertyListing.findByPk(PROPERTYLISTING.payload.id);
 
   expect(propertyListing).toBeTruthy();
@@ -77,8 +76,9 @@ test('Property Listing | get created property (auth)', async () => {
 
 test('Search Property | user search for property', async () => {
   const { body } = await request(api)
-    .get(`/public/search-property?name=${PROPERTYLISTING.payload.name}`)
+    .get(`/api/v1/search?name=${PROPERTYLISTING.payload.name}`)
     .set('Content-Type', 'application/json');
+    console.log(body)
 
   expect(body.payload).toBeTruthy();
   expect(body.statusCode).toBe(200);

@@ -40,7 +40,7 @@ const Property = sequelize.define(
       allowNull: false
     },
     price: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING,//change to number
       allowNull: false
     },
     has_C_of_O: {
@@ -62,7 +62,7 @@ const Property = sequelize.define(
       allowNull: false
     },
     images: {
-      type: Sequelize.TEXT('long'),
+      type: Sequelize.TEXT('long'),//string separeted by commas
       allowNull: true
     }
   },
