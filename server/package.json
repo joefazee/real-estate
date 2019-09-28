@@ -16,8 +16,9 @@
     "server": "npm run nodemon",
     "start": "npm run dev",
     "poststart": "npm run create-sqlite-db",
-    "dev": "cross-env NODE_ENV=development nodemon ./api.js",
+    "dev": "cross-env NODE_ENV=development nodemon ./api.js & npm run seed",
     "nodemon": "nodemon --exec npm run dev",
+    "seed": "cd seeders && node seedConfig.js",
     "create-sqlite-db": "shx touch ./db/database.sqlite",
     "drop-sqlite-db": "shx rm ./db/database.sqlite",
     "lint": "eslint ./api.js ./config/. ./test/.",
@@ -27,6 +28,13 @@
     "test": "npm run create-sqlite-db; cross-env NODE_ENV=testing jest --coverage; npm run drop-sqlite-db",
     "server-test": "npm run test",
     "test-ci": "jest --coverage --forceExit"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "seeders/*.json",
+      "seeders/*.js",
+      "services/db.service.js"
+    ]
   },
   "jest": {
     "globals": {
@@ -79,6 +87,7 @@
     "nodemailer-mock": "^1.4.3",
     "nodemon": "^1.19.1",
     "shx": "^0.3.2",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "uuid": "^3.3.3"
   }
 }

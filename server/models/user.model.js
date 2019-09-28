@@ -6,7 +6,6 @@ const AgencyProfile = require('./agency-profile.model');
 const UserCategory = require('./user-category.model');
 const PropertyListing = require('./property.model');
 const SavedProperties = require('./saved-property.model');
-const Verification = require('./verification.model');
 
 const hooks = {
   async beforeCreate(user) {
