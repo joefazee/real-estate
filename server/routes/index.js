@@ -12,7 +12,7 @@ const agencyProfileRoutes = require('./agency-profile.route');
 const router = express.Router();
 
 /** GET /health-check - Check service health */
-router.get("/health-check", (req, res) => res.send("We Good"));
+router.get("/health-check", (req, res) => res.send("We're Good"));
 
 //mount auth routes
 router.use('/auth', authRoutes);

@@ -6,7 +6,7 @@ const bcryptService = require("../services/bcrypt.service");
 const sendResponse = require("../helpers/response");
 const UserQuery = require("../queries/user.query");
 const OTPQuery = require("../queries/otp.query");
-const USER_DEFAULT_AVATER = require("../config").defaultAvatar;
+const USER_DEFAULT_AVATAR = require("../config").defaultAvatar;
 const tokenExpiry = require("../helpers/token-expiry");
 const generateOTP = require("../helpers/otp-generator");
 const EmailService = require("../services/email-event.service");
@@ -26,7 +26,7 @@ exports.register = async (req, res, next) => {
     }
 
     if (!_.isEmpty(errors)) {
-      return res.json(
+      return res.status(httpStatus.BAD_REQUEST).json(
         sendResponse(
           httpStatus.BAD_REQUEST,
           "invalid credentials",
@@ -42,7 +42,7 @@ exports.register = async (req, res, next) => {
       phone,
       password,
       user_type,
-      avatar: USER_DEFAULT_AVATER
+      avatar: USER_DEFAULT_AVATAR
     });
 
     await EmailService.emit("send-verification-email", {
@@ -63,7 +63,7 @@ exports.login = async (req, res, next) => {
     const user = await UserQuery.findByEmail(email);
 
     if (!user) {
-      return res.json(
+      return res.status(httpStatus.NOT_FOUND).json(
         sendResponse(httpStatus.NOT_FOUND, "User does not exist", null, {
           error: "User does not exist"
         })
@@ -79,7 +79,7 @@ exports.login = async (req, res, next) => {
       );
     }
 
-    return res.json(
+    return res.status(httpStatus.BAD_REQUEST).json(
       sendResponse(httpStatus.BAD_REQUEST, "invalid email or password", null, {
         error: "invalid email or password"
       })
@@ -100,7 +100,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     // Return generic success response if user is not found
     if (!user) {
-      return res.json(
+      return res.status(httpStatus.NOT_FOUND).json(
         sendResponse(httpStatus.NOT_FOUND, "Email does not exist", null, {
           error: "Email does not exist"
         })
@@ -143,7 +143,7 @@ exports.resetPassword = async (req, res, next) => {
 
     //confirm passwords matches
     if (password !== confirmPassword) {
-      return res.json(
+      return res.status(httpStatus.BAD_REQUEST).json(
         sendResponse(httpStatus.BAD_REQUEST, "Passwords do not match", null, {
           error: "Passwords does not match"
         })
@@ -154,7 +154,7 @@ exports.resetPassword = async (req, res, next) => {
 
     // Return generic success response if user is not found
     if (!user) {
-      return res.json(
+      return res.status(httpStatus.NOT_FOUND).json(
         sendResponse(httpStatus.NOT_FOUND, "Email does not exist", null, {
           error: "Email does not exist"
         })

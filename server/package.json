@@ -16,7 +16,7 @@
     "server": "npm run nodemon",
     "start": "npm run dev",
     "poststart": "npm run create-sqlite-db",
-    "dev": "cross-env NODE_ENV=development nodemon ./api.js & npm run seed",
+    "dev": "nodemon ./api.js",
     "nodemon": "nodemon --exec npm run dev",
     "seed": "cd seeders && node seedConfig.js",
     "create-sqlite-db": "shx touch ./db/database.sqlite",

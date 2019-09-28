@@ -63,7 +63,7 @@ exports.createProperty = async (req, res, next) => {
 exports.viewProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
- 
+
     const viewedListing = await PropertyQuery.findByPropertyId(id);
 
     if (!viewedListing) {
@@ -108,8 +108,7 @@ exports.propertyFeed = async (req, res, next) => {
     };
 
     const offset = +limit * +skip;
-    console.log(name)
-
+    console.log(limit, skip, offset)
     const properties = await PropertyQuery.hasNoFilterOrFilter(search, {
       limit,
       offset
@@ -121,6 +120,26 @@ exports.propertyFeed = async (req, res, next) => {
 
     return res.json(
       sendResponse(httpStatus.OK, "success!", transformProperty, null)
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.minAndMaxPropertyPrice = async (req, res, next) => {
+  try {
+    const cheapestProperty = (await PropertyQuery.cheapestProperty()) || 0;
+
+    const costliestProperty =
+      (await PropertyQuery.costliestProperty()) || 100000000;
+
+    return res.json(
+      sendResponse(
+        httpStatus.OK,
+        "success!",
+        { cheapestProperty, costliestProperty },
+        null
+      )
     );
   } catch (err) {
     next(err);

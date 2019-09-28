@@ -20,6 +20,7 @@ const handler = (err, req, res, next) => {
 		delete response.stack;
 	}
 
+	// console.log(err.status);
 	res.status(err.status);
 	res.json(response);
 };
