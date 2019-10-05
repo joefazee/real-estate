@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 
 const sendResponse = require("../helpers/response");
-const agencyProfileQuery = require("../queries/agency-profile.query");
+const AgencyProfileQuery = require("../queries/agency-profile.query");
 const EmailService = require("../services/email-event.service");
 const UserQuery = require("../queries/user.query");
 
@@ -23,7 +23,7 @@ exports.createProfile = async (req, res, next) => {
       }
     }
 
-    const profile = await agencyProfileQuery.create({
+    const profile = await AgencyProfileQuery.create({
       business_name,
       business_address,
       website,
@@ -39,6 +39,34 @@ exports.createProfile = async (req, res, next) => {
   }
 };
 
+exports.editAgencyDetails = async (req, res, next) => {
+  try {
+    const { id: user_id } = req.params;
+    const { business_name, phone, website, address } = req.body;
+
+    let agency_profile = await AgencyProfileQuery.findByUserId(user_id);
+
+    if (!agency_profile) {
+      return res.status(httpStatus.UNAUTHORIZED).json(
+        sendResponse(httpStatus.UNAUTHORIZED, "invalid agency", null, {
+          profile: "invalid profile"
+        })
+      );
+    }
+
+    agency_profile.business_name = business_name;
+    agency_profile.website = website;
+    agency_profile.address = address;
+    agency_profile.phone = phone;
+
+    agency_profile = await agency_profile.save();
+
+    return res.json(sendResponse(httpStatus.OK, "success", agency_profile, null));
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getAllProfiles = async (req, res, next) => {
   try {
     let profiles;
@@ -49,14 +77,14 @@ exports.getAllProfiles = async (req, res, next) => {
       const search = { approved };
       const offset = Number(limit) * Number(skip);
 
-      profiles = await agencyProfileQuery.filterBy(search, {
+      profiles = await AgencyProfileQuery.filterBy(search, {
         limit,
         offset
       });
     } else {
       const search = { approved };
       const offset = Number(limit) * Number(skip);
-      profiles = await agencyProfileQuery.findAll(search, {
+      profiles = await AgencyProfileQuery.findAll(search, {
         limit,
         offset
       });
@@ -78,7 +106,7 @@ exports.approveProfile = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const profile = await agencyProfileQuery.findByProfileId(id);
+    const profile = await AgencyProfileQuery.findByProfileId(id);
 
     if (profile.isApproved) {
       return res.json(
@@ -95,7 +123,7 @@ exports.approveProfile = async (req, res, next) => {
 
     const { email: sellerEmail, name } = await UserQuery.findById(user_id);
 
-    await agencyProfileQuery.approveUserProfile(profile);
+    await AgencyProfileQuery.approveUserProfile(profile);
 
     EmailService.emit("send-approval-email", {
       companyEmail,

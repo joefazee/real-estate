@@ -37,4 +37,8 @@ router
     agencyCtrl.approveProfile
   );
 
+router
+  .route("/edit")
+  .put(agencyCtrl.editAgencyDetails);
+
 module.exports = router;
