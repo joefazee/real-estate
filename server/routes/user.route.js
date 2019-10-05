@@ -10,6 +10,12 @@ router
   .route('/')
   .get(authToken, IsAdmin, userCtrl.getAll);
 
+router
+  .route('/:id')
+  .get(authToken, userCtrl.getUser)
+  //Add body validation
+  .put(authToken, userCtrl.editUserDetails);
+
 module.exports = router;
 
 
