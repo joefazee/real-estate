@@ -44,4 +44,5 @@ router
   .route("/edit/:id")
   .put(IsSeller, agencyCtrl.editAgencyDetails);
 
+
 module.exports = router;
