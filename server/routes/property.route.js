@@ -16,12 +16,14 @@ router.route("/create").post(
     validate(propertyValidation.createProperty, {
       abortEarly: false
     }),
-    uploadFile("property-images")
+    // uploadFile("property-images")
   ],
   propertyCtrl.createProperty
 );
 
 router.route("/view/:id").get(propertyCtrl.viewProperty);
+
+router.route("/agencyProperty").get(propertyCtrl.getAgencyProperties);
 
 router.route("/search").get(propertyCtrl.propertyFeed);
 

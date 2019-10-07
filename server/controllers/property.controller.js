@@ -13,45 +13,44 @@ exports.createProperty = async (req, res, next) => {
       description,
       address,
       location,
-      category,
+      category_id,
       price,
       has_C_of_O,
-      avg_monthly_payment,
-      payment_duration
+      avg_monthly_payment='3000',
+      payment_duration='2',
+      images
     } = req.body;
 
-    const { id } = await CategoryQuery.findByName(category);
+    // const { id } = await CategoryQuery.findByName(category);
 
-    let propertyImages = [];
-    if (Object.keys(req.uploadedFiles).length) {
-      const { successfulUpload } = req.uploadedFiles;
+    // let propertyImages = [];
+    // if (Object.keys(req.uploadedFiles).length) {
+    //   const { successfulUpload } = req.uploadedFiles;
 
-      for (let uploadedImage in successfulUpload) {
-        propertyImages.push(successfulUpload[uploadedImage].image);
-      }
-    }
+    //   for (let uploadedImage in successfulUpload) {
+    //     propertyImages.push(successfulUpload[uploadedImage].image);
+    //   }
+    // }
 
     const property = await PropertyQuery.create({
       name,
       description,
       address,
       location,
-      category_id: id,
+      category_id,
       price,
       has_C_of_O,
       avg_monthly_payment,
       payment_duration,
       user_id,
-      images: `${propertyImages.join(",")}`
+      images: `${images.join(",")}`
     });
 
-    property.images = property.images.split(",");
-
-    return res.json(
+    return res.status(httpStatus.OK).json(
       sendResponse(
         httpStatus.OK,
         "property created successfully",
-        property,
+        null,
         null
       )
     );
@@ -74,6 +73,30 @@ exports.viewProperty = async (req, res, next) => {
           {},
           { error: "property no found" }
         )
+      );
+    }
+
+    viewedListing.images = viewedListing.images.split(",");
+
+    return res.json(
+      sendResponse(httpStatus.OK, "success", viewedListing, null)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAgencyProperties = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const viewedListing = await PropertyQuery.findByUser(id);
+
+    if (Boolean(viewedListing)) {
+      return res.json(
+        sendResponse(httpStatus.NOT_FOUND, "Property Listing not found", null, {
+          error: "property no found"
+        })
       );
     }
 

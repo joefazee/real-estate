@@ -18,6 +18,14 @@ class PropertyQueries {
     });
   }
 
+  findByUser(user_id) {
+    return this.Model.findAll({
+      where: {
+        user_id
+      }
+    });
+  }
+
   hasNoFilterOrFilter(search, { limit, offset }) {
     return sequelize.query(
       `SELECT * FROM properties WHERE id IN
