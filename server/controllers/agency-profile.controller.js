@@ -39,6 +39,54 @@ exports.createProfile = async (req, res, next) => {
   }
 };
 
+exports.getAgencyDetails = async (req, res, next) => {
+  try {
+    const { id: user_id } = req.params;
+
+    let agency_profile = await AgencyProfileQuery.findByUserId(user_id);
+
+    if (!agency_profile) {
+      return res.status(httpStatus.UNAUTHORIZED).json(
+        sendResponse(httpStatus.UNAUTHORIZED, "invalid agency", null, {
+          profile: "invalid profile"
+        })
+      );
+    }
+
+    return res.json(sendResponse(httpStatus.OK, "success", agency_profile, null));
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.editAgencyDetails = async (req, res, next) => {
+  try {
+    const { id: user_id } = req.params;
+    const { business_name, phone, website, address } = req.body;
+
+    let agency_profile = await AgencyProfileQuery.findByUserId(user_id);
+
+    if (!agency_profile) {
+      return res.status(httpStatus.UNAUTHORIZED).json(
+        sendResponse(httpStatus.UNAUTHORIZED, "invalid agency", null, {
+          profile: "invalid profile"
+        })
+      );
+    }
+
+    agency_profile.business_name = business_name;
+    agency_profile.website = website;
+    agency_profile.address = address;
+    agency_profile.phone = phone;
+
+    agency_profile = await agency_profile.save();
+
+    return res.json(sendResponse(httpStatus.OK, "success", agency_profile, null));
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getAllProfiles = async (req, res, next) => {
   try {
     let profiles;

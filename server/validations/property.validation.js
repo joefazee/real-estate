@@ -15,19 +15,14 @@ module.exports = {
 			location: Joi.string()
 				.max(200)
 				.required(),
-			category: Joi.string()
+			category_id: Joi.string()
 				.max(200)
 				.required(),
 			price: Joi.string()
 				.max(100)
 				.required(),
 			has_C_of_O: Joi.boolean().required(),
-			avg_monthly_payment: Joi.string()
-				.max(200)
-				.required(),
-			payment_duration: Joi.string()
-				.max(200)
-				.required()
+			images: Joi.array().items(Joi.string()).required()
 		}
 	},
 
