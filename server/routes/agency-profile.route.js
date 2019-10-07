@@ -25,7 +25,10 @@ router
     agencyCtrl.createProfile
   );
 
-router.route("/").get(IsAdmin, agencyCtrl.getAllProfiles);
+router.route("/:id").get(IsSeller, agencyCtrl.getAgencyDetails);
+
+
+router.route("/get-all").get(IsAdmin, agencyCtrl.getAllProfiles);
 
 router
   .route("/approve/:id")
@@ -36,5 +39,9 @@ router
     ],
     agencyCtrl.approveProfile
   );
+
+router
+  .route("/edit/:id")
+  .put(IsSeller, agencyCtrl.editAgencyDetails);
 
 module.exports = router;
