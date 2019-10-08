@@ -29,8 +29,8 @@ class PropertyQueries {
   hasNoFilterOrFilter(search, { limit, offset }) {
     return sequelize.query(
       `SELECT * FROM properties WHERE id IN
-	(SELECT id FROM properties WHERE location = :location OR category_id = :category_id OR name LIKE :name)
-	 AND price BETWEEN :minPrice and :maxPrice ORDER by price ASC LIMIT :offset, :limit`,
+      (SELECT id FROM properties WHERE location LIKE :location AND category_id LIKE :category_id AND name LIKE :name)
+      AND price BETWEEN :minPrice and :maxPrice ORDER by price ASC LIMIT :offset, :limit`,
       {
         replacements: { ...search, offset, limit },
         type: sequelize.QueryTypes.SELECT

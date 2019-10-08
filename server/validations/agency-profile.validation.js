@@ -10,8 +10,7 @@ module.exports = {
       business_address: Joi.string()
         .max(300)
         .required(),
-      website: Joi.string()
-        .max(200),
+      website: Joi.string().max(200),
       phone: Joi.string()
         .max(45)
         .required(),
@@ -27,6 +26,20 @@ module.exports = {
         .min(36)
         .max(36)
         .required()
+    }
+  },
+  editProfile: {
+    body: {
+      business_name: Joi.string()
+        .max(200),
+      business_address: Joi.string()
+        .max(300),
+      website: Joi.string().max(200),
+      phone: Joi.string()
+        .max(45),
+      email: Joi.string()
+        .email()
+        .max(200)
     }
   }
 };

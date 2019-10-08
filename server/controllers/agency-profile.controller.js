@@ -63,7 +63,7 @@ exports.getAgencyDetails = async (req, res, next) => {
 exports.editAgencyDetails = async (req, res, next) => {
   try {
     const { id: user_id } = req.params;
-    const { business_name, phone, website, address } = req.body;
+    const { business_name, phone, website, business_address } = req.body;
 
     let agency_profile = await AgencyProfileQuery.findByUserId(user_id);
 
@@ -77,7 +77,7 @@ exports.editAgencyDetails = async (req, res, next) => {
 
     agency_profile.business_name = business_name;
     agency_profile.website = website;
-    agency_profile.address = address;
+    agency_profile.business_address = business_address;
     agency_profile.phone = phone;
 
     agency_profile = await agency_profile.save();

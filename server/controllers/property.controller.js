@@ -16,21 +16,10 @@ exports.createProperty = async (req, res, next) => {
       category_id,
       price,
       has_C_of_O,
-      avg_monthly_payment='3000',
-      payment_duration='2',
+      avg_monthly_payment = "3000",
+      payment_duration = "2",
       images
     } = req.body;
-
-    // const { id } = await CategoryQuery.findByName(category);
-
-    // let propertyImages = [];
-    // if (Object.keys(req.uploadedFiles).length) {
-    //   const { successfulUpload } = req.uploadedFiles;
-
-    //   for (let uploadedImage in successfulUpload) {
-    //     propertyImages.push(successfulUpload[uploadedImage].image);
-    //   }
-    // }
 
     const property = await PropertyQuery.create({
       name,
@@ -46,14 +35,11 @@ exports.createProperty = async (req, res, next) => {
       images: `${images.join(",")}`
     });
 
-    return res.status(httpStatus.OK).json(
-      sendResponse(
-        httpStatus.OK,
-        "property created successfully",
-        null,
-        null
-      )
-    );
+    return res
+      .status(httpStatus.OK)
+      .json(
+        sendResponse(httpStatus.OK, "property created successfully", null, null)
+      );
   } catch (error) {
     next(error);
   }
@@ -112,26 +98,30 @@ exports.getAgencyProperties = async (req, res, next) => {
 
 exports.propertyFeed = async (req, res, next) => {
   try {
-    const {
+    let {
       location = "",
       category_id = "",
       minPrice = 0,
-      maxPrice = Math.pow(10, 5),
+      maxPrice = 0,
       name = "",
-      limit = 20,
+      limit = 10,
       skip = 0
     } = req.query;
 
+    maxPrice = maxPrice.length === 0 ? Math.pow(10, 5) : +maxPrice;
+    minPrice = minPrice.length === 0 ? 0 : +minPrice;
+
     const search = {
-      location,
-      category_id,
+      location: `%${location}%`,
+      category_id: `%${category_id}%`,
       name: `%${name}%`,
       minPrice,
       maxPrice
     };
 
+
     const offset = +limit * +skip;
-    console.log(limit, skip, offset)
+
     const properties = await PropertyQuery.hasNoFilterOrFilter(search, {
       limit,
       offset
