@@ -81,6 +81,7 @@ const refactoredProperties = allSellers.reduce((seller_properties, user) => {
   return seller_properties;
 }, []);
 
+
 const getSeedData = async () => {
   const users = await refactoredUsers;
   const dataBaseSeed = {
