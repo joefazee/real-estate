@@ -30,7 +30,7 @@ class PropertyQueries {
     return sequelize.query(
       `SELECT * FROM properties WHERE id IN
       (SELECT id FROM properties WHERE location LIKE :location AND category_id LIKE :category_id AND name LIKE :name)
-      AND price BETWEEN :minPrice and :maxPrice ORDER by price ASC LIMIT :offset, :limit`,
+      AND price BETWEEN :minPrice and :maxPrice LIMIT :offset, :limit`,
       {
         replacements: { ...search, offset, limit },
         type: sequelize.QueryTypes.SELECT
