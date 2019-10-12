@@ -73,7 +73,7 @@ exports.login = async (req, res, next) => {
     if (!user.email_verified) {
       return res.status(httpStatus.BAD_REQUEST).json(
         sendResponse(httpStatus.BAD_REQUEST, "Please verify your email", null, {
-          error: "Please verify your emai"
+          error: "Please verify your email"
         })
       );
     }
