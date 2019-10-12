@@ -96,7 +96,7 @@ exports.getAllProfiles = async (req, res, next) => {
     if (approved === "true" || approved === "false") {
       approved = approved === "true" ? 1 : 0;
       const search = { approved };
-      const offset = Number(limit) * Number(skip);
+      const offset = +limit * +skip;
 
       profiles = await AgencyProfileQuery.filterBy(search, {
         limit,
@@ -104,7 +104,7 @@ exports.getAllProfiles = async (req, res, next) => {
       });
     } else {
       const search = { approved };
-      const offset = Number(limit) * Number(skip);
+      const offset = +limit * +skip;
       profiles = await AgencyProfileQuery.findAll(search, {
         limit,
         offset
@@ -125,34 +125,30 @@ exports.getAllProfiles = async (req, res, next) => {
 
 exports.approveProfile = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id, action } = req.body;
 
     const profile = await AgencyProfileQuery.findByProfileId(id);
-
-    if (profile.isApproved) {
-      return res.json(
-        sendResponse(
-          httpStatus.BAD_REQUEST,
-          "Profile Approved Already!",
-          null,
-          { error: "Profile Approved Already!" }
-        )
-      );
-    }
 
     const { email: companyEmail, user_id } = profile;
 
     const { email: sellerEmail, name } = await UserQuery.findById(user_id);
 
-    await AgencyProfileQuery.approveUserProfile(profile);
+    if (action === 'approve') {
+      await AgencyProfileQuery.approveUserProfile(profile, true);
 
-    EmailService.emit("send-approval-email", {
-      companyEmail,
-      sellerEmail,
-      name
-    });
+      EmailService.emit("send-approval-email", {
+        companyEmail,
+        sellerEmail,
+        name
+      });
+    }
+
+    if (action === "unapprove") {
+      await AgencyProfileQuery.approveUserProfile(profile, false);
+    }
+
     return res.json(
-      sendResponse(httpStatus.OK, "Account Approved Successfully!", null, null)
+      sendResponse(httpStatus.OK, `Account ${action} Successfully!`, null, null)
     );
   } catch (err) {
     next(err);

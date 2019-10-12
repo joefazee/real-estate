@@ -25,17 +25,17 @@ router
     agencyCtrl.createProfile
   );
 
-router.route("/:id").get(IsSeller, agencyCtrl.getAgencyDetails);
-
-
 router.route("/get-all").get(IsAdmin, agencyCtrl.getAllProfiles);
 
+router.route("/:id").get(IsSeller, agencyCtrl.getAgencyDetails);
+
+//Route to approve or unapprove an agency profile
 router
-  .route("/approve/:id")
+  .route("/approval")
   .post(
     [
+      IsAdmin,
       validate(profileValidation.approveProfile, { abortEarly: false }),
-      IsAdmin
     ],
     agencyCtrl.approveProfile
   );
