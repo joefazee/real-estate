@@ -3,7 +3,6 @@ const sendResponse = require('../helpers/response');
 
 module.exports = (req, res, next) => {
   const { user_type } = req.token;
-
   if (user_type !== 'admin') {
     return res.json(
       sendResponse(
