@@ -21,11 +21,12 @@ module.exports = {
     }
   },
   approveProfile: {
-    params: {
+    body: {
       id: Joi.string()
         .min(36)
         .max(36)
-        .required()
+        .required(),
+      action: Joi.string().required()
     }
   },
   editProfile: {

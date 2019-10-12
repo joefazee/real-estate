@@ -70,6 +70,14 @@ exports.login = async (req, res, next) => {
       );
     }
 
+    if (!user.email_verified) {
+      return res.status(httpStatus.BAD_REQUEST).json(
+        sendResponse(httpStatus.BAD_REQUEST, "Please verify your email", null, {
+          error: "Please verify your email"
+        })
+      );
+    }
+
     if (await bcryptService.comparePassword(password, user.password)) {
       // to issue token with the user object, convert it to JSON
       const token = authService.issue(user.toJSON());
