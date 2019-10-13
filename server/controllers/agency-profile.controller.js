@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 
 const sendResponse = require("../helpers/response");
 const AgencyProfileQuery = require("../queries/agency-profile.query");
+const DocumentQuery = require("../queries/document.query");
 const EmailService = require("../services/email-event.service");
 const UserQuery = require("../queries/user.query");
 
@@ -9,19 +10,7 @@ exports.createProfile = async (req, res, next) => {
   try {
     const { id: user_id } = req.token;
 
-    const { business_name, business_address, website, phone, email } = req.body;
-
-    const documents = [];
-
-    if (Object.keys(req.uploadedFiles).length) {
-      const { successfulUpload } = req.uploadedFiles;
-      for (let document in successfulUpload) {
-        documents.push({
-          image: successfulUpload[document].image,
-          name: document
-        });
-      }
-    }
+    const { business_name, business_address, website, phone, email, documents } = req.body;
 
     const profile = await AgencyProfileQuery.create({
       business_name,
@@ -30,8 +19,9 @@ exports.createProfile = async (req, res, next) => {
       phone,
       email,
       user_id,
-      documents: JSON.stringify(documents)
     });
+
+    await DocumentQuery.bulkCreate(documents);
 
     return res.json(sendResponse(httpStatus.OK, "success", profile, null));
   } catch (error) {
@@ -111,12 +101,8 @@ exports.getAllProfiles = async (req, res, next) => {
       });
     }
 
-    const transformProfile = profiles.map(profile => {
-      return { ...profile, documents: JSON.parse(profile.documents) };
-    });
-
     return res.json(
-      sendResponse(httpStatus.OK, "success!", transformProfile, null)
+      sendResponse(httpStatus.OK, "success!", profiles, null)
     );
   } catch (err) {
     next(err);

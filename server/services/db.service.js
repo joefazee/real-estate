@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
-const database = require('../config/database');
-const seedFile = require('../seeders/seeders.json');
+const database = require("../config/database");
+const seedFile = require("../seeders/seeders.json");
 
 const dbService = (environment, migrate) => {
   const authenticateDB = () =>
     database
       .authenticate()
       .then(() => {
-        console.log('Connection has been established successfully.');
+        console.log("Connection has been established successfully.");
       })
       .catch(err => {
-        console.error('Unable to connect to the database:', err);
+        console.error("Unable to connect to the database:", err);
       });
 
   const dropDB = () => database.drop();
@@ -18,13 +18,16 @@ const dbService = (environment, migrate) => {
   const syncDB = () => database.sync();
 
   const successfulDBStart = () =>
-    console.info('connection to the database has been established successfully');
+    console.info(
+      "connection to the database has been established successfully"
+    );
 
-  const errorDBStart = err => console.info('unable to connect to the database:', err);
+  const errorDBStart = err =>
+    console.info("unable to connect to the database:", err);
 
-  const errorSeedingDB = err => console.info('unable to seed database:', err);
+  const errorSeedingDB = err => console.info("unable to seed database:", err);
 
-  const successfulDBSeeding = () => console.info('seed database successfully');
+  const successfulDBSeeding = () => console.info("seed database successfully");
 
   const wrongEnvironment = () => {
     console.warn(
@@ -35,10 +38,17 @@ const dbService = (environment, migrate) => {
 
   const seedDataBase = async () => {
     try {
-      const { users, agency_profiles, categories, user_categories, properties } = seedFile;
+      const {
+        users,
+        agency_profiles,
+        categories,
+        user_categories,
+        properties,
+        documents
+      } = seedFile;
 
       // SEED USERS
-      const userQueryLength = users.map(a => '(?)').join(',');
+      const userQueryLength = users.map(a => "(?)").join(",");
       const userQuery = `INSERT INTO users (id, avatar, name, email_verified, phone, password, email, user_type, createdAt, updatedAt) VALUES ${userQueryLength};`;
       await database.query(userQuery, {
         replacements: users,
@@ -46,7 +56,7 @@ const dbService = (environment, migrate) => {
       });
 
       // SEED CATEGORIES
-      const categoryQueryLength = categories.map(a => '(?)').join(',');
+      const categoryQueryLength = categories.map(a => "(?)").join(",");
       const categoryQuery = `INSERT INTO categories (id, name) VALUES ${categoryQueryLength};`;
       await database.query(categoryQuery, {
         replacements: categories,
@@ -54,7 +64,7 @@ const dbService = (environment, migrate) => {
       });
 
       // SEED USER_CATEGORIES
-      const userCategoryQueryLength = user_categories.map(a => '(?)').join(',');
+      const userCategoryQueryLength = user_categories.map(a => "(?)").join(",");
       const userCategoryQueryQuery = `INSERT INTO user_categories (id, user_id, category_id) VALUES ${userCategoryQueryLength};`;
       await database.query(userCategoryQueryQuery, {
         replacements: user_categories,
@@ -62,18 +72,28 @@ const dbService = (environment, migrate) => {
       });
 
       // SEED AGENCY PROFILE
-      const agencyProfileQueryLength = agency_profiles.map(a => '(?)').join(',');
-      const agencyProfileQueryQuery = `INSERT INTO agency_profiles (id, business_name, isApproved, approvedAt, documents, phone, business_address, email, user_id, website) VALUES ${agencyProfileQueryLength};`;
+      const agencyProfileQueryLength = agency_profiles
+        .map(a => "(?)")
+        .join(",");
+      const agencyProfileQueryQuery = `INSERT INTO agency_profiles (id, business_name, isApproved, approvedAt, phone, business_address, email, user_id, website) VALUES ${agencyProfileQueryLength};`;
       await database.query(agencyProfileQueryQuery, {
         replacements: agency_profiles,
         type: database.QueryTypes.INSERT
       });
 
       // SEED PROPERTIES
-      const propertiesQueryLength = properties.map(a => '(?)').join(',');
+      const propertiesQueryLength = properties.map(a => "(?)").join(",");
       const propertiesQueryQuery = `INSERT INTO properties (id, category_id, user_id, name, address, description, location, payment_duration, price, avg_monthly_payment, has_C_of_O, images, createdAt, updatedAt, status) VALUES ${propertiesQueryLength};`;
       await database.query(propertiesQueryQuery, {
         replacements: properties,
+        type: database.QueryTypes.INSERT
+      });
+
+      // SEED DOCUMENTS
+      const documentsQueryLength = documents.map(a => "(?)").join(",");
+      const documentsQueryQuery = `INSERT INTO documents (user_id, agency_profile_id, name, link, id) VALUES ${documentsQueryLength};`;
+      await database.query(documentsQueryQuery, {
+        replacements: documents,
         type: database.QueryTypes.INSERT
       });
 
@@ -149,16 +169,16 @@ const dbService = (environment, migrate) => {
 
   const start = async () => {
     switch (environment) {
-      case 'development':
+      case "development":
         await startDev();
         break;
-      case 'staging':
+      case "staging":
         await startStage();
         break;
-      case 'testing':
+      case "testing":
         await startTest();
         break;
-      case 'production':
+      case "production":
         await startProd();
         break;
       default:
