@@ -7,6 +7,7 @@ const seedFile = require('./seedDataBase.json');
 const { users, agency_profiles, categories, user_categories, properties } = seedFile;
 const allSellers = [];
 const allInvestors = [];
+const agencyDocuments = [];
 
 const generateCOFOs = () => {
   const COFOs = [1, 0];
@@ -38,9 +39,34 @@ const refactoredCategories = categories.reduce((categories, category) => {
 // REFACTORED AGENCY PROFILES FORM USER ID
 const refactoredAgencyProfiles = allSellers.reduce((agency, user, index) => {
   const profile = agency_profiles[index];
-  const documents = JSON.stringify(profile.documents);
   profile.user_id = user.id;
-  agency.push([...Object.values({ ...profile, documents })]);
+  const [firstDoc, secondDoc] = profile.documents;
+  firstDoc.name = 'CAC';
+  const agencyDocs = {
+    user_id: user.id,
+    agency_profile_id: profile.id
+  };
+
+  agencyDocuments.push([
+    ...Object.values({
+      ...agencyDocs,
+      name: firstDoc.name,
+      link: firstDoc.image,
+      id: uuid()
+    })
+  ]);
+
+  agencyDocuments.push([
+    ...Object.values({
+      ...agencyDocs,
+      name: secondDoc.name,
+      link: secondDoc.image,
+      id: uuid()
+    })
+  ]);
+
+  delete profile.documents;
+  agency.push([...Object.values({ ...profile })]);
   return agency;
 }, []);
 
@@ -75,12 +101,17 @@ const refactoredProperties = allSellers.reduce((seller_properties, user) => {
     const payment_duration = property.payment_duration.toString();
     const has_C_of_O = generateCOFOs();
     seller_properties.push([
-      ...Object.values({ ...property, images, payment_duration, has_C_of_O, id })
+      ...Object.values({
+        ...property,
+        images,
+        payment_duration,
+        has_C_of_O,
+        id
+      })
     ]);
   }
   return seller_properties;
 }, []);
-
 
 const getSeedData = async () => {
   const users = await refactoredUsers;
@@ -89,6 +120,7 @@ const getSeedData = async () => {
     categories: refactoredCategories,
     user_categories: refactoredUserCategory,
     properties: refactoredProperties,
+    documents: agencyDocuments,
     users
   };
 
