@@ -31,7 +31,8 @@ class AgencyProfileQueries {
     SELECT agency_profiles.id AS profile_id,
       (SELECT COUNT(*) FROM properties WHERE properties.user_id = agency_profiles.user_id) AS noOfProperties,
       (SELECT COUNT(*) FROM properties WHERE properties.user_id = agency_profiles.user_id AND properties.status = 'active') AS noOfPropertiesSold,
-     user_id, 
+      (SELECT * FROM documents WHERE documents.agency_profile_id = ANY (SELECT agency_profiles.id FROM )) AS agencyDocuments,
+     user_id,
      business_name,
      business_address,
      website, 
@@ -39,7 +40,6 @@ class AgencyProfileQueries {
      approvedAt,
      agency_profiles.phone AS profile_phone,
      agency_profiles.email AS profile_email,
-     documents, 
      users.name AS user_name, 
      user_type, 
      createdAt,
@@ -49,6 +49,7 @@ class AgencyProfileQueries {
      avatar
     FROM agency_profiles
     JOIN users ON users.id = agency_profiles.user_id
+    JOIN documents ON documents.name = 'CAC'
     ORDER BY agency_profiles.business_name ASC 
     LIMIT :offset, :limit`,
       {
