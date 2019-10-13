@@ -67,3 +67,5 @@ typings/
 
 # sqlite database
 db/database.sqlite
+
+seeders/.DS_Store

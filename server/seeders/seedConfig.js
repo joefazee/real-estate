@@ -114,6 +114,8 @@ const refactoredProperties = allSellers.reduce((seller_properties, user) => {
 }, []);
 
 const getSeedData = async () => {
+  console.log(agencyDocuments);
+
   const users = await refactoredUsers;
   const dataBaseSeed = {
     agency_profiles: refactoredAgencyProfiles,

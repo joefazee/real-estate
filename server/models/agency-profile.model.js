@@ -1,68 +1,59 @@
-require('dotenv').config()
-const Sequelize = require('sequelize');
-const sequelize = require('../config/database');
-const Document = require('./document.model');
+require("dotenv").config();
+const Sequelize = require("sequelize");
+const sequelize = require("../config/database");
+const Document = require("./document.model");
 
-const tableName = 'agency_profiles';
+const tableName = "agency_profiles";
 
 const AgencyProfile = sequelize.define(
-  'AgencyProfile',
+  "AgencyProfile",
   {
     id: {
       primaryKey: true,
       type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
+      defaultValue: Sequelize.UUIDV4
     },
     user_id: {
       type: Sequelize.UUID,
-      unique: true,
+      unique: true
     },
     business_name: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     business_address: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     website: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     phone: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     isApproved: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
-      allowNull: false,
+      allowNull: false
     },
     approvedAt: {
-      type: 'TIMESTAMP',
-      allowNull: true,
-    },
-    documents: {
-      type: Sequelize.TEXT('long'),
+      type: "TIMESTAMP",
       allowNull: true
-    },
+    }
   },
   { tableName, timestamps: false }
 );
 
 AgencyProfile.hasMany(Document, {
-  as: 'profile_document',
-  foreignKey: 'profile_id',
+  as: "profile_document",
+  foreignKey: "agency_profile_id"
 });
 
 
-
-AgencyProfile.prototype.toJSON = function() {
-  const profile = Object.assign({}, this.get());
-  return { ...profile, documents: JSON.parse(profile.documents) };
-};
 module.exports = AgencyProfile;
