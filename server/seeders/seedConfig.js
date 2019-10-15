@@ -44,22 +44,28 @@ const refactoredAgencyProfiles = allSellers.reduce((agency, user, index) => {
   firstDoc.name = 'CAC';
   const agencyDocs = {
     user_id: user.id,
-    agency_profile_id: profile.id,
-    id: uuid()
+    agency_profile_id: profile.id
   };
 
-  agencyDocuments.push({
-    ...agencyDocs,
-    name: firstDoc.name,
-    link: firstDoc.image
-  });
+  agencyDocuments.push([
+    ...Object.values({
+      ...agencyDocs,
+      name: firstDoc.name,
+      link: firstDoc.image,
+      id: uuid()
+    })
+  ]);
 
-  agencyDocuments.push({
-    ...agencyDocs,
-    name: secondDoc.name,
-    link: secondDoc.image
-  });
+  agencyDocuments.push([
+    ...Object.values({
+      ...agencyDocs,
+      name: secondDoc.name,
+      link: secondDoc.image,
+      id: uuid()
+    })
+  ]);
 
+  delete profile.documents;
   agency.push([...Object.values({ ...profile })]);
   return agency;
 }, []);
@@ -116,12 +122,11 @@ const getSeedData = async () => {
     categories: refactoredCategories,
     user_categories: refactoredUserCategory,
     properties: refactoredProperties,
-    users,
-    documents: agencyDocuments
+    documents: agencyDocuments,
+    users
   };
 
   fs.writeFile('./seeders.json', JSON.stringify(dataBaseSeed, null, 2), 'utf8', console.log);
 };
 
 getSeedData();
-
