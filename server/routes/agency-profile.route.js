@@ -20,7 +20,6 @@ router
       IsSeller,
       hasCreatedProfile,
       validate(profileValidation.createProfile, { abortEarly: false }),
-      // uploadFile("documents")
     ],
     agencyCtrl.createProfile
   );
