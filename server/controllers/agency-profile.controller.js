@@ -18,10 +18,16 @@ exports.createProfile = async (req, res, next) => {
       website,
       phone,
       email,
-      user_id,
+      user_id
     });
 
-    await DocumentQuery.bulkCreate(documents);
+    const payload = [];
+    documents.map( doc => {
+      const key = (Object.keys(doc))[0];
+      payload.push({ name: key, link: doc[key], user_id, agency_profile_id: profile.id });
+    });
+
+    await DocumentQuery.bulkCreate(payload);
 
     return res.json(sendResponse(httpStatus.OK, "success", profile, null));
   } catch (error) {

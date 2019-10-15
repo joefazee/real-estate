@@ -38,6 +38,7 @@ const dbService = (environment, migrate) => {
 
   const seedDataBase = async () => {
     try {
+      await startMigrateFalse();
       const {
         users,
         agency_profiles,
@@ -125,11 +126,7 @@ const dbService = (environment, migrate) => {
   const startDev = async () => {
     try {
       await authenticateDB();
-
-      //   return startMigrateTrue();
-
-      await startMigrateFalse();
-      return seedDataBase();
+      await startMigrateTrue();
     } catch (err) {
       return errorDBStart(err);
     }
@@ -187,7 +184,8 @@ const dbService = (environment, migrate) => {
   };
 
   return {
-    start
+    start,
+    seedDataBase
   };
 };
 

@@ -17,6 +17,8 @@ module.exports = {
       email: Joi.string()
         .email()
         .max(200)
+        .required(),
+      documents: Joi.array()
         .required()
     }
   },
@@ -31,13 +33,10 @@ module.exports = {
   },
   editProfile: {
     body: {
-      business_name: Joi.string()
-        .max(200),
-      business_address: Joi.string()
-        .max(300),
+      business_name: Joi.string().max(200),
+      business_address: Joi.string().max(300),
       website: Joi.string().max(200),
-      phone: Joi.string()
-        .max(45),
+      phone: Joi.string().max(45),
       email: Joi.string()
         .email()
         .max(200)

@@ -12,8 +12,8 @@ module.exports = async (req, res, next) => {
 	const userHasProfile = await agencyProfileQuery.findByUserId(user_id);
 
   if (userHasProfile) {
-    return res.json(
-      sendResponse(httpStatus.BAD_REQUEST, "User has an agency profile", null, {
+    return res.status(400).json(
+      sendResponse(httpStatus.BAD_REQUEST, "You already have an agency profile, Check your Account", null, {
         error: "User has an agency profile"
       })
     );
@@ -28,7 +28,7 @@ module.exports = async (req, res, next) => {
 	if (emailExist) error['email'] = "email has been taken";
 
   if (!_.isEmpty(error)) {
-    return res.json(
+    return res.status(400).json(
       sendResponse(
         httpStatus.BAD_REQUEST,
         "Invalid fields",

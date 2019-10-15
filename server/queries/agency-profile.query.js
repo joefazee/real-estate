@@ -31,7 +31,7 @@ class AgencyProfileQueries {
     SELECT agency_profiles.id AS profile_id,
       (SELECT COUNT(*) FROM properties WHERE properties.user_id = agency_profiles.user_id) AS noOfProperties,
       (SELECT COUNT(*) FROM properties WHERE properties.user_id = agency_profiles.user_id AND properties.status = 'active') AS noOfPropertiesSold,
-      (SELECT * FROM documents WHERE documents.agency_profile_id = ANY (SELECT agency_profiles.id FROM )) AS agencyDocuments,
+      (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', name, 'link', link))  FROM documents WHERE documents.agency_profile_id = agency_profiles.id) AS documents,
      user_id,
      business_name,
      business_address,
@@ -49,7 +49,6 @@ class AgencyProfileQueries {
      avatar
     FROM agency_profiles
     JOIN users ON users.id = agency_profiles.user_id
-    JOIN documents ON documents.name = 'CAC'
     ORDER BY agency_profiles.business_name ASC 
     LIMIT :offset, :limit`,
       {
@@ -73,14 +72,14 @@ class AgencyProfileQueries {
   filterBy(search, { limit, offset }) {
     return sequelize.query(
       `
-     SELECT agency_profiles.id AS profile_id,
+     SELECT agency_profiles.id AS profile_id,      
+     (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', name, 'link', link))  FROM documents WHERE documents.agency_profile_id = agency_profiles.id) AS documents,
      user_id, 
      business_name,
      business_address,
      website, 
      agency_profiles.phone AS profile_phone,
      agency_profiles.email AS profile_email,
-     documents, 
      users.name AS user_name, 
      user_type, 
      email_verified, 
@@ -89,7 +88,6 @@ class AgencyProfileQueries {
      avatar 
     FROM agency_profiles
     JOIN users ON users.id = agency_profiles.user_id
-    ORDER BY agency_profiles.business_name ASC 
     WHERE agency_profiles.isApproved = :approved
     ORDER BY agency_profiles.business_name ASC 
     LIMIT :offset, :limit`,
