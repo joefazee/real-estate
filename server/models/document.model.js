@@ -23,7 +23,7 @@ const Document = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false
     },
-    user_id: {
+    agency_profile_id: {
       type: Sequelize.STRING,
       allowNull: false
     }
