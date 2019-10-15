@@ -1,10 +1,10 @@
-const Sequelize = require("sequelize");
+const Sequelize = require('sequelize');
 
-const sequelize = require("../config/database");
-const tableName = "documents";
+const sequelize = require('../config/database');
+const tableName = 'documents';
 
 const Document = sequelize.define(
-  "Document",
+  'Document',
   {
     id: {
       primaryKey: true,
@@ -20,11 +20,11 @@ const Document = sequelize.define(
       allowNull: false
     },
     user_id: {
-      type: Sequelize.STRING,
+      type: Sequelize.UUID,
       allowNull: false
     },
     agency_profile_id: {
-      type: Sequelize.STRING,
+      type: Sequelize.UUID,
       allowNull: false
     }
   },
@@ -32,4 +32,3 @@ const Document = sequelize.define(
 );
 
 module.exports = Document;
-;
