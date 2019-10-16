@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
   if (tokenToVerify) {
     return await jwtService.verify(tokenToVerify, (err, thisToken) => {
       if (err) {
-        return res.json(
+        return res.status(401).json(
           sendResponse(httpStatus.UNAUTHORIZED, "Invalid Token", null, {
             error: "Invalid Token"
           })
@@ -28,7 +28,7 @@ module.exports = async (req, res, next) => {
     });
   }
 
-  return res.json(
+  return res.status(401).json(
     sendResponse(httpStatus.UNAUTHORIZED, "No Token found", null, {
       error: "No Authorization found"
     })
