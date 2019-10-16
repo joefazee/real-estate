@@ -74,22 +74,23 @@ exports.viewProperty = async (req, res, next) => {
 
 exports.getAgencyProperties = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id: user_id } = req.token;
 
-    const viewedListing = await PropertyQuery.findByUser(id);
+    const listings = await PropertyQuery.findByUser(user_id);
 
-    if (Boolean(viewedListing)) {
-      return res.json(
+    if (!Boolean(listings)) {
+      return res.status(404).json(
         sendResponse(httpStatus.NOT_FOUND, "Property Listing not found", null, {
-          error: "property no found"
+          error: "property not found"
         })
       );
     }
-
-    viewedListing.images = viewedListing.images.split(",");
+    const transformProperty = listings.map(({dataValues}) => {
+      return { ...dataValues, images: dataValues.images.slice().split(",") };
+    });
 
     return res.json(
-      sendResponse(httpStatus.OK, "success", viewedListing, null)
+      sendResponse(httpStatus.OK, "success!", transformProperty, null)
     );
   } catch (error) {
     next(error);
@@ -118,7 +119,6 @@ exports.propertyFeed = async (req, res, next) => {
       minPrice,
       maxPrice
     };
-
 
     const offset = +limit * +skip;
 

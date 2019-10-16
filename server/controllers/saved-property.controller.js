@@ -12,23 +12,44 @@ exports.saveProperty = async (req, res, next) => {
       user_id,
       property_id
     });
+
     if (alreadyExists) {
-      return res.json(
+      return res.status(400).json(
         sendResponse(
           httpStatus.BAD_REQUEST,
-          "property already saved by user",
+          "You already bookmarked this property",
           null,
           { error: "property already saved by user" }
         )
       );
     }
 
-    await savedPropertiesQuery.create({
+    const savedProperty = await savedPropertiesQuery.create({
       user_id,
       property_id
     });
 
-    return res.json(sendResponse(httpStatus.OK, "property saved", null, null));
+    return res.json(
+      sendResponse(httpStatus.OK, "property saved", savedProperty, null)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getSavedProperty = async (req, res, next) => {
+  try {
+    const { id: user_id } = req.token;
+
+    const savedProperties = await savedPropertiesQuery.findAll({ user_id });
+
+    const transformProperty = savedProperties.map(property => {
+      return { ...property, images: property.images.split(",") };
+    });
+    
+    return res.json(
+      sendResponse(httpStatus.OK, "success!!!", transformProperty, null)
+    );  
   } catch (error) {
     next(error);
   }
