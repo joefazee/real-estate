@@ -13,6 +13,8 @@ router.use(authToken);
 router
   .route('/')
   .post([ validate(savedPropValidation.saveProperty, { abortEarly: false }), IsInvestor ], savePropCtrl.saveProperty)
+  .get(IsInvestor, savePropCtrl.getSavedProperty);
+
 
 router
   .route('/:property_id')

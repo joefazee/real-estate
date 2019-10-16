@@ -23,7 +23,7 @@ router.route("/create").post(
 
 router.route("/view/:id").get(propertyCtrl.viewProperty);
 
-router.route("/agencyProperty").get(propertyCtrl.getAgencyProperties);
+router.route("/agency-property").get(authToken, propertyCtrl.getAgencyProperties);
 
 router.route("/search").get(propertyCtrl.propertyFeed);
 
