@@ -65,7 +65,7 @@ exports.deleteSavedProperty = async (req, res, next) => {
       property_id
     });
     if (!alreadyExists) {
-      return res.json(
+      return res.status(400).json(
         sendResponse(
           httpStatus.BAD_REQUEST,
           "this property was not saved by user",

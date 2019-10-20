@@ -40,7 +40,7 @@ class SavedPropertiesQueries {
 		return sequelize.query(
       `
 			SELECT saved_properties.id AS id,
-			properties.id AS property_id,
+			property_id,
 			name,
 			description,
 			address,
