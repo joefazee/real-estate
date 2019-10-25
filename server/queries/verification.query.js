@@ -13,13 +13,12 @@ class VerificationQueries {
 
   findOneAndDelete( payload ) {
     const { code, user_id } = payload;
-    return this.Model.destroy({ where: { code,user_id } });
+    return this.Model.destroy({ where: { code, user_id } });
   }
 
-  verifyEmail(email) {
+  verifyEmail(id) {
     const payload = { email_verified: true };
-    const where = { where: { email } };
-    return UserQuery.update(payload, where);
+    return UserQuery.update(id, payload);
   }
 }
 

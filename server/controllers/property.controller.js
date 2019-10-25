@@ -21,7 +21,7 @@ exports.createProperty = async (req, res, next) => {
       images
     } = req.body;
 
-    const property = await PropertyQuery.create({
+    await PropertyQuery.create({
       name,
       description,
       address,
@@ -105,7 +105,7 @@ exports.propertyFeed = async (req, res, next) => {
       minPrice = 0,
       maxPrice = 0,
       name = "",
-      limit = 10,
+      limit = 12,
       skip = 0
     } = req.query;
 
@@ -131,8 +131,16 @@ exports.propertyFeed = async (req, res, next) => {
       return { ...property, images: property.images.split(",") };
     });
 
+    const propCount = (await PropertyQuery.findNoOfProperties())[0].noOfProperties;
+    const totalPages = Math.ceil(propCount/limit);
+
     return res.json(
-      sendResponse(httpStatus.OK, "success!", transformProperty, null)
+      sendResponse(
+        httpStatus.OK,
+        "success!",
+        { properties: transformProperty, count: propCount, totalPages },
+        null
+      )
     );
   } catch (err) {
     next(err);

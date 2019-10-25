@@ -11,6 +11,7 @@ exports.verify = async (req, res, next) => {
       code: token,
       user_id
     });
+
     if (!foundRecord) {
       return res.json(
         sendResponse(
@@ -22,7 +23,7 @@ exports.verify = async (req, res, next) => {
       );
     }
     
-    await VerificationQuery.verifyEmail(email);
+    await VerificationQuery.verifyEmail(user_id);
     return res.json(
       sendResponse(httpStatus.OK, "Account Verified Successfully!", null, null)
     );
