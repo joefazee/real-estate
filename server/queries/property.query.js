@@ -49,6 +49,12 @@ class PropertyQueries {
   async findByPropertyId(id) {
     return this.Model.findOne({ where: { id } });
   }
+
+  async findNoOfProperties() {
+    return sequelize.query(`SELECT COUNT(*) AS noOfProperties FROM properties`, {
+      type: sequelize.QueryTypes.SELECT
+    });
+  }
 }
 
 const propertyQuery = new PropertyQueries(Property);

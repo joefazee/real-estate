@@ -7,7 +7,7 @@
     "server-test": "cd server && npm test",
     "client-test": "cd client && yarn test",
     "test": "npm run server-test && npm run client-test",
-    "server": "cd server && npm run server",
+    "server": "cd server && npm run production",
     "client": "cd client && npm start",
     "start": "concurrently - kill-others \"npm run server\" \"npm run client\""
   },
